@@ -10,7 +10,7 @@ class SliderSeeder extends Seeder
     public function run(): void
     {
         DB::table('sliders')->insert([
-            [
+            [k
                 'title' => json_encode(['tr' => 'Geleceği Güvenle İnşa Ediyoruz', 'en' => 'Building the Future with Confidence']),
                 'subtitle' => json_encode(['tr' => 'Modern mimari ve 20 yılı aşkın tecrübemizle hayallerinizi gerçeğe dönüştürüyoruz.', 'en' => 'We turn your dreams into reality with modern architecture and over 20 years of experience.']),
                 'button_text' => json_encode(['tr' => 'Projelerimiz', 'en' => 'Our Projects']),
