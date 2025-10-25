@@ -4,37 +4,47 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Translatable\HasTranslations; // EKLE
 
 class PageSection extends Model
 {
-    use HasFactory;
+    use HasFactory, HasTranslations; // HasTranslations EKLE
 
-    /**
-     * Mass assignment için doldurulabilir alanlar.
-     */
     protected $fillable = [
         'page_id',
         'section_key',
         'content',
         'order',
-        'is_active', // EKLENDİ
+        'is_active',
     ];
 
-    /**
-     * Belirtilen sütunların veri tiplerini otomatik olarak dönüştürür.
-     * Bu, hatanın çözümüdür.
-     *
-     * @var array
-     */
     protected $casts = [
-        'content' => 'array', // Bu satır, veritabanındaki JSON'ı otomatik olarak PHP dizisine çevirir.
+        'content' => 'array',
     ];
 
-    /**
-     * Sayfa ile olan ilişkiyi tanımlar.
-     */
+    // EKLE: Çevrilebilir alanlar (content içindeki JSON verileri için)
+    public $translatable = [];
+
     public function page()
     {
         return $this->belongsTo(Page::class);
+    }
+
+    /**
+     * Helper metod: Content içindeki çok dilli değerleri almak için
+     */
+    public function getTranslation(string $key, string $locale, array $content = null, $default = '')
+    {
+        $content = $content ?? $this->content;
+        return data_get($content, "$key.$locale", $default);
+    }
+
+    /**
+     * Helper metod: Repeater içindeki çok dilli değerleri almak için
+     */
+    public function getRepeaterTranslation(string $repeaterKey, int $index, string $fieldKey, string $locale, array $content = null, $default = '')
+    {
+        $content = $content ?? $this->content;
+        return data_get($content, "$repeaterKey.$index.$fieldKey.$locale", $default);
     }
 }

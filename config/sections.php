@@ -120,6 +120,25 @@ return [
         ],
     ],
 
+    'service-cards-grid' => [
+        'name' => 'Hizmet Kartları Grid (Filtrelenebilir)',
+        'view' => 'frontend.sections._service-cards-grid',
+        'data_handler' => \App\PageBuilder\ServicesListHandler::class,
+        'fields' => [
+            ['name' => 'sub_title', 'label' => 'Üst Başlık', 'type' => 'text', 'translatable' => true],
+            ['name' => 'main_title', 'label' => 'Ana Başlık', 'type' => 'text', 'translatable' => true],
+            ['name' => 'service_count', 'label' => 'Gösterilecek Hizmet Sayısı', 'type' => 'number'],
+            [
+                'name' => 'show_filters',
+                'label' => 'Kategori Filtreleri Göster',
+                'type' => 'select',
+                'options' => [
+                    '0' => 'Hayır',
+                    '1' => 'Evet',
+                ]
+            ],
+        ],
+    ],
     // SON
 
 
