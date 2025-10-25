@@ -37,14 +37,14 @@
             <div class="col-xl-6 col-lg-6">
                 <div class="about_us_content">
                     <h6 class="sub_title">{{ $subTitle }}</h6>
-                    <h2 class="sec_title">{{ $title }}</h2>
+                    <h2 class="sec_title">{!! $title  !!} </h2>
 
                     @if($leadText)
                         <p class="ind_lead">{{ $leadText }}</p>
                     @endif
 
                     @if($mainText)
-                        <p class="mb28">{!! nl2br(e($mainText)) !!}</p>
+                        <p class="mb28">{!! $mainText !!}</p>
                     @endif
 
                     @if($signatureImage)

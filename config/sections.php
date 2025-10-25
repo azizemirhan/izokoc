@@ -64,6 +64,62 @@ return [
             ],
         ],
     ],
+
+    // ... Diğer section tanımları ...
+
+    'core-features' => [
+        'name' => 'Temel Özellikler (Icon Kutuları)', // Bölümün kendisinin adı (bu değişmedi)
+        'view' => 'frontend.sections._core-features',
+        'data_handler' => null,
+        'fields' => [
+            [
+                'label' => 'Alt Başlık', // Yönetici panelindeki etiket
+                'name' => 'sub_title',   // Form input name'i ve veritabanı JSON anahtarı
+                'type' => 'text',
+                'translatable' => true,
+                'default' => 'Core Features',
+            ],
+            [
+                'label' => 'Ana Başlık İkonu',
+                'name' => 'title_icon',
+                'type' => 'iconpicker',
+                'default' => 'fal fa-user-hard-hat',
+            ],
+            [
+                'label' => 'Ana Başlık Metni',
+                'name' => 'title_text',
+                'type' => 'text',
+                'translatable' => true,
+                'default' => 'Doom Features',
+            ],
+            [
+                'label' => 'Özellikler', // Repeater alanının etiketi
+                'name' => 'features',    // Repeater'ın form input name'i ve veritabanı JSON anahtarı
+                'type' => 'repeater',
+                'fields' => [ // Repeater içindeki alanlar
+                    [
+                        'label' => 'İkon', // İç alanın etiketi
+                        'name' => 'icon',  // İç alanın name'i
+                        'type' => 'iconpicker',
+                        'default' => 'icofont-calculations',
+                    ],
+                    [
+                        'label' => 'Başlık',
+                        'name' => 'feature_title',
+                        'type' => 'text',
+                        'translatable' => true,
+                    ],
+                    [
+                        'label' => 'Açıklama',
+                        'name' => 'description',
+                        'type' => 'textarea',
+                        'translatable' => true,
+                    ],
+                ]
+            ]
+        ],
+    ],
+
     // SON
 
 
@@ -147,17 +203,6 @@ return [
         ],
     ],
 
-    'core-features' => [
-        'name' => 'Öne Çıkan Özellikler (Akordiyon)',
-        'view' => 'frontend.sections._core-features',
-        'data_handler' => \App\PageBuilder\FeaturesListHandler::class,
-        'fields' => [
-            ['name' => 'small_title', 'label' => 'Küçük Başlık', 'type' => 'text', 'translatable' => true],
-            ['name' => 'main_title', 'label' => 'Ana Başlık', 'type' => 'text', 'translatable' => true],
-            ['name' => 'video_url', 'label' => 'Video Linki (YouTube/Vimeo)', 'type' => 'url'],
-            ['name' => 'video_image', 'label' => 'Video Kapak Resmi', 'type' => 'file'],
-        ],
-    ],
     'call-to-action-banner' => [
         'name' => 'Harekete Geçirici Banner',
         'view' => 'frontend.sections._call-to-action-banner',

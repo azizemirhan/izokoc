@@ -1,73 +1,59 @@
 @php
-    // DÜZELTME: Admin panelinden girilen statik başlıkları data_get() ile güvenli bir şekilde alıyoruz.
-    $smallTitle = data_get($content, 'small_title.' . app()->getLocale(), 'Core Features');
-    $mainTitle = data_get($content, 'main_title.' . app()->getLocale(), 'What Makes Us Different');
+    // Ana başlık ve alt başlık bilgilerini al
+    $subTitle = $section->getTranslation('sub_title', app()->getLocale(), $content, 'Core Features');
+    $titleIcon = data_get($content, 'title_icon', 'fal fa-user-hard-hat');
+    $titleText = $section->getTranslation('title_text', app()->getLocale(), $content, 'Doom Features');
 
-    // Bu alanlar tekil olduğu için doğrudan erişim doğrudur.
-    $videoUrl = $content['video_url'] ?? '#';
-    $videoImage = isset($content['video_image']) ? asset($content['video_image']) : 'https://placehold.co/965x825';
-
-    // DataHandler'dan gelen Feature koleksiyonu
-    $features = $dynamicData ?? collect();
+    // Tekrarlayan özellikler verisini al (varsayılan olarak boş bir dizi)
+    $features = data_get($content, 'features', []);
 @endphp
 
-<section class="core-features">
+<section class="commonSection graySection">
     <div class="container">
         <div class="row">
-            <div class="col-lg-6">
-                <div class="space">
-                    <div class="heading-style-2">
-                        <div class="data">
-                            <span>{{ $smallTitle }}</span>
-                            <h2>{{ $mainTitle }}</h2>
-                        </div>
-                    </div>
-                    @if($features->isNotEmpty())
-                        <div class="accordion" id="accordion-{{ $section->id }}">
-                            @foreach($features as $feature)
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="heading-{{ $feature->id }}">
-                                        <button class="accordion-button {{ $loop->first ? '' : 'collapsed' }}"
-                                                type="button" data-bs-toggle="collapse"
-                                                data-bs-target="#collapse-{{ $feature->id }}"
-                                                aria-expanded="{{ $loop->first ? 'true' : 'false' }}">
-                                            <span
-                                                class="num">0{{ $loop->iteration }}.</span> {{ $feature->getTranslation('title', app()->getLocale()) }}
-                                        </button>
-                                    </h2>
-                                    <div id="collapse-{{ $feature->id }}"
-                                         class="accordion-collapse collapse {{ $loop->first ? 'show' : '' }}"
-                                         aria-labelledby="heading-{{ $feature->id }}"
-                                         data-bs-parent="#accordion-{{ $section->id }}">
-                                        <div class="accordion-body">
-                                            <p>{{ $feature->getTranslation('description', app()->getLocale()) }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    @endif
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <div class="shape">
-                    <div class="video">
-                        <figure>
-                            <img src="{{ $videoImage }}" alt="Core Feature Img">
-                        </figure>
-                        <a class="video-play-btn" data-fancybox="" href="{{ $videoUrl }}">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="35" height="56" viewBox="0 0 35 56">
-                                <g>
-                                    <path d="M1362,5000.8,1327,4972V5027Z" transform="translate(-1326.998 -4971.996)"
-                                          fill="rgba(0,0,0,0)"/>
-                                    <path d="M1333,5015.017l19.29-14.437L1333,4984.7v30.313M1327,5027V4972l35,28.807Z"
-                                          transform="translate(-1326.998 -4971.996)"/>
-                                </g>
-                            </svg>
-                        </a>
-                    </div>
-                </div>
+            <div class="col-xl-12 text-center">
+                {{-- Alt Başlık --}}
+                <h6 class="sub_title gray_sub_title">{{ $subTitle }}</h6>
+                {{-- Ana Başlık (İkon ve Metin) --}}
+                <h2 class="sec_title with_bar">
+                    <span>
+                        @if($titleIcon)<i class="{{ $titleIcon }}"></i>@endif
+                        <span>{{ $titleText }}</span>
+                    </span>
+                </h2>
             </div>
         </div>
+
+        {{-- Eğer özellikler varsa göster --}}
+        @if(!empty($features))
+            <div class="row">
+                {{-- Her bir özellik için döngü --}}
+                @foreach($features as $feature)
+                    @php
+                        // Her bir özelliğin verilerini güvenli bir şekilde al
+                        // Not: İkon sınıfları HTML'de 'bigger' ve 'smaller' olarak ayrılmış,
+                        //       burada tek bir ikon alanı ('icon') varsayıldı ve ikisine de atandı.
+                        //       Gerekirse repeater içinde iki ayrı ikon alanı tanımlanabilir.
+                        $featureIcon = data_get($feature, 'icon', 'icofont-calculations');
+                        $featureTitle = $section->getRepeaterTranslation('features', $loop->index, 'feature_title', app()->getLocale(), $content);
+                        $featureDescription = $section->getRepeaterTranslation('features', $loop->index, 'description', app()->getLocale(), $content);
+                    @endphp
+                    <div class="col-lg-3 col-md-6">
+                        <div class="icon_box_01 text-center">
+                            {{-- İkonlar --}}
+                            <i class="bigger {{ $featureIcon }}"></i>
+                            <i class="smaller {{ $featureIcon }}"></i>
+                            <span></span>
+                            {{-- Özellik Başlığı (Çevrilebilir) --}}
+                            <h3>{!! nl2br(e($featureTitle)) !!}</h3>
+                            {{-- Özellik Açıklaması (Çevrilebilir) --}}
+                            <p>
+                                {!! nl2br(e($featureDescription)) !!}
+                            </p>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @endif
     </div>
 </section>

@@ -255,7 +255,6 @@ input:focus, textarea:focus, select:focus, button:focus{
 .sec_title{
     font-size: 80px;
     line-height: 90px;
-    letter-spacing: -2.4px;
     margin: 0 0 80px;
     position: relative;
 }
