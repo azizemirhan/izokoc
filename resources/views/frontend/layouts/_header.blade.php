@@ -41,42 +41,6 @@
                         </form>
                     </div>
 
-                    {{-- DİNAMİK DİL DEĞİŞTİRİCİ --}}
-                    @if(isset($activeLanguages) && $activeLanguages->count() > 1)
-                        <div class="language-switcher dropdown topbar_element">
-                            <a href="#" class="language-flag current-language dropdown-toggle" id="languageDropdown"
-                               role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                @php
-                                    $currentLocale = app()->getLocale();
-                                    $currentFlagCode = $currentLocale == 'en' ? 'gb' : $currentLocale;
-                                    $currentLangData = $activeLanguages->get($currentLocale);
-                                @endphp
-                                <img src="{{ asset('flag-icons-main/flags/1x1/'.$currentFlagCode.'.svg') }}"
-                                     alt="{{ $currentLocale }}">
-                                <span
-                                        class="current-lang-text">{{ $currentLangData['native'] ?? strtoupper($currentLocale) }}</span>
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="languageDropdown">
-                                @foreach($activeLanguages as $code => $lang)
-                                    @if($code != app()->getLocale())
-                                        <li>
-                                            <a class="dropdown-item language-flag"
-                                               href="{{ route('language.swap', $code) }}">
-                                                @php
-                                                    $flagCode = $code == 'en' ? 'gb' : $code;
-                                                @endphp
-                                                <img src="{{ asset('flag-icons-main/flags/1x1/'.$flagCode.'.svg') }}"
-                                                     alt="{{ $lang['native'] }}">
-                                                <span>{{ $lang['native'] }}</span>
-                                            </a>
-                                        </li>
-                                    @endif
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
-                    {{-- DİL DEĞİŞTİRİCİ BİTİŞ --}}
-
                     <div class="topbar_element settings_bar">
                         <a href="#" class="hamburger" id="open-overlay-nav"><i class="fal fa-bars"></i></a>
                     </div>

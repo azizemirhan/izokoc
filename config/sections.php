@@ -8,65 +8,62 @@ return [
         'fields' => [],
     ],
 
-    // ... Diğer section tanımları ...
-
     'about-us-video' => [
-        'name' => 'Hakkımızda (Video ve İçerik)', // Yönetici panelinde görünecek isim
-        'view' => 'frontend.sections._about-us-video', // Kullanılacak Blade dosyasının yolu
-        'data_handler' => null, // Dinamik veri çekmeye gerek yok
+        'name' => 'Hakkımızda (Video ve İçerik)',
+        'view' => 'frontend.sections._about-us-video',
+        'data_handler' => null,
         'fields' => [
             [
-                'name' => 'Ana Resim', // Alanın etiketi
-                'key' => 'main_image', // Veritabanında content JSON'da saklanacak anahtar
-                'type' => 'image',     // Alan tipi (görsel seçici)
+                'name' => 'main_image',
+                'label' => 'Ana Resim',
+                'type' => 'file',
             ],
             [
-                'name' => 'Popup Resmi',
-                'key' => 'popup_image',
-                'type' => 'image',
+                'name' => 'popup_image',
+                'label' => 'Popup Resmi',
+                'type' => 'file',
             ],
             [
-                'name' => 'Video URL',
-                'key' => 'video_url',
-                'type' => 'text', // Alan tipi (metin girişi)
-                'default' => 'https://player.vimeo.com/video/78393586', // Varsayılan değer
-            ],
-            [
-                'name' => 'Alt Başlık',
-                'key' => 'sub_title',
+                'name' => 'video_url',
+                'label' => 'Video URL',
                 'type' => 'text',
-                'translatable' => true, // Çevrilebilir alan
+                'default' => 'https://player.vimeo.com/video/78393586',
+            ],
+            [
+                'name' => 'sub_title',
+                'label' => 'Alt Başlık',
+                'type' => 'text',
+                'translatable' => true,
                 'default' => 'About Us',
             ],
             [
-                'name' => 'Ana Başlık',
-                'key' => 'title',
-                'type' => 'textarea', // Uzun metinler için textarea daha uygun olabilir
+                'name' => 'title',
+                'label' => 'Ana Başlık',
+                'type' => 'textarea',
                 'translatable' => true,
                 'default' => 'Concerted Efforts To Build Better.',
             ],
             [
-                'name' => 'Giriş Metni',
-                'key' => 'lead_text',
+                'name' => 'lead_text',
+                'label' => 'Giriş Metni',
                 'type' => 'text',
                 'translatable' => true,
                 'default' => 'Dream big with get more inspiring solutions from here.',
             ],
             [
-                'name' => 'Ana Paragraf',
-                'key' => 'main_text',
+                'name' => 'main_text',
+                'label' => 'Ana Paragraf',
                 'type' => 'textarea',
                 'translatable' => true,
                 'default' => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, do eiusmod temp or incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit.',
             ],
             [
-                'name' => 'İmza Resmi',
-                'key' => 'signature_image',
-                'type' => 'image',
+                'name' => 'signature_image',
+                'label' => 'İmza Resmi',
+                'type' => 'file',
             ],
         ],
     ],
-
     // SON
 
 
