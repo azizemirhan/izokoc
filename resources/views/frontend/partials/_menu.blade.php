@@ -1,16 +1,17 @@
 @if(isset($items) && $items->isNotEmpty())
-    {{-- Yeni temadaki mobil menü çubuğu --}}
-    <div class="mobileMenuBar">
-        <a href="javascript: void(0);"><span>Menu</span><i class="fa fa-bars"></i></a>
-    </div>
-
-    {{-- Yeni temadaki ana navigasyon menüsü --}}
-    <nav class="mainmenu">
-        <ul>
+    {{-- Desktop Menu için class yapısı --}}
+    @if(!isset($type) || $type !== 'mobile')
+        <ul class="izokoc_menu">
             @foreach($items as $item)
-                {{-- Her bir öğe için _submenu.blade.php'yi çağırır --}}
-                @include('frontend.partials._submenu', ['item' => $item])
+                @include('frontend.partials._submenu', ['item' => $item, 'type' => 'desktop'])
             @endforeach
         </ul>
-    </nav>
+    @else
+        {{-- Mobile Menu için class yapısı --}}
+        <ul class="izokoc_mobile_menu">
+            @foreach($items as $item)
+                @include('frontend.partials._submenu', ['item' => $item, 'type' => 'mobile'])
+            @endforeach
+        </ul>
+    @endif
 @endif

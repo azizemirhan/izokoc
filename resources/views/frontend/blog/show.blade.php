@@ -1,658 +1,805 @@
 @extends('frontend.layouts.master')
 
 @section('page_meta')
-    <title>{{ $post->seo_title ?: $post->title }}</title>
-    <meta name="description" content="{{ $post->meta_description ?: $post->excerpt }}">
-    <meta name="keywords" content="{{ $post->keywords }}">
-    <meta name="robots" content="{{ $post->index_status }},{{ $post->follow_status }}">
-    <link rel="canonical" href="{{ $post->canonical_url ?: url()->current() }}"/>
-    <meta property="og:title" content="{{ $post->seo_title ?: $post->title }}"/>
-    <meta property="og:description" content="{{ $post->meta_description ?: $post->excerpt }}"/>
-    @if($post->featured_image)
-        <meta property="og:image" content="{{ asset($post->featured_image) }}"/>
+    <title>{{ $post->seo_title ?: $post->title }} | Blog</title>
+    <meta name="description" content="{{ $post->meta_description ?: Str::limit($post->excerpt, 160) }}">
+    @if($post->keywords)
+        <meta name="keywords" content="{{ $post->keywords }}">
     @endif
 @endsection
 
 @section('content')
-    {{-- Banner'ı yazının kendi başlığı ile oluşturuyoruz --}}
-    <x-page-banner :title="$pageTitle"/>
-    <section id="nx-post" class="gap blog-style-one blog-detail detail-page">
+    <x-page-banner :title="$post->title" :subtitle="$post->category ? $post->category->name : ''" />
+
+    <section class="izokoc-blog-single-section">
         <div class="container">
             <div class="row">
-                {{-- ANA YAZI İÇERİĞİ --}}
+                {{-- ANA İÇERİK: YAZI DETAYI --}}
                 <div class="col-lg-8">
-                    <div class="blog-post">
-                        <div class="blog-image">
-                            <figure>
+                    <article class="izokoc-blog-single">
+                        {{-- Featured Image --}}
+                        @if($post->featured_image)
+                            <div class="izokoc-blog-single__featured">
                                 <img src="{{ asset($post->featured_image) }}"
                                      alt="{{ $post->featured_image_alt_text ?: $post->title }}">
-                            </figure>
-                        </div>
-                        <div class="blog-data">
-                            <span class="blog-date">{{ $post->published_date_formatted }}</span>
-                            <h2>{{ $post->title }}</h2>
-                            <div class="blog-author d-flex-all justify-content-start">
-                                <div class="author-img">
-                                    <figure>
-                                        {{-- Yazar resmi için bir alanınız varsa burayı güncelleyebilirsiniz --}}
-                                        <img src="https://placehold.co/55x55" alt="{{ $post->author->name }}">
-                                    </figure>
-                                </div>
-                                <div class="details">
-                                    <h3><span>{{ __('Author') }}:</span> {{ $post->author->name }}</h3>
-                                </div>
                             </div>
+                        @endif
+
+                        {{-- Meta Bilgiler --}}
+                        <div class="izokoc-blog-single__meta">
+                            <div class="izokoc-blog-single__meta-item">
+                                <i class="icofont-user-alt-7"></i>
+                                <span>{{ $post->author->name }}</span>
+                            </div>
+                            <div class="izokoc-blog-single__meta-item">
+                                <i class="icofont-calendar"></i>
+                                <span>{{ $post->published_date_formatted }}</span>
+                            </div>
+                            @if($post->category)
+                                <div class="izokoc-blog-single__meta-item">
+                                    <i class="icofont-folder"></i>
+                                    <a href="{{ route('blog.category', $post->category->slug) }}">
+                                        {{ $post->category->name }}
+                                    </a>
+                                </div>
+                            @endif
                         </div>
 
-                        {{-- Quill editörden gelen zengin içerik --}}
-                        <div class="post-content">
+                        {{-- İçerik --}}
+                        <div class="izokoc-blog-single__content">
                             {!! $post->content !!}
                         </div>
-                        {{-- Sonraki / Önceki Yazı Navigasyonu --}}
-                        <div class="post-navigation d-flex justify-content-between border-top pt-4 mt-4">
-                            <div>
-                                @if($previousPost)
-                                    <a href="{{ route('blog.show', $previousPost->slug) }}"
-                                       class="theme-btn-two-outline">
-                                        <i class="fa-solid fa-arrow-left-long me-2"></i> {{ __('Previous Post') }}
-                                    </a>
-                                @endif
+
+                        {{-- Etiketler --}}
+                        @if($post->tags->isNotEmpty())
+                            <div class="izokoc-blog-single__tags">
+                                <strong>{{ __('Tags:') }}</strong>
+                                <div class="izokoc-blog-single__tags-wrapper">
+                                    @foreach($post->tags as $tag)
+                                        <a href="{{ route('blog.tag', $tag->slug) }}" class="izokoc-blog-single__tag">
+                                            {{ $tag->name }}
+                                        </a>
+                                    @endforeach
+                                </div>
                             </div>
-                            <div>
-                                @if($nextPost)
-                                    <a href="{{ route('blog.show', $nextPost->slug) }}" class="theme-btn-two">
-                                        {{ __('Next Post') }} <i class="fa-solid fa-arrow-right-long ms-2"></i>
-                                    </a>
-                                @endif
+                        @endif
+
+                        {{-- Sosyal Paylaşım --}}
+                        <div class="izokoc-blog-single__share">
+                            <strong>{{ __('Share:') }}</strong>
+                            <div class="izokoc-social-share">
+                                <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(route('blog.show', $post->slug)) }}"
+                                   target="_blank"
+                                   class="izokoc-social-share__btn izokoc-social-share__btn--facebook">
+                                    <i class="icofont-facebook"></i>
+                                </a>
+                                <a href="https://twitter.com/intent/tweet?url={{ urlencode(route('blog.show', $post->slug)) }}&text={{ urlencode($post->title) }}"
+                                   target="_blank"
+                                   class="izokoc-social-share__btn izokoc-social-share__btn--twitter">
+                                    <i class="icofont-twitter"></i>
+                                </a>
+                                <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ urlencode(route('blog.show', $post->slug)) }}&title={{ urlencode($post->title) }}"
+                                   target="_blank"
+                                   class="izokoc-social-share__btn izokoc-social-share__btn--linkedin">
+                                    <i class="icofont-linkedin"></i>
+                                </a>
+                                <a href="https://api.whatsapp.com/send?text={{ urlencode($post->title . ' ' . route('blog.show', $post->slug)) }}"
+                                   target="_blank"
+                                   class="izokoc-social-share__btn izokoc-social-share__btn--whatsapp">
+                                    <i class="icofont-whatsapp"></i>
+                                </a>
                             </div>
                         </div>
 
-                    </div>
+                        {{-- Önceki/Sonraki Yazılar --}}
+                        @if(isset($previousPost) || isset($nextPost))
+                            <div class="izokoc-blog-navigation">
+                                @if(isset($previousPost))
+                                    <a href="{{ route('blog.show', $previousPost->slug) }}"
+                                       class="izokoc-blog-navigation__link izokoc-blog-navigation__link--prev">
+                                        <span class="izokoc-blog-navigation__label">
+                                            <i class="icofont-rounded-left"></i>
+                                            {{ __('Previous Post') }}
+                                        </span>
+                                        <span class="izokoc-blog-navigation__title">
+                                            {{ Str::limit($previousPost->title, 50) }}
+                                        </span>
+                                    </a>
+                                @endif
+
+                                @if(isset($nextPost))
+                                    <a href="{{ route('blog.show', $nextPost->slug) }}"
+                                       class="izokoc-blog-navigation__link izokoc-blog-navigation__link--next">
+                                        <span class="izokoc-blog-navigation__label">
+                                            {{ __('Next Post') }}
+                                            <i class="icofont-rounded-right"></i>
+                                        </span>
+                                        <span class="izokoc-blog-navigation__title">
+                                            {{ Str::limit($nextPost->title, 50) }}
+                                        </span>
+                                    </a>
+                                @endif
+                            </div>
+                        @endif
+
+                        {{-- İlgili Yazılar --}}
+                        @if(isset($relatedPosts) && $relatedPosts->isNotEmpty())
+                            <div class="izokoc-related-posts">
+                                <h3 class="izokoc-related-posts__title">{{ __('Related Posts') }}</h3>
+                                <div class="row">
+                                    @foreach($relatedPosts as $relatedPost)
+                                        <div class="col-md-6">
+                                            <article class="izokoc-related-post">
+                                                <a href="{{ route('blog.show', $relatedPost->slug) }}"
+                                                   class="izokoc-related-post__thumb">
+                                                    <img src="{{ asset($relatedPost->featured_image) }}"
+                                                         alt="{{ $relatedPost->title }}"
+                                                         loading="lazy">
+                                                </a>
+                                                <div class="izokoc-related-post__content">
+                                                    <span class="izokoc-related-post__date">
+                                                        {{ $relatedPost->published_date_formatted }}
+                                                    </span>
+                                                    <h4 class="izokoc-related-post__title">
+                                                        <a href="{{ route('blog.show', $relatedPost->slug) }}">
+                                                            {{ $relatedPost->title }}
+                                                        </a>
+                                                    </h4>
+                                                </div>
+                                            </article>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+                    </article>
                 </div>
 
-                {{-- KENAR ÇUBUĞU (SIDEBAR) --}}
+                {{-- SIDEBAR --}}
                 <div class="col-lg-4">
-                    <aside class="sidebar">
-                        {{-- Arama --}}
-                        <div class="widget widget-search">
-                            <form action="{{ route('blog.index') }}" method="GET">
-                                <input type="search" name="q" placeholder="{{ __('Search in Blog...') }}" value="{{ request('q') }}">
-                                <button type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    <aside class="izokoc-sidebar">
+                        {{-- Arama Widget'ı --}}
+                        <div class="izokoc-widget izokoc-widget--search">
+                            <form action="{{ route('blog.index') }}" method="GET" class="izokoc-search-form">
+                                <input type="search"
+                                       name="q"
+                                       placeholder="{{ __('Search articles...') }}"
+                                       class="izokoc-search-form__input">
+                                <button type="submit" class="izokoc-search-form__button">
+                                    <i class="icofont-search-1"></i>
+                                </button>
                             </form>
                         </div>
 
-                        {{-- Kategoriler --}}
-                        <div class="widget widget-categories">
-                            <h3 class="widget-title">{{ __('Author') }}:</h3>
-                            <ul>
-                                @foreach($categories as $category)
-                                    <li>
-                                        <a href="{{ route('blog.category', $category->slug) }}">
-                                            <p>{{ $category->name }}</p>
-                                            <span>({{ $category->posts_count }})</span>
-                                        </a>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </div>
+                        {{-- Kategoriler Widget'ı --}}
+                        @if(isset($categories) && $categories->isNotEmpty())
+                            <div class="izokoc-widget izokoc-widget--categories">
+                                <h3 class="izokoc-widget__title">{{ __('Categories') }}</h3>
+                                <ul class="izokoc-category-list">
+                                    @foreach($categories as $category)
+                                        <li class="izokoc-category-list__item">
+                                            <a href="{{ route('blog.category', $category->slug) }}"
+                                               class="izokoc-category-list__link {{ $post->category_id == $category->id ? 'active' : '' }}">
+                                                <i class="icofont-folder"></i>
+                                                <span>{{ $category->name }}</span>
+                                                <span class="izokoc-category-list__count">{{ $category->posts_count }}</span>
+                                            </a>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
 
-                        {{-- Son Yazılar --}}
-                        <div class="widget widget-recent-posts">
-                            <h3 class="widget-title">{{ __('Recent Posts') }}</h3>
-                            <ul>
-                                @foreach($recentPosts as $recentPost)
-                                    <li>
-                                        <img src="{{ asset($recentPost->featured_image) }}"
-                                             alt="{{ $recentPost->title }}" width="70" height="70"
-                                             style="object-fit: cover;">
-                                        <div>
-                                            <span>{{ $recentPost->published_date_formatted }}</span>
-                                            <h6>
-                                                <a href="{{ route('blog.show', $recentPost->slug) }}">{{ Str::limit($recentPost->title, 40) }}</a>
-                                            </h6>
-                                        </div>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </div>
-
+                        {{-- Son Yazılar Widget'ı --}}
+                        @if(isset($recentPosts) && $recentPosts->isNotEmpty())
+                            <div class="izokoc-widget izokoc-widget--recent">
+                                <h3 class="izokoc-widget__title">{{ __('Recent Posts') }}</h3>
+                                <ul class="izokoc-recent-posts">
+                                    @foreach($recentPosts as $recentPost)
+                                        <li class="izokoc-recent-posts__item">
+                                            <a href="{{ route('blog.show', $recentPost->slug) }}"
+                                               class="izokoc-recent-posts__link">
+                                                <div class="izokoc-recent-posts__thumb">
+                                                    <img src="{{ asset($recentPost->featured_image) }}"
+                                                         alt="{{ $recentPost->title }}"
+                                                         loading="lazy">
+                                                </div>
+                                                <div class="izokoc-recent-posts__content">
+                                                    <span class="izokoc-recent-posts__date">
+                                                        <i class="icofont-calendar"></i>
+                                                        {{ $recentPost->published_date_formatted }}
+                                                    </span>
+                                                    <h6 class="izokoc-recent-posts__title">
+                                                        {{ Str::limit($recentPost->title, 50) }}
+                                                    </h6>
+                                                </div>
+                                            </a>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
                     </aside>
                 </div>
             </div>
         </div>
     </section>
 @endsection
+
 @push('styles')
     <style>
-        /* ===== Blog Detay (izole alan) ===== */
-        #nx-post {
-            --nx-gap: 22px;
-            --nx-radius: 16px;
-            --nx-border: #eef0f3;
-            --nx-card: #fff;
-            --nx-shadow: 0 10px 30px rgba(2, 8, 20, .06);
-            --nx-muted: #6b7280;
-            --nx-ink: #111827
+        /* Blog Single Section */
+        .izokoc-blog-single-section {
+            padding: 80px 0;
+            background: #f8f9fa;
         }
 
-        #nx-post * {
-            box-sizing: border-box
+        /* Blog Single */
+        .izokoc-blog-single {
+            background: #fff;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
         }
 
-        /* Ana kart */
-        #nx-post .blog-post {
-            background: var(--nx-card);
-            border: 1px solid var(--nx-border);
-            border-radius: var(--nx-radius);
-            box-shadow: var(--nx-shadow);
+        .izokoc-blog-single__featured {
+            margin-bottom: 30px;
+            border-radius: 12px;
             overflow: hidden;
         }
 
-        /* Kapak görseli */
-        #nx-post .blog-image {
-            position: relative
+        .izokoc-blog-single__featured img {
+            width: 100%;
+            height: auto;
+            display: block;
         }
 
-        #nx-post .blog-image figure {
-            margin: 0;
-            aspect-ratio: 16/9;
-            overflow: hidden
+        /* Meta */
+        .izokoc-blog-single__meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            padding-bottom: 25px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
         }
 
-        #nx-post .blog-image img {
+        .izokoc-blog-single__meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #666;
+            font-size: 15px;
+        }
+
+        .izokoc-blog-single__meta-item i {
+            color: #ff211B;
+            font-size: 18px;
+        }
+
+        .izokoc-blog-single__meta-item a {
+            color: #666;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .izokoc-blog-single__meta-item a:hover {
+            color: #ff211B;
+        }
+
+        /* Content */
+        .izokoc-blog-single__content {
+            color: #444;
+            font-size: 16px;
+            line-height: 1.8;
+            margin-bottom: 40px;
+        }
+
+        .izokoc-blog-single__content h1,
+        .izokoc-blog-single__content h2,
+        .izokoc-blog-single__content h3,
+        .izokoc-blog-single__content h4,
+        .izokoc-blog-single__content h5,
+        .izokoc-blog-single__content h6 {
+            color: #1a1a1a;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .izokoc-blog-single__content p {
+            margin-bottom: 20px;
+        }
+
+        .izokoc-blog-single__content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .izokoc-blog-single__content ul,
+        .izokoc-blog-single__content ol {
+            margin-bottom: 20px;
+            padding-left: 30px;
+        }
+
+        .izokoc-blog-single__content li {
+            margin-bottom: 10px;
+        }
+
+        .izokoc-blog-single__content blockquote {
+            background: #f8f9fa;
+            border-left: 4px solid #ff211B;
+            padding: 20px 30px;
+            margin: 30px 0;
+            font-style: italic;
+            color: #555;
+        }
+
+        /* Tags */
+        .izokoc-blog-single__tags {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 25px 0;
+            border-top: 1px solid #e0e0e0;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 30px;
+        }
+
+        .izokoc-blog-single__tags strong {
+            color: #1a1a1a;
+            font-size: 16px;
+            flex-shrink: 0;
+            padding-top: 8px;
+        }
+
+        .izokoc-blog-single__tags-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .izokoc-blog-single__tag {
+            display: inline-block;
+            background: #f0f0f0;
+            color: #666;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 13px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .izokoc-blog-single__tag:hover {
+            background: #ff211B;
+            color: #1a1a1a;
+            transform: translateY(-2px);
+        }
+
+        /* Share */
+        .izokoc-blog-single__share {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 25px 0;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 40px;
+        }
+
+        .izokoc-blog-single__share strong {
+            color: #1a1a1a;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .izokoc-social-share {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .izokoc-social-share__btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 18px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .izokoc-social-share__btn:hover {
+            transform: translateY(-3px);
+        }
+
+        .izokoc-social-share__btn--facebook {
+            background: #3b5998;
+        }
+
+        .izokoc-social-share__btn--twitter {
+            background: #1da1f2;
+        }
+
+        .izokoc-social-share__btn--linkedin {
+            background: #0077b5;
+        }
+
+        .izokoc-social-share__btn--whatsapp {
+            background: #25d366;
+        }
+
+        /* Navigation */
+        .izokoc-blog-navigation {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 50px;
+        }
+
+        .izokoc-blog-navigation__link {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .izokoc-blog-navigation__link:hover {
+            background: #ff211B;
+            transform: translateY(-3px);
+        }
+
+        .izokoc-blog-navigation__link--next {
+            text-align: right;
+        }
+
+        .izokoc-blog-navigation__label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #999;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .izokoc-blog-navigation__link--next .izokoc-blog-navigation__label {
+            justify-content: flex-end;
+        }
+
+        .izokoc-blog-navigation__title {
+            color: #1a1a1a;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        /* Related Posts */
+        .izokoc-related-posts {
+            padding-top: 40px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .izokoc-related-posts__title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 30px;
+        }
+
+        .izokoc-related-post {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .izokoc-related-post:hover {
+            background: #fff;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .izokoc-related-post__thumb {
+            flex-shrink: 0;
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .izokoc-related-post__thumb img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .izokoc-related-post:hover .izokoc-related-post__thumb img {
+            transform: scale(1.1);
+        }
+
+        .izokoc-related-post__content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .izokoc-related-post__date {
             display: block;
-            transition: transform .35s ease;
+            color: #999;
+            font-size: 13px;
+            margin-bottom: 8px;
         }
 
-        #nx-post .blog-post:hover .blog-image img {
-            transform: scale(1.02)
-        }
-
-        /* Üst meta + başlık */
-        #nx-post .blog-data {
-            padding: 18px 18px 8px 18px
-        }
-
-        #nx-post .blog-date {
-            display: inline-block;
-            padding: 6px 10px;
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: .2px;
-            color: #0f172a;
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 999px;
-        }
-
-        #nx-post h2 {
-            margin: 12px 0 10px 0;
-            font-size: clamp(22px, 3.2vw, 32px);
-            line-height: 1.2;
-            font-weight: 800;
-            color: var(--nx-ink);
-        }
-
-        /* Yazar kutusu */
-        #nx-post .blog-author {
-            gap: 12px;
-            margin-top: 6px
-        }
-
-        #nx-post .blog-author .author-img figure {
-            margin: 0
-        }
-
-        #nx-post .blog-author img {
-            width: 55px;
-            height: 55px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 1px solid var(--nx-border)
-        }
-
-        #nx-post .blog-author .details h3 {
-            margin: 0;
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--nx-ink)
-        }
-
-        #nx-post .blog-author .details h3 span {
+        .izokoc-related-post__title {
+            font-size: 16px;
             font-weight: 600;
-            color: var(--nx-muted);
-            margin-right: 6px
+            margin: 0;
+            line-height: 1.4;
         }
 
-        /* İçerik tipografisi */
-        #nx-post .post-content {
-            padding: 0 18px 18px 18px;
-            color: #1f2937;
-            font-size: 16px;
-            line-height: 1.75;
-        }
-
-        #nx-post .post-content p {
-            margin: 0 0 1em 0
-        }
-
-        #nx-post .post-content h2,
-        #nx-post .post-content h3,
-        #nx-post .post-content h4 {
-            margin: 1.3em 0 .5em 0;
-            line-height: 1.25;
-            font-weight: 800;
-            color: var(--nx-ink)
-        }
-
-        #nx-post .post-content h2 {
-            font-size: clamp(20px, 2.6vw, 26px)
-        }
-
-        #nx-post .post-content h3 {
-            font-size: clamp(18px, 2.2vw, 22px)
-        }
-
-        #nx-post .post-content h4 {
-            font-size: clamp(16px, 2vw, 18px)
-        }
-
-        #nx-post .post-content ul,
-        #nx-post .post-content ol {
-            padding-left: 1.3em;
-            margin: 0 0 1em 0
-        }
-
-        #nx-post .post-content li {
-            margin: .3em 0
-        }
-
-        #nx-post .post-content a {
-            color: #2563eb;
-            text-underline-offset: 3px
-        }
-
-        #nx-post .post-content a:hover {
-            text-decoration: underline
-        }
-
-        #nx-post .post-content blockquote {
-            margin: 1.2em 0;
-            padding: 14px 16px;
-            background: #f8fafc;
-            border-left: 4px solid #93c5fd;
-            border-radius: 10px;
-            color: #0f172a
-        }
-
-        #nx-post .post-content code {
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-            font-size: .95em;
-            background: #0f172a0d;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            padding: .15em .4em
-        }
-
-        #nx-post .post-content pre {
-            overflow: auto;
-            padding: 14px;
-            background: #0b1220;
-            color: #e5e7eb;
-            border-radius: 12px;
-            border: 1px solid #1c2537
-        }
-
-        #nx-post .post-content figure {
-            margin: 1em 0
-        }
-
-        #nx-post .post-content img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 12px;
-            border: 1px solid var(--nx-border)
-        }
-
-        #nx-post .post-content figcaption {
-            font-size: 13px;
-            color: var(--nx-muted);
-            text-align: center;
-            margin-top: 6px
-        }
-
-        #nx-post .post-content table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            margin: 1em 0;
-            font-size: 15px
-        }
-
-        #nx-post .post-content thead th {
-            background: #f1f5f9;
-            color: #0f172a;
-            font-weight: 700;
-        }
-
-        #nx-post .post-content th, #nx-post .post-content td {
-            border: 1px solid var(--nx-border);
-            padding: 10px
-        }
-
-        #nx-post .post-content hr {
-            border: 0;
-            height: 1px;
-            background: var(--nx-border);
-            margin: 1.2em 0
-        }
-
-        /* Etiketler & kategori */
-        #nx-post .mini-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px
-        }
-
-        #nx-post .mini-tags a {
-            display: inline-flex;
-            align-items: center;
-            padding: 8px 12px;
-            font-size: 13px;
-            color: #0f172a;
-            background: #f1f5f9;
-            border: 1px solid #e2e8f0;
-            border-radius: 999px;
+        .izokoc-related-post__title a {
+            color: #1a1a1a;
             text-decoration: none;
-            transition: background .2s ease, transform .2s ease;
+            transition: color 0.3s ease;
         }
 
-        #nx-post .mini-tags a:hover {
-            background: #e2e8f0;
-            transform: translateY(-1px)
+        .izokoc-related-post__title a:hover {
+            color: #ff211B;
         }
 
-        #nx-post .category.shape p {
-            margin: 0
-        }
-
-        #nx-post .category.shape a {
-            display: inline-flex;
-            align-items: center;
-            padding: 8px 12px;
-            border-radius: 999px;
-            text-decoration: none;
-            background: #fff7ed;
-            color: #7c2d12;
-            border: 1px solid #fed7aa;
-        }
-
-        /* Önceki / Sonraki navigasyon */
-        #nx-post .post-navigation {
-            gap: 12px
-        }
-
-        #nx-post .theme-btn-two,
-        #nx-post .theme-btn-two-outline {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 14px;
-            font-weight: 700;
-            font-size: 14px;
-            border-radius: 12px;
-            text-decoration: none;
-            transition: filter .2s ease, transform .2s ease, box-shadow .2s ease, border-color .2s ease
-        }
-
-        #nx-post .theme-btn-two {
-            background: #111827;
-            color: #fff;
-            border: 1px solid #111827;
-            box-shadow: 0 8px 18px rgba(17, 24, 39, .18)
-        }
-
-        #nx-post .theme-btn-two:hover {
-            transform: translateY(-1px);
-            filter: saturate(1.05)
-        }
-
-        #nx-post .theme-btn-two-outline {
-            background: #ffffff;
-            color: #111827;
-            border: 1px solid var(--nx-border)
-        }
-
-        #nx-post .theme-btn-two-outline:hover {
-            border-color: #cbd5e1;
-            transform: translateY(-1px)
-        }
-
-        /* Sidebar (liste sayfasıyla uyumlu) */
-        #nx-post .sidebar {
+        /* Sidebar */
+        .izokoc-sidebar {
             position: sticky;
-            top: 22px
+            top: 100px;
         }
 
-        #nx-post .sidebar .widget {
-            background: var(--nx-card);
-            border: 1px solid var(--nx-border);
-            border-radius: 14px;
-            padding: 16px;
-            box-shadow: var(--nx-shadow);
-            margin-bottom: 18px;
+        /* Widget Base */
+        .izokoc-widget {
+            background: #fff;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
         }
 
-        #nx-post .widget-title {
-            margin: 4px 0 14px 0;
-            font-size: 16px;
-            font-weight: 800
-        }
-
-        #nx-post .widget-search form {
-            position: relative
-        }
-
-        #nx-post .widget-search input[type="search"] {
-            width: 100%;
-            height: 44px;
-            border: 1px solid var(--nx-border);
-            border-radius: 999px;
-            padding: 0 44px 0 14px;
-            outline: none;
-            transition: border-color .2s ease, box-shadow .2s ease;
-        }
-
-        #nx-post .widget-search input[type="search"]:focus {
-            border-color: #93c5fd;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, .12)
-        }
-
-        #nx-post .widget-search button {
-            position: absolute;
-            right: 4px;
-            top: 4px;
-            width: 36px;
-            height: 36px;
-            border: none;
-            border-radius: 999px;
-            background: #111827;
-            color: #fff;
-            cursor: pointer;
-        }
-
-        /* Kategoriler */
-        #nx-post .widget-categories ul {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            display: grid;
-            gap: 8px
-        }
-
-        #nx-post .widget-categories li a {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 12px;
-            border: 1px solid var(--nx-border);
-            border-radius: 10px;
-            text-decoration: none;
-            color: #111827;
-            transition: background .2s ease, border-color .2s ease;
-        }
-
-        #nx-post .widget-categories li a:hover {
-            background: #f8fafc;
-            border-color: #e2e8f0
-        }
-
-        #nx-post .widget-categories li span {
-            color: var(--nx-muted)
-        }
-
-        #nx-post .widget-categories li p {
-            margin: 0
-        }
-
-        /* Son Yazılar */
-        #nx-post .widget-recent-posts ul {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            display: grid;
-            gap: 12px
-        }
-
-        #nx-post .widget-recent-posts li {
-            display: grid;
-            grid-template-columns:70px 1fr;
-            gap: 10px;
-            align-items: center;
-        }
-
-        #nx-post .widget-recent-posts img {
-            width: 70px;
-            height: 70px;
-            object-fit: cover;
-            border-radius: 10px;
-            border: 1px solid var(--nx-border)
-        }
-
-        #nx-post .widget-recent-posts span {
-            display: block;
-            font-size: 12px;
-            color: var(--nx-muted);
-            margin-bottom: 4px
-        }
-
-        #nx-post .widget-recent-posts h6 {
-            margin: 0;
+        .izokoc-widget__title {
+            font-size: 20px;
             font-weight: 700;
-            line-height: 1.35
+            color: #1a1a1a;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #ff211B;
         }
 
-        #nx-post .widget-recent-posts a {
-            text-decoration: none
-        }
-
-        #nx-post .widget-recent-posts a:hover {
-            text-decoration: underline
-        }
-
-        /* Etiket Bulutu */
-        #nx-post .widget-tags .tags-cloud {
+        /* Search Widget */
+        .izokoc-search-form {
             display: flex;
-            flex-wrap: wrap;
-            gap: 8px
+            border: 2px solid #e0e0e0;
+            border-radius: 50px;
+            overflow: hidden;
+            transition: border-color 0.3s ease;
         }
 
-        #nx-post .widget-tags .tags-cloud a {
-            display: inline-flex;
+        .izokoc-search-form:focus-within {
+            border-color: #ff211B;
+        }
+
+        .izokoc-search-form__input {
+            flex: 1;
+            border: none;
+            padding: 12px 20px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .izokoc-search-form__button {
+            background: #ff211B;
+            border: none;
+            padding: 0 25px;
+            color: #1a1a1a;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .izokoc-search-form__button:hover {
+            background: #ffab00;
+        }
+
+        /* Category List */
+        .izokoc-category-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .izokoc-category-list__item {
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .izokoc-category-list__item:last-child {
+            border-bottom: none;
+        }
+
+        .izokoc-category-list__link {
+            display: flex;
             align-items: center;
-            padding: 8px 12px;
-            font-size: 13px;
-            color: #0f172a;
-            background: #f1f5f9;
-            border: 1px solid #e2e8f0;
-            border-radius: 999px;
+            gap: 12px;
+            padding: 12px 0;
+            color: #666;
             text-decoration: none;
-            transition: background .2s ease, transform .2s ease;
+            transition: all 0.3s ease;
         }
 
-        #nx-post .widget-tags .tags-cloud a:hover {
-            background: #e2e8f0;
-            transform: translateY(-1px)
+        .izokoc-category-list__link:hover,
+        .izokoc-category-list__link.active {
+            color: #ff211B;
+            padding-left: 10px;
         }
 
-        /* Grid boşlukları */
-        #nx-post .row > [class*="col-"] {
-            margin-bottom: var(--nx-gap)
+        .izokoc-category-list__link i {
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .izokoc-category-list__link > span:first-of-type {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .izokoc-category-list__count {
+            background: #f0f0f0;
+            color: #666;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 13px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        /* Recent Posts */
+        .izokoc-recent-posts {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .izokoc-recent-posts__item {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .izokoc-recent-posts__item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .izokoc-recent-posts__link {
+            display: flex;
+            gap: 15px;
+            text-decoration: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .izokoc-recent-posts__link:hover {
+            opacity: 0.8;
+        }
+
+        .izokoc-recent-posts__thumb {
+            flex-shrink: 0;
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .izokoc-recent-posts__thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .izokoc-recent-posts__content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .izokoc-recent-posts__date {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #999;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        .izokoc-recent-posts__date i {
+            font-size: 14px;
+        }
+
+        .izokoc-recent-posts__title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a1a1a;
+            line-height: 1.4;
+            margin: 0;
         }
 
         /* Responsive */
-        @media (max-width: 991.98px) {
-            #nx-post .sidebar {
+        @media (max-width: 991px) {
+            .izokoc-sidebar {
                 position: static;
-                top: auto
+                margin-top: 50px;
             }
         }
 
-        @media (max-width: 575.98px) {
-            #nx-post .blog-data {
-                padding: 14px 14px 6px 14px
+        @media (max-width: 768px) {
+            .izokoc-blog-single-section {
+                padding: 50px 0;
             }
 
-            #nx-post .post-content {
-                padding: 0 14px 14px 14px
-            }
-        }
-
-        /* Dark mode */
-        @media (prefers-color-scheme: dark) {
-            #nx-post {
-                --nx-border: #1c2537;
-                --nx-muted: #93a3b8;
-                --nx-ink: #000;
+            .izokoc-blog-single {
+                padding: 25px;
             }
 
-            #nx-post .post-content a {
-                color: #60a5fa
+            .izokoc-blog-single__meta {
+                gap: 15px;
             }
 
-            #nx-post .post-content blockquote {
-                background: #0f172a;
-                border-left-color: #60a5fa;
-                color: #e5e7eb
+            .izokoc-blog-single__content {
+                font-size: 15px;
             }
 
-            #nx-post .widget-search button {
-                background: #2563eb
+            .izokoc-blog-single__share,
+            .izokoc-blog-single__tags {
+                flex-direction: column;
+                align-items: flex-start;
             }
 
-            #nx-post .theme-btn-two {
-                background: #2563eb;
-                border-color: #2563eb
+            .izokoc-blog-navigation {
+                grid-template-columns: 1fr;
             }
 
-            #nx-post .widget-categories li a {
-                color: #e5e7eb
+            .izokoc-blog-navigation__link--next {
+                text-align: left;
             }
 
-            #nx-post .widget-tags .tags-cloud a {
-                color: #e5e7eb;
-                background: #0f172a;
-                border-color: #1f2937
+            .izokoc-blog-navigation__link--next .izokoc-blog-navigation__label {
+                justify-content: flex-start;
             }
 
-            #nx-post .widget-recent-posts a {
-                color: #e5e7eb
+            .izokoc-related-post {
+                flex-direction: column;
+            }
+
+            .izokoc-related-post__thumb {
+                width: 100%;
+                height: 200px;
+            }
+
+            .izokoc-widget {
+                padding: 20px;
             }
         }
 
+        @media (max-width: 576px) {
+            .izokoc-blog-single {
+                padding: 20px;
+            }
+        }
     </style>
 @endpush

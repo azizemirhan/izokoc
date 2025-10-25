@@ -1,21 +1,53 @@
+@php
+    $isMobile = isset($type) && $type === 'mobile';
+    $currentUrl = url()->current();
+    $itemUrl = $item->url ?? '#';
+    $isActive = $itemUrl === $currentUrl || ($itemUrl !== '#' && request()->is(trim($itemUrl, '/') . '/*'));
+@endphp
+
 @if ($item->children->isNotEmpty())
-    {{-- Eğer alt menüsü varsa, temanızın beklediği class'ı ekler: "menu-item-has-children" --}}
-    {{-- Not: Aktif menü öğesi için (current-menu-item) sınıfını Menu modelinizde veya bir View Composer'da eklemeniz gerekebilir --}}
-    <li class="menu-item-has-children">
-        <a href="{{ $item->url }}">
-            {{ $item->getTranslation('label', app()->getLocale()) }}
-        </a>
-        {{-- Alt menü için temanızın beklediği ul class'ı: "sub_menu" (alt çizgiye dikkat) --}}
-        <ul class="sub_menu">
-            @foreach($item->children as $child)
-                {{-- Her bir alt öğe için kendini tekrar çağırarak (recursive) iç içe yapıyı kurar --}}
-                @include('frontend.partials._submenu', ['item' => $child])
-            @endforeach
-        </ul>
-    </li>
+    {{-- Desktop için alt menüsü olan öğe --}}
+    @if(!$isMobile)
+        <li class="izokoc_menu_item izokoc_has_submenu {{ $isActive ? 'izokoc_active' : '' }}">
+            <a href="{{ $itemUrl }}">
+                {{ $item->getTranslation('label', app()->getLocale()) }}
+            </a>
+            <ul class="izokoc_submenu">
+                @foreach($item->children as $child)
+                    @include('frontend.partials._submenu', ['item' => $child, 'type' => 'desktop'])
+                @endforeach
+            </ul>
+        </li>
+    @else
+        {{-- Mobile için alt menüsü olan öğe --}}
+        <li class="izokoc_mobile_item izokoc_has_child {{ $isActive ? 'izokoc_active' : '' }}">
+            <a href="{{ $itemUrl }}">
+                {{ $item->getTranslation('label', app()->getLocale()) }}
+            </a>
+            <button class="izokoc_submenu_toggle" type="button">
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <ul class="izokoc_mobile_submenu">
+                @foreach($item->children as $child)
+                    @include('frontend.partials._submenu', ['item' => $child, 'type' => 'mobile'])
+                @endforeach
+            </ul>
+        </li>
+    @endif
 @else
-    {{-- Eğer alt menüsü yoksa, normal bir <li> oluşturur --}}
-    <li>
-        <a href="{{ $item->url }}">{{ $item->getTranslation('label', app()->getLocale()) }}</a>
-    </li>
+    {{-- Desktop için normal menü öğesi --}}
+    @if(!$isMobile)
+        <li class="izokoc_menu_item {{ $isActive ? 'izokoc_active' : '' }}">
+            <a href="{{ $itemUrl }}">
+                {{ $item->getTranslation('label', app()->getLocale()) }}
+            </a>
+        </li>
+    @else
+        {{-- Mobile için normal menü öğesi --}}
+        <li class="izokoc_mobile_item {{ $isActive ? 'izokoc_active' : '' }}">
+            <a href="{{ $itemUrl }}">
+                {{ $item->getTranslation('label', app()->getLocale()) }}
+            </a>
+        </li>
+    @endif
 @endif

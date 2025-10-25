@@ -63,6 +63,7 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('site/css/theme.css') }}"/>
     <link rel="stylesheet" type="text/css" href="{{ asset('site/css/responsive.css') }}"/>
     <link rel="stylesheet" type="text/css" href="{{ asset('site/css/presets/color1.css') }}" id="colorChange"/>
+    <link rel="stylesheet" type="text/css" href="{{ asset('site/header.css') }}"/>
 
     @stack('styles')
 </head>
@@ -73,10 +74,6 @@
 @endif
 @yield('content')
 @include('frontend.layouts._footer')
-
-<button id="scrollTop" class="scrollTopStick">
-    <i class="fa-solid fa-arrow-up"></i>
-</button>
 @auth('admin')
     @include('admin.bar')
 @endauth
@@ -109,6 +106,7 @@
 <script src="{{ asset('site/js/extensions/revolution.extension.video.min.js') }}"></script>
 
 <script src="{{ asset('site/js/theme.js') }}"></script>
+<script src="{{ asset('site/header.js') }}"></script>
 
 @stack('scripts')
 </body>

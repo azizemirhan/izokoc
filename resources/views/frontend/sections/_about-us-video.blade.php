@@ -46,10 +46,6 @@
                     @if($mainText)
                         <p class="mb28">{!! $mainText !!}</p>
                     @endif
-
-                    @if($signatureImage)
-                        <img src="{{ $signatureImage }}" alt="Signature" class="signature-image">
-                    @endif
                 </div>
             </div>
         </div>

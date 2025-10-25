@@ -18,8 +18,14 @@ class Post extends Model
 
     // Çevrilebilir alanları bu diziye ekleyin
     public $translatable = [
-        'title', 'content', 'excerpt', 'featured_image_alt_text',
-        'seo_title', 'meta_description', 'keywords'
+        'title',
+        'content',
+        'excerpt',
+        'summary', // EKLENDI
+        'featured_image_alt_text',
+        'seo_title',
+        'meta_description',
+        'keywords'
     ];
 
     protected $casts = [
@@ -49,6 +55,7 @@ class Post extends Model
         // Bu metod da 'author' ile aynı işi yapar.
         return $this->belongsTo(User::class, 'user_id');
     }
+
     public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class, 'post_tag');
@@ -86,6 +93,4 @@ class Post extends Model
     {
         return $this->published_at ? $this->published_at->format('d M, Y') : '';
     }
-
-
 }

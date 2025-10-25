@@ -5,9 +5,35 @@ return [
         'name' => 'Ana Sayfa Slider',
         'view' => 'frontend.sections._main-slider',
         'data_handler' => \App\PageBuilder\SlidersListHandler::class,
-        'fields' => [],
+        'fields' => [
+            [
+                'name' => 'transition_effect',
+                'label' => 'Geçiş Efekti',
+                'type' => 'select',
+                'options' => [
+                    'fade' => 'Fade (Soldurma)',
+                    'slide' => 'Slide (Kaydırma)',
+                    'zoom' => 'Zoom (Yakınlaştırma)',
+                    'flip' => 'Flip (Çevirme)',
+                    'cube' => 'Cube (Küp)',
+                    'carousel' => 'Carousel (Döner)',
+                ],
+                'default' => 'fade'
+            ],
+            [
+                'name' => 'autoplay_speed',
+                'label' => 'Otomatik Geçiş Hızı (milisaniye)',
+                'type' => 'number',
+                'default' => '5000'
+            ],
+            [
+                'name' => 'transition_speed',
+                'label' => 'Geçiş Animasyon Hızı (milisaniye)',
+                'type' => 'number',
+                'default' => '1000'
+            ],
+        ],
     ],
-
     'about-us-video' => [
         'name' => 'Hakkımızda (Video ve İçerik)',
         'view' => 'frontend.sections._about-us-video',
@@ -64,9 +90,6 @@ return [
             ],
         ],
     ],
-
-    // ... Diğer section tanımları ...
-
     'core-features' => [
         'name' => 'Temel Özellikler (Icon Kutuları)', // Bölümün kendisinin adı (bu değişmedi)
         'view' => 'frontend.sections._core-features',
@@ -119,8 +142,6 @@ return [
             ]
         ],
     ],
-
-
     'service-cards-grid' => [
         'name' => 'Hizmet Kartları Grid (Filtrelenebilir)',
         'view' => 'frontend.sections._service-cards-grid',
@@ -186,6 +207,323 @@ return [
             ],
         ],
     ],
+    'why-choose-us' => [
+        'name' => 'Neden Bizi Seçmelisiniz',
+        'view' => 'frontend.sections._why-choose-us',
+        'data_handler' => null,
+        'fields' => [
+            [
+                'name' => 'main_image',
+                'label' => 'Sol Taraf Görseli',
+                'type' => 'file'
+            ],
+            [
+                'name' => 'sub_title',
+                'label' => 'Üst Başlık',
+                'type' => 'text',
+                'translatable' => true,
+                'default' => 'why choose us'
+            ],
+            [
+                'name' => 'main_title',
+                'label' => 'Ana Başlık',
+                'type' => 'textarea',
+                'translatable' => true,
+                'default' => 'We Offer A Great Variety Of Products & Services.'
+            ],
+            [
+                'name' => 'content',
+                'label' => 'İçerik Metni',
+                'type' => 'textarea',
+                'translatable' => true
+            ],
+            [
+                'name' => 'button_text',
+                'label' => 'Buton Yazısı',
+                'type' => 'text',
+                'translatable' => true,
+                'default' => 'get a quote'
+            ],
+            [
+                'name' => 'button_url',
+                'label' => 'Buton Linki',
+                'type' => 'text',
+                'default' => '#'
+            ],
+        ],
+    ],
+    'testimonials-section' => [
+        'name' => 'Müşteri Yorumları Bölümü',
+        'view' => 'frontend.sections._testimonials-section',
+        'data_handler' => null,
+        'fields' => [
+            [
+                'name' => 'sub_title',
+                'label' => 'Üst Başlık',
+                'type' => 'text',
+                'translatable' => true,
+                'default' => 'Testimonials'
+            ],
+            [
+                'name' => 'main_title',
+                'label' => 'Ana Başlık',
+                'type' => 'textarea',
+                'translatable' => true,
+                'default' => 'Happy Clients Says About Us'
+            ],
+            [
+                'name' => 'lead_text',
+                'label' => 'Vurgu Metni',
+                'type' => 'text',
+                'translatable' => true,
+                'default' => 'Make your dream with us'
+            ],
+            [
+                'name' => 'description',
+                'label' => 'Açıklama Metni',
+                'type' => 'textarea',
+                'translatable' => true
+            ],
+            [
+                'name' => 'testimonials',
+                'label' => 'Müşteri Yorumları',
+                'type' => 'repeater',
+                'fields' => [
+                    [
+                        'name' => 'rating',
+                        'label' => 'Yıldız Sayısı (1-5)',
+                        'type' => 'number',
+                        'default' => '5'
+                    ],
+                    [
+                        'name' => 'title',
+                        'label' => 'Yorum Başlığı',
+                        'type' => 'text',
+                        'translatable' => true
+                    ],
+                    [
+                        'name' => 'content',
+                        'label' => 'Yorum İçeriği',
+                        'type' => 'textarea',
+                        'translatable' => true
+                    ],
+                    [
+                        'name' => 'author_image',
+                        'label' => 'Yazar Fotoğrafı',
+                        'type' => 'file'
+                    ],
+                    [
+                        'name' => 'author_name',
+                        'label' => 'Yazar Adı',
+                        'type' => 'text',
+                        'translatable' => true
+                    ],
+                    [
+                        'name' => 'author_position',
+                        'label' => 'Yazar Pozisyonu',
+                        'type' => 'text',
+                        'translatable' => true
+                    ],
+                ]
+            ],
+        ],
+    ],
+    'engineering-approach' => [
+        'name' => 'Mühendislik Yaklaşımımız',
+        'view' => 'frontend.sections._engineering-approach',
+        'data_handler' => null,
+        'fields' => [
+            ['name' => 'sub_title', 'label' => 'Üst Başlık', 'type' => 'text', 'translatable' => true],
+            ['name' => 'main_title', 'label' => 'Ana Başlık', 'type' => 'text', 'translatable' => true],
+            ['name' => 'description', 'label' => 'Açıklama', 'type' => 'textarea', 'translatable' => true],
+            [
+                'name' => 'steps',
+                'label' => 'Süreç Adımları',
+                'type' => 'repeater',
+                'fields' => [
+                    ['name' => 'step_number', 'label' => 'Adım Numarası', 'type' => 'text'],
+                    ['name' => 'step_icon', 'label' => 'İkon (icofont class)', 'type' => 'text'],
+                    ['name' => 'step_title', 'label' => 'Adım Başlığı', 'type' => 'text', 'translatable' => true],
+                    ['name' => 'step_description', 'label' => 'Adım Açıklaması', 'type' => 'textarea', 'translatable' => true],
+                ]
+            ],
+        ],
+    ],
+    'sectors-we-serve' => [
+        'name' => 'Sektörel Uzmanlıklarımız',
+        'view' => 'frontend.sections._sectors-we-serve',
+        'data_handler' => null,
+        'fields' => [
+            ['name' => 'sub_title', 'label' => 'Üst Başlık', 'type' => 'text', 'translatable' => true],
+            ['name' => 'main_title', 'label' => 'Ana Başlık', 'type' => 'text', 'translatable' => true],
+            [
+                'name' => 'sectors',
+                'label' => 'Sektörler',
+                'type' => 'repeater',
+                'fields' => [
+                    ['name' => 'sector_icon', 'label' => 'Sektör İkonu (icofont class)', 'type' => 'text'],
+                    ['name' => 'sector_image', 'label' => 'Sektör Görseli', 'type' => 'file'],
+                    ['name' => 'sector_name', 'label' => 'Sektör Adı', 'type' => 'text', 'translatable' => true],
+                    ['name' => 'sector_description', 'label' => 'Sektör Açıklaması', 'type' => 'textarea', 'translatable' => true],
+                ]
+            ],
+        ],
+    ],
+    'technology-innovation' => [
+        'name' => 'Teknoloji ve İnovasyon',
+        'view' => 'frontend.sections._technology-innovation',
+        'data_handler' => null,
+        'fields' => [
+            ['name' => 'sub_title', 'label' => 'Üst Başlık', 'type' => 'text', 'translatable' => true],
+            ['name' => 'main_title', 'label' => 'Ana Başlık', 'type' => 'text', 'translatable' => true],
+            ['name' => 'main_image', 'label' => 'Ana Görsel', 'type' => 'file'],
+            [
+                'name' => 'technologies',
+                'label' => 'Teknolojiler',
+                'type' => 'repeater',
+                'fields' => [
+                    ['name' => 'tech_icon', 'label' => 'Teknoloji İkonu', 'type' => 'text'],
+                    ['name' => 'tech_title', 'label' => 'Teknoloji Başlığı', 'type' => 'text', 'translatable' => true],
+                    ['name' => 'tech_description', 'label' => 'Teknoloji Açıklaması', 'type' => 'textarea', 'translatable' => true],
+                ]
+            ],
+        ],
+    ],
+    'quality-safety-standards' => [
+        'name' => 'Kalite ve Güvenlik Standartları',
+        'view' => 'frontend.sections._quality-safety-standards',
+        'data_handler' => null,
+        'fields' => [
+            ['name' => 'sub_title', 'label' => 'Üst Başlık', 'type' => 'text', 'translatable' => true],
+            ['name' => 'main_title', 'label' => 'Ana Başlık', 'type' => 'text', 'translatable' => true],
+            ['name' => 'description', 'label' => 'Açıklama', 'type' => 'textarea', 'translatable' => true],
+            [
+                'name' => 'certificates',
+                'label' => 'Sertifikalar',
+                'type' => 'repeater',
+                'fields' => [
+                    ['name' => 'certificate_logo', 'label' => 'Sertifika Logosu', 'type' => 'file'],
+                    ['name' => 'certificate_name', 'label' => 'Sertifika Adı', 'type' => 'text', 'translatable' => true],
+                    ['name' => 'certificate_description', 'label' => 'Açıklama', 'type' => 'textarea', 'translatable' => true],
+                ]
+            ],
+            [
+                'name' => 'standards',
+                'label' => 'Standartlar',
+                'type' => 'repeater',
+                'fields' => [
+                    ['name' => 'standard_icon', 'label' => 'İkon', 'type' => 'text'],
+                    ['name' => 'standard_title', 'label' => 'Standart Başlığı', 'type' => 'text', 'translatable' => true],
+                    ['name' => 'standard_description', 'label' => 'Açıklama', 'type' => 'textarea', 'translatable' => true],
+                ]
+            ],
+        ],
+    ],
+
+    'sustainability-focus' => [
+        'name' => 'Sürdürülebilirlik Odağımız',
+        'view' => 'frontend.sections._sustainability-focus',
+        'data_handler' => null,
+        'fields' => [
+            ['name' => 'sub_title', 'label' => 'Üst Başlık', 'type' => 'text', 'translatable' => true],
+            ['name' => 'main_title', 'label' => 'Ana Başlık', 'type' => 'text', 'translatable' => true],
+            ['name' => 'description', 'label' => 'Açıklama', 'type' => 'textarea', 'translatable' => true],
+            ['name' => 'main_image', 'label' => 'Ana Görsel', 'type' => 'file'],
+            ['name' => 'video_url', 'label' => 'Video URL (YouTube/Vimeo)', 'type' => 'text'],
+            [
+                'name' => 'sustainability_features',
+                'label' => 'Sürdürülebilirlik Özellikleri',
+                'type' => 'repeater',
+                'fields' => [
+                    ['name' => 'feature_icon', 'label' => 'Özellik İkonu', 'type' => 'text'],
+                    ['name' => 'feature_title', 'label' => 'Özellik Başlığı', 'type' => 'text', 'translatable' => true],
+                    ['name' => 'feature_value', 'label' => 'Değer/İstatistik', 'type' => 'text', 'translatable' => true],
+                    ['name' => 'feature_description', 'label' => 'Açıklama', 'type' => 'textarea', 'translatable' => true],
+                ]
+            ],
+            [
+                'name' => 'green_initiatives',
+                'label' => 'Yeşil Girişimler',
+                'type' => 'repeater',
+                'fields' => [
+                    ['name' => 'initiative_icon', 'label' => 'İkon', 'type' => 'text'],
+                    ['name' => 'initiative_title', 'label' => 'Girişim Başlığı', 'type' => 'text', 'translatable' => true],
+                    ['name' => 'initiative_description', 'label' => 'Açıklama', 'type' => 'textarea', 'translatable' => true],
+                ]
+            ],
+        ],
+    ],
+    'milestones' => [
+        'name' => 'Kilometre Taşları',
+        'view' => 'frontend.sections._milestones',
+        'data_handler' => null,
+        'fields' => [
+            ['name' => 'sub_title', 'label' => 'Üst Başlık', 'type' => 'text', 'translatable' => true],
+            ['name' => 'main_title', 'label' => 'Ana Başlık', 'type' => 'text', 'translatable' => true],
+            ['name' => 'layout_style', 'label' => 'Layout Stili', 'type' => 'select', 'options' => ['vertical' => 'Dikey', 'horizontal' => 'Yatay'], 'default' => 'vertical'],
+            [
+                'name' => 'milestones',
+                'label' => 'Kilometre Taşları',
+                'type' => 'repeater',
+                'fields' => [
+                    ['name' => 'year', 'label' => 'Yıl', 'type' => 'text'],
+                    ['name' => 'milestone_icon', 'label' => 'İkon', 'type' => 'text'],
+                    ['name' => 'milestone_image', 'label' => 'Görsel', 'type' => 'file'],
+                    ['name' => 'milestone_title', 'label' => 'Başlık', 'type' => 'text', 'translatable' => true],
+                    ['name' => 'milestone_description', 'label' => 'Açıklama', 'type' => 'textarea', 'translatable' => true],
+                    ['name' => 'highlight', 'label' => 'Öne Çıkar', 'type' => 'checkbox'],
+                ]
+            ],
+        ],
+    ],
+    'vision-mission' => [
+        'name' => 'Vizyon ve Misyon',
+        'view' => 'frontend.sections._vision-mission',
+        'data_handler' => null,
+        'fields' => [
+            ['name' => 'sub_title', 'label' => 'Üst Başlık', 'type' => 'text', 'translatable' => true],
+            ['name' => 'main_title', 'label' => 'Ana Başlık', 'type' => 'text', 'translatable' => true],
+            ['name' => 'background_image', 'label' => 'Arka Plan Görseli', 'type' => 'file'],
+
+            // Vizyon
+            ['name' => 'vision_icon', 'label' => 'Vizyon İkonu', 'type' => 'text', 'default' => 'icofont-eye-alt'],
+            ['name' => 'vision_title', 'label' => 'Vizyon Başlığı', 'type' => 'text', 'translatable' => true],
+            ['name' => 'vision_content', 'label' => 'Vizyon İçeriği', 'type' => 'textarea', 'translatable' => true],
+            ['name' => 'vision_image', 'label' => 'Vizyon Görseli', 'type' => 'file'],
+
+            // Misyon
+            ['name' => 'mission_icon', 'label' => 'Misyon İkonu', 'type' => 'text', 'default' => 'icofont-flag-alt-1'],
+            ['name' => 'mission_title', 'label' => 'Misyon Başlığı', 'type' => 'text', 'translatable' => true],
+            ['name' => 'mission_content', 'label' => 'Misyon İçeriği', 'type' => 'textarea', 'translatable' => true],
+            ['name' => 'mission_image', 'label' => 'Misyon Görseli', 'type' => 'file'],
+
+            // Değerler
+            [
+                'name' => 'values',
+                'label' => 'Değerlerimiz',
+                'type' => 'repeater',
+                'fields' => [
+                    ['name' => 'value_icon', 'label' => 'Değer İkonu', 'type' => 'text'],
+                    ['name' => 'value_title', 'label' => 'Değer Başlığı', 'type' => 'text', 'translatable' => true],
+                    ['name' => 'value_description', 'label' => 'Değer Açıklaması', 'type' => 'textarea', 'translatable' => true],
+                ]
+            ],
+
+            // İstatistikler
+            [
+                'name' => 'statistics',
+                'label' => 'İstatistikler',
+                'type' => 'repeater',
+                'fields' => [
+                    ['name' => 'stat_icon', 'label' => 'İstatistik İkonu', 'type' => 'text'],
+                    ['name' => 'stat_number', 'label' => 'Sayı', 'type' => 'text'],
+                    ['name' => 'stat_suffix', 'label' => 'Ek (%, +, vb.)', 'type' => 'text'],
+                    ['name' => 'stat_title', 'label' => 'İstatistik Başlığı', 'type' => 'text', 'translatable' => true],
+                ]
+            ],
+        ],
+    ],
+
     // SON
 
 

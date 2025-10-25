@@ -190,7 +190,7 @@ class PostController extends Controller
      */
     public function uploadEditorImage(Request $request)
     {
-        $request->validate(['image' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048']);
+        $request->validate(['image' => 'required|image|mimes:jpeg,png,jpg,webp|max:50048']);
         $path = $this->uploadImage($request, 'image', 'uploads/posts/editor');
         return response()->json(['location' => asset($path)]);
     }
@@ -260,7 +260,7 @@ class PostController extends Controller
             'category_id' => 'required|exists:categories,id',
             'status' => 'required|in:published,draft,scheduled',
             'published_at' => 'nullable|date',
-            'featured_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'featured_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:50048',
             'featured_image_alt_text' => 'nullable|array',
             'seo_title' => 'nullable|array',
             'meta_description' => 'nullable|array',

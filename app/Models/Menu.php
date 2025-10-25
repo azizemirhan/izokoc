@@ -40,17 +40,40 @@ class Menu extends Model
         return view($view, ['items' => $items])->render();
     }
 
-    /** İstersen header’da @if(\App\Models\Menu::existsBySlug('main-menu')) diye kullan */
+    /** İstersen header'da @if(\App\Models\Menu::existsBySlug('main-menu')) diye kullan */
     public static function existsBySlug(string $slug): bool
     {
         return static::where('slug', $slug)->exists();
     }
 
-    public static function renderByPlacement(string $placement, string $view = 'frontend.partials._menu'): string
+    /**
+     * Placement'a göre menüyü render eder
+     *
+     * @param string $placement Menü konumu (örn: 'header', 'footer')
+     * @param string|null $type Menü tipi ('desktop' veya 'mobile'), null ise desktop
+     * @param string $view View dosyası yolu
+     * @return string
+     */
+    public static function renderByPlacement(
+        string  $placement,
+        ?string $type = null,
+        string  $view = 'frontend.partials._menu'
+    ): string
     {
         $menu = static::where('placement', $placement)->first();
-        if (!$menu) return '';
-        $items = $menu->items()->whereNull('parent_id')->with('childrenRecursive')->get();
-        return view($view, ['items' => $items])->render();
+
+        if (!$menu) {
+            return '';
+        }
+
+        $items = $menu->items()
+            ->whereNull('parent_id')
+            ->with('childrenRecursive')
+            ->get();
+
+        return view($view, [
+            'items' => $items,
+            'type' => $type ?? 'desktop'
+        ])->render();
     }
 }

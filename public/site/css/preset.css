@@ -43,7 +43,7 @@ h1, h2, h3, h4, h5, h6{
 }
 
 a{
-    color: #ff5e14;
+    color: #fff;
     text-decoration: none;
     transition: all ease 300ms;
     -moz-transition: all ease 300ms;
@@ -340,7 +340,7 @@ input:focus, textarea:focus, select:focus, button:focus{
 
 .page_banner{
     position: relative;
-    background: url(../images/bg/7.jpg) no-repeat center center / cover;
+    background: url(../banner.png) no-repeat center center / cover;
     padding: 110px 0 120px;
 }
 .page_banner:after{
