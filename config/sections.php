@@ -120,14 +120,26 @@ return [
         ],
     ],
 
+
     'service-cards-grid' => [
         'name' => 'Hizmet Kartları Grid (Filtrelenebilir)',
         'view' => 'frontend.sections._service-cards-grid',
-        'data_handler' => \App\PageBuilder\ServicesListHandler::class,
+        'data_handler' => null, // Handler'ı kaldırıyoruz
         'fields' => [
-            ['name' => 'sub_title', 'label' => 'Üst Başlık', 'type' => 'text', 'translatable' => true],
-            ['name' => 'main_title', 'label' => 'Ana Başlık', 'type' => 'text', 'translatable' => true],
-            ['name' => 'service_count', 'label' => 'Gösterilecek Hizmet Sayısı', 'type' => 'number'],
+            [
+                'name' => 'sub_title',
+                'label' => 'Üst Başlık',
+                'type' => 'text',
+                'translatable' => true,
+                'default' => 'Our Services'
+            ],
+            [
+                'name' => 'main_title',
+                'label' => 'Ana Başlık',
+                'type' => 'text',
+                'translatable' => true,
+                'default' => 'What We Offer'
+            ],
             [
                 'name' => 'show_filters',
                 'label' => 'Kategori Filtreleri Göster',
@@ -135,6 +147,41 @@ return [
                 'options' => [
                     '0' => 'Hayır',
                     '1' => 'Evet',
+                ]
+            ],
+            [
+                'name' => 'service_cards',
+                'label' => 'Hizmet Kartları',
+                'type' => 'repeater',
+                'fields' => [
+                    [
+                        'name' => 'service_image',
+                        'label' => 'Hizmet Görseli (370x280)',
+                        'type' => 'file'
+                    ],
+                    [
+                        'name' => 'service_title',
+                        'label' => 'Hizmet Başlığı',
+                        'type' => 'text',
+                        'translatable' => true
+                    ],
+                    [
+                        'name' => 'service_summary',
+                        'label' => 'Hizmet Özeti',
+                        'type' => 'textarea',
+                        'translatable' => true
+                    ],
+                    [
+                        'name' => 'service_category',
+                        'label' => 'Kategori Adı',
+                        'type' => 'text',
+                        'translatable' => true
+                    ],
+                    [
+                        'name' => 'service_link',
+                        'label' => 'Hizmet Detay Linki',
+                        'type' => 'text'
+                    ],
                 ]
             ],
         ],

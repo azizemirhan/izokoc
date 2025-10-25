@@ -145,11 +145,6 @@
             }
         }
 
-        .video-play-btn:hover .play-icon {
-            transform: scale(1.1);
-            background: #ffc107;
-            color: #1a1a1a;
-        }
 
         .play-text {
             color: #ffffff;
@@ -173,7 +168,6 @@
         .sub_title {
             font-size: 14px;
             font-weight: 600;
-            color: #ffc107;
             text-transform: uppercase;
             letter-spacing: 2px;
             margin-bottom: 15px;
