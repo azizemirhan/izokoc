@@ -562,8 +562,8 @@
     <script>
         $(function () {
             const allSectionsConfig = @json($availableSections);
-            const activeLanguages = @json($activeLanguages->keys()); // Sadece dil kodları
-            const activeLanguageData = @json($activeLanguages); // Tam dil verisi
+            const activeLanguages = @json($activeLanguages->keys());
+            const activeLanguageData = @json($activeLanguages);
             const pageCanvas = $("#page-canvas");
             let quillInstances = new Map();
 
@@ -599,14 +599,13 @@
             pageCanvas.sortable({
                 placeholder: "placeholder",
                 handle: ".sortable-handle",
-                tolerance: "pointer", // Bu satırı ekleyin
-                forcePlaceholderSize: true, // Bu satırı ekleyin
+                tolerance: "pointer",
+                forcePlaceholderSize: true,
                 receive: function (event, ui) {
                     const sectionKey = $(ui.item).data('section-key');
                     const newItemHtml = createSectionHtml(sectionKey, allSectionsConfig[sectionKey]);
                     const newItem = $(newItemHtml);
 
-                    // Canvas'ın boş olmadığını belirtmek için class ekle
                     $(this).removeClass('empty-canvas');
 
                     $(this).find('.draggable-item').replaceWith(newItem);
@@ -614,7 +613,6 @@
                     new bootstrap.Collapse(newItem.find('.accordion-collapse'));
                 },
                 start: function (event, ui) {
-                    // Sürükleme başladığında canvas'ı hazırla
                     if ($(this).children().length === 0) {
                         $(this).addClass('ready-for-drop');
                     }
@@ -624,7 +622,6 @@
                 }
             });
 
-            // Canvas boş mu kontrolü
             function checkCanvasEmpty() {
                 if (pageCanvas.children().length === 0) {
                     pageCanvas.addClass('empty-canvas');
@@ -633,20 +630,16 @@
                 }
             }
 
-            // Sayfa yüklendiğinde kontrol et
             checkCanvasEmpty();
 
-            // Remove item event handler'ı güncelle
             pageCanvas.on('click', '.remove-item', function () {
                 $(this).closest('.canvas-item').remove();
-                checkCanvasEmpty(); // Canvas boş kaldı mı kontrol et
+                checkCanvasEmpty();
             });
 
-
-            // Repeater item silme (accordion yapısı için güncellenmiş)
             pageCanvas.on('click', '.remove-repeater-item, .btn-close-repeater', function (e) {
                 e.preventDefault();
-                e.stopPropagation(); // Accordion'un toggle olmasını engelle
+                e.stopPropagation();
 
                 const repeaterItem = $(this).closest('.repeater-item-accordion');
 
@@ -657,9 +650,6 @@
                 }
             });
 
-
-            // Repeater items için sortable başlat
-            // Repeater items için sortable başlat
             function initializeRepeaterSortable() {
                 $('.sortable-repeater').each(function () {
                     if (!$(this).hasClass('ui-sortable')) {
@@ -679,31 +669,61 @@
 
             initializeRepeaterSortable();
 
+            // Add repeater item butonuna event handler
             pageCanvas.on('click', '.add-repeater-item', function () {
-                const container = $(this).prev('.repeater-items-container');
+                const button = $(this);
+                const container = button.prev('.repeater-items-container');
                 const repeaterName = container.data('repeater-name');
-                const sectionKey = $(this).closest('.canvas-item').data('section-key');
-                const repeaterField = allSectionsConfig[sectionKey].fields.find(f => f.name === repeaterName);
+
+                const canvasItem = button.closest('.canvas-item');
+                const sectionKey = canvasItem.data('section-key');
+
+                const parentRepeaterContainer = button.closest('.repeater-item-body').parent().parent();
+                let repeaterField;
+
+                if (parentRepeaterContainer.hasClass('repeater-item-accordion')) {
+                    const parentRepeaterName = parentRepeaterContainer.closest('.repeater-items-container').data('repeater-name');
+                    const sectionConfig = allSectionsConfig[sectionKey];
+
+                    const findNestedRepeater = (fields, targetName) => {
+                        for (let field of fields) {
+                            if (field.name === targetName && field.type === 'repeater') {
+                                return field;
+                            }
+                            if (field.type === 'repeater' && field.fields) {
+                                const nested = findNestedRepeater(field.fields, targetName);
+                                if (nested) return nested;
+                            }
+                        }
+                        return null;
+                    };
+
+                    const parentField = findNestedRepeater(sectionConfig.fields, parentRepeaterName);
+                    if (parentField) {
+                        repeaterField = parentField.fields.find(f => f.name === repeaterName && f.type === 'repeater');
+                    }
+                } else {
+                    repeaterField = allSectionsConfig[sectionKey].fields.find(f => f.name === repeaterName);
+                }
+
                 if (repeaterField) {
-                    const itemIndex = container.children('.repeater-item').length;
+                    const itemIndex = container.children('.repeater-item-accordion').length;
                     const uniqueId = `${sectionKey}-${repeaterName}-${itemIndex}-${Date.now()}`;
-                    const newItemHtml = createRepeaterItemHtml(repeaterField.fields, uniqueId);
+                    const newItemHtml = createRepeaterItemHtml(repeaterField.fields, uniqueId, sectionKey);
                     const newItem = $(newItemHtml);
                     container.append(newItem);
-                    initializeQuill(`#${uniqueId} .quill-editor`);
+                    initializeQuill(`#${uniqueId}-collapse .quill-editor`);
 
-                    // Sortable'ı yenile
                     initializeRepeaterSortable();
                 }
             });
 
             $('#page-form').on('submit', function (e) {
-                e.preventDefault(); // Önce formu durdur
+                e.preventDefault();
 
                 const form = this;
                 const formData = new FormData(form);
 
-                // Önce mevcut section-meta-input'ları temizle
                 $(form).find('.section-meta-input').remove();
 
                 // Quill editor içeriklerini aktar
@@ -720,64 +740,55 @@
                     const sectionKey = sectionItem.data('section-key');
                     const sectionId = sectionItem.data('id');
 
-                    // Section meta bilgilerini FormData'ya ekle
                     formData.append(`sections[${sectionIndex}][section_key]`, sectionKey);
                     formData.append(`sections[${sectionIndex}][is_active]`, sectionItem.find('.status-toggle').is(':checked') ? 1 : 0);
                     if (sectionId) {
                         formData.append(`sections[${sectionIndex}][id]`, sectionId);
                     }
 
-                    // Normal input, select, textarea'ları işle (repeater dışında)
-                    sectionItem.find('> .accordion-collapse > .accordion-body > .field-wrapper').not('.repeater-items-container').find('input, select, textarea').each(function () {
-                        const input = $(this);
-                        const originalName = input.attr('data-name');
-                        const lang = input.attr('data-lang');
-                        const value = input.val();
+                    // Normal input, select, textarea'ları işle
+                    sectionItem.find('> .accordion-collapse > .accordion-body > .field-wrapper').each(function() {
+                        const fieldWrapper = $(this);
 
-                        if (input.attr('type') === 'file') {
-                            const files = input[0].files;
-                            if (files && files.length > 0) {
-                                formData.append(`sections[${sectionIndex}][files][${originalName}]`, files[0]);
-                            }
-                        } else if (lang) {
-                            formData.append(`sections[${sectionIndex}][content][${originalName}][${lang}]`, value || '');
-                        } else if (originalName) {
-                            formData.append(`sections[${sectionIndex}][content][${originalName}]`, value || '');
+                        // Eğer bu bir repeater container ise, atla (aşağıda işlenecek)
+                        if (fieldWrapper.find('.repeater-items-container').length > 0) {
+                            return;
                         }
-                    });
 
-                    // Repeater alanlarını işle (YENİ ACCORDION YAPISI İLE)
-                    sectionItem.find('.repeater-items-container').each(function () {
-                        const repeaterContainer = $(this);
-                        const repeaterName = repeaterContainer.data('repeater-name');
+                        // Normal alanları işle
+                        fieldWrapper.find('input, select, textarea').each(function () {
+                            const input = $(this);
+                            const originalName = input.attr('data-name');
+                            const lang = input.attr('data-lang');
+                            const value = input.val();
 
-                        // Accordion yapısındaki repeater item'ları bul
-                        repeaterContainer.find('.repeater-item-accordion').each(function (itemIndex) {
-                            const repeaterItem = $(this);
+                            if (!originalName) return;
 
-                            // Her repeater item'ın body kısmındaki input'ları bul
-                            repeaterItem.find('.repeater-item-body input, .repeater-item-body select, .repeater-item-body textarea').each(function () {
-                                const input = $(this);
-                                const originalName = input.attr('data-name');
-                                const lang = input.attr('data-lang');
-                                const value = input.val();
-
-                                if (input.attr('type') === 'file') {
-                                    const files = input[0].files;
-                                    if (files && files.length > 0) {
-                                        formData.append(`sections[${sectionIndex}][content][${repeaterName}][${itemIndex}][files][${originalName}]`, files[0]);
-                                    }
-                                } else if (lang) {
-                                    formData.append(`sections[${sectionIndex}][content][${repeaterName}][${itemIndex}][${originalName}][${lang}]`, value || '');
-                                } else if (originalName) {
-                                    formData.append(`sections[${sectionIndex}][content][${repeaterName}][${itemIndex}][${originalName}]`, value || '');
+                            if (input.attr('type') === 'file') {
+                                const files = input[0].files;
+                                if (files && files.length > 0) {
+                                    formData.append(`sections[${sectionIndex}][files][${originalName}]`, files[0]);
                                 }
-                            });
+                            } else if (lang) {
+                                formData.append(`sections[${sectionIndex}][content][${originalName}][${lang}]`, value || '');
+                            } else {
+                                formData.append(`sections[${sectionIndex}][content][${originalName}]`, value || '');
+                            }
                         });
                     });
+
+                    // Repeater alanlarını işle
+                    processRepeaterItems(sectionItem.find('> .accordion-collapse > .accordion-body'), sectionIndex, formData, '');
                 });
 
-                // FormData ile AJAX gönder
+                // Debug - FormData içeriğini göster
+                console.log('=== FORM DATA DEBUG ===');
+                for (let pair of formData.entries()) {
+                    console.log(pair[0] + ': ' + (pair[1] instanceof File ? pair[1].name : pair[1]));
+                }
+                console.log('=== END DEBUG ===');
+
+                // AJAX gönder
                 $.ajax({
                     url: $(form).attr('action'),
                     method: 'POST',
@@ -785,11 +796,10 @@
                     processData: false,
                     contentType: false,
                     success: function (response) {
-                        // Başarılı olursa sayfayı yenile
                         location.reload();
                     },
                     error: function (xhr) {
-                        // Hata mesajlarını göster
+                        console.error('AJAX Error:', xhr);
                         if (xhr.status === 422) {
                             const errors = xhr.responseJSON.errors;
                             let errorHtml = '<div class="alert alert-danger"><ul class="mb-0">';
@@ -808,6 +818,68 @@
 
                 return false;
             });
+
+            // RECURSIVE REPEATER PROCESSOR
+            function processRepeaterItems($container, sectionIndex, formData, parentPath) {
+                $container.find('> .repeater-items-container').each(function () {
+                    const repeaterContainer = $(this);
+                    const repeaterName = repeaterContainer.data('repeater-name');
+                    const currentPath = parentPath ? `${parentPath}.${repeaterName}` : repeaterName;
+
+                    repeaterContainer.find('> .repeater-item-accordion').each(function (itemIndex) {
+                        const repeaterItem = $(this);
+                        const itemPath = `${currentPath}.${itemIndex}`;
+
+                        // Bu item'ın field-wrapper'larını işle
+                        repeaterItem.find('> .collapse > .repeater-item-body > .mb-3').each(function() {
+                            const fieldWrapper = $(this);
+
+                            // Eğer bu bir nested repeater container ise, recursive olarak işle
+                            if (fieldWrapper.find('> .repeater-items-container').length > 0) {
+                                processRepeaterItems(fieldWrapper, sectionIndex, formData, itemPath);
+                                return;
+                            }
+
+                            // Normal inputları işle (direkt child)
+                            fieldWrapper.find('> input, > select, > textarea').each(function () {
+                                processInput($(this), sectionIndex, formData, itemPath);
+                            });
+
+                            // Quill editor wrapper içindeki hidden input
+                            fieldWrapper.find('> .quill-editor-wrapper > input[type="hidden"]').each(function () {
+                                processInput($(this), sectionIndex, formData, itemPath);
+                            });
+
+                            // Tab content içindeki inputlar (çok dilli alanlar)
+                            fieldWrapper.find('> .tab-content > .tab-pane').each(function() {
+                                $(this).find('input, select, textarea').each(function () {
+                                    processInput($(this), sectionIndex, formData, itemPath);
+                                });
+                            });
+                        });
+                    });
+                });
+            }
+
+            // Input işleme yardımcı fonksiyonu
+            function processInput($input, sectionIndex, formData, itemPath) {
+                const originalName = $input.attr('data-name');
+                const lang = $input.attr('data-lang');
+                const value = $input.val();
+
+                if (!originalName) return;
+
+                if ($input.attr('type') === 'file') {
+                    const files = $input[0].files;
+                    if (files && files.length > 0) {
+                        formData.append(`sections[${sectionIndex}][content][${itemPath}][files][${originalName}]`, files[0]);
+                    }
+                } else if (lang) {
+                    formData.append(`sections[${sectionIndex}][content][${itemPath}][${originalName}][${lang}]`, value || '');
+                } else {
+                    formData.append(`sections[${sectionIndex}][content][${itemPath}][${originalName}]`, value || '');
+                }
+            }
 
             function createSectionHtml(key, config) {
                 const uniqueId = key + '-' + Date.now();
@@ -838,14 +910,13 @@
 
                 if (field.type === 'repeater') {
                     fieldHtml += `<label class="form-label fw-bold">${field.label}</label>
-                                  <div class="repeater-items-container" data-repeater-name="${field.name}"></div>
+                                  <div class="repeater-items-container sortable-repeater" data-repeater-name="${field.name}"></div>
                                   <button type="button" class="btn btn-success btn-sm add-repeater-item">+ Ekle</button>`;
                 } else if (field.translatable) {
                     const tabId = `${uniqueId}-${field.name}`;
                     fieldHtml += `<label class="form-label">${field.label}</label>
                                   <ul class="nav nav-tabs nav-tabs-sm">`;
 
-                    // Tüm aktif diller için sekme oluştur
                     activeLanguages.forEach((code, index) => {
                         const isActive = index === 0 ? 'active' : '';
                         fieldHtml += `<li class="nav-item"><button class="nav-link ${isActive}" data-bs-toggle="tab" data-bs-target="#${tabId}-${code}" type="button">${code.toUpperCase()}</button></li>`;
@@ -853,7 +924,6 @@
 
                     fieldHtml += `</ul><div class="tab-content mt-2">`;
 
-                    // Tüm aktif diller için içerik alanları oluştur
                     activeLanguages.forEach((code, index) => {
                         const isActive = index === 0 ? 'show active' : '';
                         fieldHtml += `<div class="tab-pane fade ${isActive}" id="${tabId}-${code}">${createInputElement(field, code)}</div>`;
@@ -866,13 +936,18 @@
                 return fieldHtml + `</div>`;
             }
 
-            function createRepeaterItemHtml(fields, uniqueId) {
+            function createRepeaterItemHtml(fields, uniqueId, parentSectionKey) {
                 let itemFieldsHtml = fields.map(field => {
                     let fieldHtml = `<div class="mb-3 field-wrapper">`;
-                    if (field.translatable) {
+
+                    if (field.type === 'repeater') {
+                        fieldHtml += `<label class="form-label fw-bold">${field.label}</label>
+                                      <div class="repeater-items-container sortable-repeater" data-repeater-name="${field.name}" style="padding-left: 20px; border-left: 3px solid #e0e6ed;"></div>
+                                      <button type="button" class="btn btn-success btn-sm add-repeater-item">+ Ekle</button>`;
+                    } else if (field.translatable) {
                         const tabId = `${uniqueId}-${field.name}`;
                         fieldHtml += `<label class="form-label">${field.label}</label>
-                          <ul class="nav nav-tabs nav-tabs-sm">`;
+                                      <ul class="nav nav-tabs nav-tabs-sm">`;
 
                         activeLanguages.forEach((code, index) => {
                             const isActive = index === 0 ? 'active' : '';
@@ -894,22 +969,22 @@
                 }).join('');
 
                 return `<div class="repeater-item-accordion mb-2">
-                <div class="repeater-item-header">
-                    <i class="bi bi-grip-vertical repeater-drag-handle" style="cursor: move;"></i>
-                    <button class="repeater-toggle-btn" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#${uniqueId}-collapse">
-                        <i class="bi bi-chevron-down collapse-icon"></i>
-                        <span class="repeater-title">Yeni Öğe</span>
-                    </button>
-                    <button type="button" class="btn-close-repeater remove-repeater-item"></button>
-                </div>
-
-                <div class="collapse show" id="${uniqueId}-collapse">
-                    <div class="repeater-item-body">
-                        ${itemFieldsHtml}
+                    <div class="repeater-item-header">
+                        <i class="bi bi-grip-vertical repeater-drag-handle" style="cursor: move;"></i>
+                        <button class="repeater-toggle-btn" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#${uniqueId}-collapse">
+                            <i class="bi bi-chevron-down collapse-icon"></i>
+                            <span class="repeater-title">Yeni Öğe</span>
+                        </button>
+                        <button type="button" class="btn-close-repeater remove-repeater-item"></button>
                     </div>
-                </div>
-            </div>`;
+
+                    <div class="collapse show" id="${uniqueId}-collapse">
+                        <div class="repeater-item-body">
+                            ${itemFieldsHtml}
+                        </div>
+                    </div>
+                </div>`;
             }
 
             function createInputElement(field, lang = null) {
@@ -919,8 +994,6 @@
                     return `<div class="quill-editor-wrapper"><div class="quill-editor"></div><input type="hidden" ${dataAttrs}></div>`;
                 } else if (field.type === 'file') {
                     return `<input type="file" class="form-control" ${dataAttrs}>`;
-                } else if (field.type === 'multi_image') {
-                    return '';
                 } else if (field.type === 'select' && field.options) {
                     const options = Object.entries(field.options).map(([val, label]) => `<option value="${val}">${label}</option>`).join('');
                     return `<select class="form-select" ${dataAttrs}>${options}</select>`;
