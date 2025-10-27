@@ -612,66 +612,6 @@ ul {
 .izokoc_menu_item.izokoc_active > a::after {
     width: 80%;
 }
-
-/* ========== SUBMENU ========== */
-.izokoc_submenu {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background: var(--izokoc-white);
-    min-width: 250px;
-    border-radius: 0 0 10px 10px;
-    box-shadow: 0 10px 30px var(--izokoc-shadow);
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-10px);
-    transition: var(--izokoc-transition);
-    overflow: hidden;
-}
-
-.izokoc_has_submenu:hover .izokoc_submenu {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-}
-
-.izokoc_submenu li {
-    border-bottom: 1px solid var(--izokoc-border);
-}
-
-.izokoc_submenu li:last-child {
-    border-bottom: none;
-}
-
-.izokoc_submenu a {
-    display: block;
-    padding: 15px 25px;
-    font-size: 14px;
-    color: var(--izokoc-text-dark);
-    transition: var(--izokoc-transition);
-    position: relative;
-}
-
-.izokoc_submenu a::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 0;
-    height: 100%;
-    background: linear-gradient(90deg, var(--izokoc-primary), transparent);
-    transition: var(--izokoc-transition);
-}
-
-.izokoc_submenu a:hover {
-    padding-left: 35px;
-    color: var(--izokoc-primary);
-}
-
-.izokoc_submenu a:hover::before {
-    width: 4px;
-}
-
 /* ========== SOCIAL MEDIA ========== */
 .izokoc_social {
     display: flex;
@@ -1233,6 +1173,167 @@ ul {
 .izokoc_mobile_submenu .izokoc_mobile_submenu .izokoc_mobile_submenu .izokoc_mobile_submenu a {
     padding-left: 105px !important;
     font-size: 11px;
+}
+
+/* Alt menü toggle butonları için renk farklılıkları */
+.izokoc_mobile_submenu .izokoc_submenu_toggle {
+    background: rgba(255, 49, 49, 0.1);
+    border-radius: 50%;
+}
+
+.izokoc_mobile_submenu .izokoc_mobile_submenu .izokoc_submenu_toggle {
+    background: rgba(41, 98, 255, 0.1);
+}
+
+/* ========== SUBMENU ========== */
+.izokoc_submenu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: var(--izokoc-white);
+    min-width: 250px;
+    border-radius: 0 0 10px 10px;
+    box-shadow: 0 10px 30px var(--izokoc-shadow);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: var(--izokoc-transition);
+    overflow: visible;
+    z-index: 100;
+}
+
+.izokoc_menu_item.izokoc_has_submenu:hover > .izokoc_submenu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.izokoc_submenu .izokoc_submenu {
+    position: absolute;
+    top: -10px;
+    left: 100%;
+    margin-left: 2px;
+    border-radius: 10px;
+    transform: translateX(-10px);
+    z-index: 101;
+}
+
+.izokoc_submenu li {
+    position: relative;
+    border-bottom: 1px solid var(--izokoc-border);
+}
+
+.izokoc_submenu li:last-child {
+    border-bottom: none;
+}
+
+.izokoc_submenu a {
+    display: block;
+    padding: 15px 25px;
+    padding-right: 40px;
+    font-size: 14px;
+    color: var(--izokoc-text-dark);
+    transition: var(--izokoc-transition);
+    position: relative;
+    white-space: nowrap;
+}
+
+.izokoc_submenu a::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 100%;
+    background: linear-gradient(90deg, var(--izokoc-primary), transparent);
+    transition: var(--izokoc-transition);
+}
+
+.izokoc_submenu a:hover {
+    padding-left: 35px;
+    color: var(--izokoc-primary);
+    background: rgba(255, 49, 49, 0.05);
+}
+
+.izokoc_submenu a:hover::before {
+    width: 4px;
+}
+
+.izokoc_submenu .izokoc_has_submenu > a::after {
+    content: '\f054';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 10px;
+    opacity: 0.5;
+    transition: var(--izokoc-transition);
+}
+
+.izokoc_submenu .izokoc_has_submenu:hover > a::after {
+    opacity: 1;
+    color: var(--izokoc-primary);
+    transform: translateY(-50%) translateX(2px);
+}
+
+.izokoc_submenu .izokoc_has_submenu:hover > .izokoc_submenu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+}
+
+.izokoc_submenu .izokoc_has_submenu::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: -5px;
+    width: 5px;
+    height: 100%;
+    background: transparent;
+}
+
+/* ========== MULTI-LEVEL SUBMENU (3+ SEVİYE) ========== */
+
+
+.izokoc_mobile_submenu {
+    background: #f8f9fa;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out;
+}
+
+.izokoc_mobile_submenu.izokoc_active {
+    max-height: 2000px;
+}
+
+/* 3. seviye mobil */
+.izokoc_mobile_submenu .izokoc_mobile_submenu {
+    background: #f0f2f5;
+}
+
+.izokoc_mobile_submenu .izokoc_mobile_submenu a {
+    padding-left: 65px !important;
+    font-size: 13px;
+}
+
+.izokoc_mobile_submenu .izokoc_mobile_submenu a::before {
+    left: 45px;
+}
+
+/* 4. seviye mobil */
+.izokoc_mobile_submenu .izokoc_mobile_submenu .izokoc_mobile_submenu {
+    background: #e8eaed;
+}
+
+.izokoc_mobile_submenu .izokoc_mobile_submenu .izokoc_mobile_submenu a {
+    padding-left: 85px !important;
+    font-size: 12px;
+}
+
+.izokoc_mobile_submenu .izokoc_mobile_submenu .izokoc_mobile_submenu a::before {
+    left: 65px;
 }
 
 /* Alt menü toggle butonları için renk farklılıkları */
