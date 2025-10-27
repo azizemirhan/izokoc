@@ -218,7 +218,7 @@ class PageController extends Controller
 
     public function update(Request $request, Page $page)
     {
-        // 1. ADIM: Sayfa ve SEO ayarlarını doğrula (Bu kısım aynı kalıyor)
+        // 1. ADIM: Sayfa ve SEO ayarlarını doğrula
         $validatedPageData = $request->validate([
             'title' => 'required|array',
             'title.*' => 'required|string|max:255',
@@ -236,8 +236,7 @@ class PageController extends Controller
             'og_description' => 'nullable|array',
             'og_image' => 'nullable|url',
             'sections.*.files.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:50048',
-            'sections.*.content.menu_items.*.files.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
-            'sections.*.content.service_cards.*.files.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'sections.*.content.*.*.files.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
         ]);
 
         // 2. ADIM: Sayfanın temel bilgilerini güncelle
@@ -252,29 +251,27 @@ class PageController extends Controller
             $section->delete();
         }
 
-        // 4. ADIM: Gelen section'ları işle (YENİ VE KARARLI YAPI)
+        // 4. ADIM: Gelen section'ları işle
         if ($request->has('sections')) {
             foreach ($request->sections as $order => $sectionData) {
                 $section = PageSection::findOrNew($sectionData['id'] ?? null);
-                $oldContent = $section->content ?? []; // Sadece eski resimleri silmek için lazım olacak
+                $oldContent = $section->content ?? [];
 
-                // Gelen içeriği temel al, birleştirme yapma!
+                // Gelen içeriği temel al
                 $content = $sectionData['content'] ?? [];
 
                 // Ana section için dosya yüklemelerini işle
                 $mainFilePathPrefix = "sections.{$order}.files";
                 if ($request->hasFile($mainFilePathPrefix)) {
                     foreach ($request->file($mainFilePathPrefix) as $fieldName => $uploadedFile) {
-                        // Eski resmi sil
                         if (isset($oldContent[$fieldName])) {
                             $this->deleteImage($oldContent[$fieldName]);
                         }
-                        // Yeni resmi yükle ve content'e ekle
                         $imagePath = $this->uploadImage($request, "{$mainFilePathPrefix}.{$fieldName}", 'uploads/sections');
                         $content[$fieldName] = $imagePath;
                     }
                 } else {
-                    // Eğer yeni dosya gelmediyse, eski dosya yolunu koru
+                    // Eski dosya yollarını koru
                     $sectionConfig = config('sections.' . $sectionData['section_key'], []);
                     foreach ($sectionConfig['fields'] as $field) {
                         if ($field['type'] === 'file' && isset($oldContent[$field['name']])) {
@@ -283,34 +280,9 @@ class PageController extends Controller
                     }
                 }
 
-                // Repeater alanlarındaki dosya yüklemelerini işle
+                // Repeater alanlarındaki dosya yüklemelerini işle (NESTED DAHİL)
                 $sectionConfig = config('sections.' . $sectionData['section_key'], []);
-                foreach ($sectionConfig['fields'] as $field) {
-                    if ($field['type'] === 'repeater' && isset($content[$field['name']])) {
-                        $repeaterName = $field['name'];
-                        foreach ($content[$repeaterName] as $itemIndex => &$item) {
-                            $repeaterFilePathPrefix = "sections.{$order}.content.{$repeaterName}.{$itemIndex}.files";
-                            if ($request->hasFile($repeaterFilePathPrefix)) {
-                                foreach ($request->file($repeaterFilePathPrefix) as $repeaterFieldName => $uploadedFile) {
-                                    // Eski resmi sil
-                                    if (isset($oldContent[$repeaterName][$itemIndex][$repeaterFieldName])) {
-                                        $this->deleteImage($oldContent[$repeaterName][$itemIndex][$repeaterFieldName]);
-                                    }
-                                    // Yeni resmi yükle
-                                    $imagePath = $this->uploadImage($request, "{$repeaterFilePathPrefix}.{$repeaterFieldName}", 'uploads/sections');
-                                    $item[$repeaterFieldName] = $imagePath;
-                                }
-                            } else {
-                                // Yeni resim gelmediyse, eski repeater item resim yolunu koru
-                                foreach ($field['fields'] as $repeaterField) {
-                                    if ($repeaterField['type'] === 'file' && isset($oldContent[$repeaterName][$itemIndex][$repeaterField['name']])) {
-                                        $item[$repeaterField['name']] = $oldContent[$repeaterName][$itemIndex][$repeaterField['name']];
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                $content = $this->processRepeaterFiles($request, $order, $sectionConfig['fields'], $content, $oldContent);
 
                 $section->fill([
                     'page_id' => $page->id,
@@ -325,6 +297,118 @@ class PageController extends Controller
 
         return redirect()->back()->with('success', 'Sayfa başarıyla güncellendi.');
     }
+
+    private function processRepeaterFiles($request, $sectionOrder, $fields, $content, $oldContent, $parentPath = '')
+    {
+        foreach ($fields as $field) {
+            if ($field['type'] === 'repeater') {
+                $repeaterName = $field['name'];
+                $currentPath = $parentPath ? "{$parentPath}.{$repeaterName}" : $repeaterName;
+
+                if (isset($content[$repeaterName]) && is_array($content[$repeaterName])) {
+                    foreach ($content[$repeaterName] as $itemIndex => &$item) {
+                        // Bu repeater item'ın dosyalarını işle
+                        $repeaterFilePathPrefix = "sections.{$sectionOrder}.content.{$currentPath}.{$itemIndex}.files";
+
+                        if ($request->hasFile($repeaterFilePathPrefix)) {
+                            foreach ($request->file($repeaterFilePathPrefix) as $repeaterFieldName => $uploadedFile) {
+                                // Eski resmi sil
+                                $oldValue = data_get($oldContent, "{$repeaterName}.{$itemIndex}.{$repeaterFieldName}");
+                                if ($oldValue) {
+                                    $this->deleteImage($oldValue);
+                                }
+                                // Yeni resmi yükle
+                                $imagePath = $this->uploadImage($request, "{$repeaterFilePathPrefix}.{$repeaterFieldName}", 'uploads/sections');
+                                $item[$repeaterFieldName] = $imagePath;
+                            }
+                        } else {
+                            // Yeni resim gelmediyse, eski resim yollarını koru
+                            foreach ($field['fields'] as $repeaterField) {
+                                if ($repeaterField['type'] === 'file') {
+                                    $oldValue = data_get($oldContent, "{$repeaterName}.{$itemIndex}.{$repeaterField['name']}");
+                                    if ($oldValue && !isset($item[$repeaterField['name']])) {
+                                        $item[$repeaterField['name']] = $oldValue;
+                                    }
+                                }
+                            }
+                        }
+
+                        // NESTED REPEATER: Bu item içinde başka repeater var mı kontrol et
+                        foreach ($field['fields'] as $nestedField) {
+                            if ($nestedField['type'] === 'repeater') {
+                                // Recursive olarak nested repeater'ı işle
+                                $item = $this->processNestedRepeaterFiles(
+                                    $request,
+                                    $sectionOrder,
+                                    $nestedField,
+                                    $item,
+                                    data_get($oldContent, "{$repeaterName}.{$itemIndex}", []),
+                                    "{$currentPath}.{$itemIndex}"
+                                );
+                            }
+                        }
+                    }
+                    unset($item); // Reference'ı temizle
+                    $content[$repeaterName] = array_values($content[$repeaterName]); // Array'i yeniden indexle
+                }
+            }
+        }
+
+        return $content;
+    }
+
+    private function processNestedRepeaterFiles($request, $sectionOrder, $field, $item, $oldItem, $parentPath)
+    {
+        $repeaterName = $field['name'];
+
+        if (isset($item[$repeaterName]) && is_array($item[$repeaterName])) {
+            foreach ($item[$repeaterName] as $nestedIndex => &$nestedItem) {
+                $nestedPath = "{$parentPath}.{$repeaterName}.{$nestedIndex}";
+                $filePathPrefix = "sections.{$sectionOrder}.content.{$nestedPath}.files";
+
+                // Nested item'ın dosyalarını işle
+                if ($request->hasFile($filePathPrefix)) {
+                    foreach ($request->file($filePathPrefix) as $fieldName => $uploadedFile) {
+                        $oldValue = data_get($oldItem, "{$repeaterName}.{$nestedIndex}.{$fieldName}");
+                        if ($oldValue) {
+                            $this->deleteImage($oldValue);
+                        }
+                        $imagePath = $this->uploadImage($request, "{$filePathPrefix}.{$fieldName}", 'uploads/sections');
+                        $nestedItem[$fieldName] = $imagePath;
+                    }
+                } else {
+                    // Eski dosya yollarını koru
+                    foreach ($field['fields'] as $nestedField) {
+                        if ($nestedField['type'] === 'file') {
+                            $oldValue = data_get($oldItem, "{$repeaterName}.{$nestedIndex}.{$nestedField['name']}");
+                            if ($oldValue && !isset($nestedItem[$nestedField['name']])) {
+                                $nestedItem[$nestedField['name']] = $oldValue;
+                            }
+                        }
+                    }
+                }
+
+                // Daha derin nested repeater varsa (3. seviye), burada da işlenebilir
+                foreach ($field['fields'] as $deeperField) {
+                    if ($deeperField['type'] === 'repeater') {
+                        $nestedItem = $this->processNestedRepeaterFiles(
+                            $request,
+                            $sectionOrder,
+                            $deeperField,
+                            $nestedItem,
+                            data_get($oldItem, "{$repeaterName}.{$nestedIndex}", []),
+                            $nestedPath
+                        );
+                    }
+                }
+            }
+            unset($nestedItem);
+            $item[$repeaterName] = array_values($item[$repeaterName]);
+        }
+
+        return $item;
+    }
+
     /**
      * Bir section ve içeriğindeki tüm resimleri siler.
      * @param PageSection $section
@@ -333,24 +417,37 @@ class PageController extends Controller
     {
         $sectionConfig = config('sections.' . $section->section_key, []);
         if (!empty($section->content) && !empty($sectionConfig['fields'])) {
-            foreach ($sectionConfig['fields'] as $field) {
-                // Ana alanlardaki dosyalar
-                if ($field['type'] === 'file' && !empty($section->content[$field['name']])) {
-                    $this->deleteImage($section->content[$field['name']]);
-                }
-                // Repeater içindeki dosyalar
-                if ($field['type'] === 'repeater' && !empty($section->content[$field['name']])) {
-                    foreach ($section->content[$field['name']] as $item) {
-                        foreach ($field['fields'] as $repeaterField) {
-                            if ($repeaterField['type'] === 'file' && !empty($item[$repeaterField['name']])) {
-                                $this->deleteImage($item[$repeaterField['name']]);
-                            }
+            $this->deleteFieldImages($sectionConfig['fields'], $section->content);
+        }
+    }
+
+    private function deleteFieldImages($fields, $content)
+    {
+        foreach ($fields as $field) {
+            // Normal dosya alanı
+            if ($field['type'] === 'file' && !empty($content[$field['name']])) {
+                $this->deleteImage($content[$field['name']]);
+            }
+
+            // Repeater alanı
+            if ($field['type'] === 'repeater' && !empty($content[$field['name']])) {
+                foreach ($content[$field['name']] as $item) {
+                    // Repeater item'daki dosyaları sil
+                    foreach ($field['fields'] as $repeaterField) {
+                        if ($repeaterField['type'] === 'file' && !empty($item[$repeaterField['name']])) {
+                            $this->deleteImage($item[$repeaterField['name']]);
+                        }
+
+                        // Nested repeater varsa, recursive olarak işle
+                        if ($repeaterField['type'] === 'repeater' && !empty($item[$repeaterField['name']])) {
+                            $this->deleteFieldImages([$repeaterField], $item);
                         }
                     }
                 }
             }
         }
     }
+
     public function reorderSections(Request $request)
     {
         $data = $request->validate([
