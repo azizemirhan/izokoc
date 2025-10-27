@@ -564,6 +564,43 @@ return [
             ['name' => 'map_embed_url', 'label' => 'Özel Google Maps Embed URL (opsiyonel)', 'type' => 'textarea'],
         ],
     ],
+    'services-mega-list' => [
+        'name' => 'Hizmetler Mega Liste (Kartlı)',
+        'view' => 'frontend.sections._services-mega-list',
+        'data_handler' => null,
+        'fields' => [
+            ['name' => 'section_title', 'label' => 'Bölüm Başlığı', 'type' => 'text', 'translatable' => true, 'default' => 'Hizmetlerimiz'],
+            ['name' => 'section_subtitle', 'label' => 'Alt Başlık', 'type' => 'text', 'translatable' => true, 'default' => 'Profesyonel İzolasyon Çözümleri'],
+            ['name' => 'background_color', 'label' => 'Arkaplan Rengi', 'type' => 'select', 'options' => [
+                'light' => 'Açık',
+                'dark' => 'Koyu',
+                'gradient' => 'Gradyan'
+            ], 'default' => 'light'],
+            [
+                'name' => 'service_categories',
+                'label' => 'Hizmet Kategorileri',
+                'type' => 'repeater',
+                'fields' => [
+                    ['name' => 'category_icon', 'label' => 'Kategori İkonu (Font Awesome)', 'type' => 'text', 'default' => 'fas fa-layer-group'],
+                    ['name' => 'category_color', 'label' => 'Kategori Rengi (hex)', 'type' => 'text', 'default' => '#2563eb'],
+                    ['name' => 'category_title', 'label' => 'Kategori Başlığı', 'type' => 'text', 'translatable' => true],
+                    ['name' => 'category_description', 'label' => 'Kategori Açıklaması', 'type' => 'textarea', 'translatable' => true],
+                    [
+                        'name' => 'services',
+                        'label' => 'Hizmetler',
+                        'type' => 'repeater',
+                        'fields' => [
+                            ['name' => 'service_title', 'label' => 'Hizmet Adı', 'type' => 'text', 'translatable' => true],
+                            ['name' => 'service_description', 'label' => 'Kısa Açıklama', 'type' => 'textarea', 'translatable' => true],
+                            ['name' => 'service_icon', 'label' => 'Hizmet İkonu', 'type' => 'text', 'default' => 'fas fa-check-circle'],
+                            ['name' => 'service_link', 'label' => 'Detay Linki', 'type' => 'text'],
+                            ['name' => 'service_image', 'label' => 'Hizmet Görseli (opsiyonel)', 'type' => 'file'],
+                        ]
+                    ],
+                ]
+            ],
+        ],
+    ],
     // SON
 
 
