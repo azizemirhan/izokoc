@@ -289,8 +289,8 @@
                                              id="edit-title-{{ $code }}" role="tabpanel">
                                             <input type="text" name="title[{{ $code }}]" class="form-control"
                                                    value="{{ old('title.'.$code, $page->getTranslation('title', $code)) }}"
-                                                {{-- Sadece ilk dilin zorunlu olmasını sağlıyoruz --}}
-                                                {{ $loop->first ? 'required' : '' }}>
+                                                    {{-- Sadece ilk dilin zorunlu olmasını sağlıyoruz --}}
+                                                    {{ $loop->first ? 'required' : '' }}>
                                         </div>
                                     @endforeach
                                 </div>
@@ -404,11 +404,11 @@
                                                         <select name="index_status" id="index_status"
                                                                 class="form-select">
                                                             <option
-                                                                value="index" @selected(old('index_status', $page->index_status) == 'index')>
+                                                                    value="index" @selected(old('index_status', $page->index_status) == 'index')>
                                                                 Sayfa indexlensin
                                                             </option>
                                                             <option
-                                                                value="noindex" @selected(old('index_status', $page->index_status) == 'noindex')>
+                                                                    value="noindex" @selected(old('index_status', $page->index_status) == 'noindex')>
                                                                 Sayfa indexlenmesin
                                                             </option>
                                                         </select>
@@ -419,11 +419,11 @@
                                                         <select name="follow_status" id="follow_status"
                                                                 class="form-select">
                                                             <option
-                                                                value="follow" @selected(old('follow_status', $page->follow_status) == 'follow')>
+                                                                    value="follow" @selected(old('follow_status', $page->follow_status) == 'follow')>
                                                                 Sayfadaki linkler takip edilsin
                                                             </option>
                                                             <option
-                                                                value="nofollow" @selected(old('follow_status', $page->follow_status) == 'nofollow')>
+                                                                    value="nofollow" @selected(old('follow_status', $page->follow_status) == 'nofollow')>
                                                                 Sayfadaki linkler takip edilmesin
                                                             </option>
                                                         </select>
@@ -485,7 +485,7 @@
                             <div class="row mt-3">
                                 <div class="col-md-6 mb-3">
                                     <label for="slug" class="form-label">URL Uzantısı (Slug) <span
-                                            class="text-danger">*</span></label>
+                                                class="text-danger">*</span></label>
                                     <input type="text" name="slug" id="slug" class="form-control"
                                            value="{{ old('slug', $page->slug) }}" required>
                                 </div>
@@ -496,7 +496,7 @@
                                             Taslak
                                         </option>
                                         <option
-                                            value="published" @selected(old('status', $page->status) == 'published')>
+                                                value="published" @selected(old('status', $page->status) == 'published')>
                                             Yayınlandı
                                         </option>
                                     </select>
@@ -558,11 +558,12 @@
 @push('scripts')
     {{-- Quill Editor JS --}}
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
     <script>
         $(function () {
             const allSectionsConfig = @json($availableSections);
-            const activeLanguages = @json($activeLanguages->keys());
-            const activeLanguageData = @json($activeLanguages);
+            const activeLanguages = @json($activeLanguages->keys()); // Sadece dil kodları
+            const activeLanguageData = @json($activeLanguages); // Tam dil verisi
             const pageCanvas = $("#page-canvas");
             let quillInstances = new Map();
 
@@ -598,20 +599,22 @@
             pageCanvas.sortable({
                 placeholder: "placeholder",
                 handle: ".sortable-handle",
-                tolerance: "pointer",
-                forcePlaceholderSize: true,
+                tolerance: "pointer", // Bu satırı ekleyin
+                forcePlaceholderSize: true, // Bu satırı ekleyin
                 receive: function (event, ui) {
                     const sectionKey = $(ui.item).data('section-key');
                     const newItemHtml = createSectionHtml(sectionKey, allSectionsConfig[sectionKey]);
                     const newItem = $(newItemHtml);
 
+                    // Canvas'ın boş olmadığını belirtmek için class ekle
                     $(this).removeClass('empty-canvas');
+
                     $(this).find('.draggable-item').replaceWith(newItem);
                     initializeQuill(`#collapse-${newItem.data('unique-id')} .quill-editor`);
-                    initializeNestedRepeaterSortable(newItem);
                     new bootstrap.Collapse(newItem.find('.accordion-collapse'));
                 },
                 start: function (event, ui) {
+                    // Sürükleme başladığında canvas'ı hazırla
                     if ($(this).children().length === 0) {
                         $(this).addClass('ready-for-drop');
                     }
@@ -621,6 +624,7 @@
                 }
             });
 
+            // Canvas boş mu kontrolü
             function checkCanvasEmpty() {
                 if (pageCanvas.children().length === 0) {
                     pageCanvas.addClass('empty-canvas');
@@ -629,16 +633,20 @@
                 }
             }
 
+            // Sayfa yüklendiğinde kontrol et
             checkCanvasEmpty();
 
+            // Remove item event handler'ı güncelle
             pageCanvas.on('click', '.remove-item', function () {
                 $(this).closest('.canvas-item').remove();
-                checkCanvasEmpty();
+                checkCanvasEmpty(); // Canvas boş kaldı mı kontrol et
             });
 
+
+            // Repeater item silme (accordion yapısı için güncellenmiş)
             pageCanvas.on('click', '.remove-repeater-item, .btn-close-repeater', function (e) {
                 e.preventDefault();
-                e.stopPropagation();
+                e.stopPropagation(); // Accordion'un toggle olmasını engelle
 
                 const repeaterItem = $(this).closest('.repeater-item-accordion');
 
@@ -649,6 +657,9 @@
                 }
             });
 
+
+            // Repeater items için sortable başlat
+            // Repeater items için sortable başlat
             function initializeRepeaterSortable() {
                 $('.sortable-repeater').each(function () {
                     if (!$(this).hasClass('ui-sortable')) {
@@ -666,77 +677,36 @@
                 });
             }
 
-            // YENİ: Nested repeater'lar için sortable başlatma
-            function initializeNestedRepeaterSortable(container) {
-                container.find('.sortable-repeater').each(function () {
-                    if (!$(this).hasClass('ui-sortable')) {
-                        $(this).sortable({
-                            handle: '.repeater-drag-handle',
-                            placeholder: 'repeater-placeholder',
-                            forcePlaceholderSize: true,
-                            tolerance: 'pointer',
-                            items: '.repeater-item-accordion',
-                        });
-                    }
-                });
-            }
-
             initializeRepeaterSortable();
 
-            // YENİ: Nested repeater için add button handler
             pageCanvas.on('click', '.add-repeater-item', function () {
-                const $button = $(this);
-                const container = $button.prev('.repeater-items-container');
+                const container = $(this).prev('.repeater-items-container');
                 const repeaterName = container.data('repeater-name');
-                const canvasItem = $button.closest('.canvas-item');
-                const sectionKey = canvasItem.data('section-key');
-
-                // Parent repeater item olup olmadığını kontrol et
-                const parentRepeaterItem = $button.closest('.repeater-item-accordion');
-
-                let repeaterField;
-
-                if (parentRepeaterItem.length > 0) {
-                    // Nested repeater - parent repeater config'ini bul
-                    const parentContainer = parentRepeaterItem.closest('.repeater-items-container');
-                    const parentRepeaterName = parentContainer.data('repeater-name');
-                    const parentRepeaterConfig = allSectionsConfig[sectionKey].fields.find(f => f.name === parentRepeaterName);
-
-                    // Nested repeater field'ını bul
-                    repeaterField = parentRepeaterConfig.fields.find(f => f.name === repeaterName && f.type === 'repeater');
-                } else {
-                    // Normal repeater
-                    repeaterField = allSectionsConfig[sectionKey].fields.find(f => f.name === repeaterName);
-                }
-
+                const sectionKey = $(this).closest('.canvas-item').data('section-key');
+                const repeaterField = allSectionsConfig[sectionKey].fields.find(f => f.name === repeaterName);
                 if (repeaterField) {
-                    const itemIndex = container.children('.repeater-item-accordion').length;
+                    const itemIndex = container.children('.repeater-item').length;
                     const uniqueId = `${sectionKey}-${repeaterName}-${itemIndex}-${Date.now()}`;
-                    const newItemHtml = createRepeaterItemHtml(repeaterField.fields, uniqueId, repeaterField);
+                    const newItemHtml = createRepeaterItemHtml(repeaterField.fields, uniqueId);
                     const newItem = $(newItemHtml);
                     container.append(newItem);
                     initializeQuill(`#${uniqueId} .quill-editor`);
 
-                    // Nested repeater için sortable başlat
-                    initializeNestedRepeaterSortable(newItem);
-
-                    // Ana sortable'ı yenile
-                    if (container.hasClass('ui-sortable')) {
-                        container.sortable('refresh');
-                    } else {
-                        initializeRepeaterSortable();
-                    }
+                    // Sortable'ı yenile
+                    initializeRepeaterSortable();
                 }
             });
 
             $('#page-form').on('submit', function (e) {
-                e.preventDefault();
+                e.preventDefault(); // Önce formu durdur
 
                 const form = this;
                 const formData = new FormData(form);
 
+                // Önce mevcut section-meta-input'ları temizle
                 $(form).find('.section-meta-input').remove();
 
+                // Quill editor içeriklerini aktar
                 quillInstances.forEach((quill, element) => {
                     const hiddenInput = $(element).next('input[type="hidden"]');
                     if (hiddenInput.length) {
@@ -744,18 +714,20 @@
                     }
                 });
 
+                // Canvas'taki her section'ı işle
                 $('#page-canvas .canvas-item').each(function (sectionIndex) {
                     const sectionItem = $(this);
                     const sectionKey = sectionItem.data('section-key');
                     const sectionId = sectionItem.data('id');
 
+                    // Section meta bilgilerini FormData'ya ekle
                     formData.append(`sections[${sectionIndex}][section_key]`, sectionKey);
                     formData.append(`sections[${sectionIndex}][is_active]`, sectionItem.find('.status-toggle').is(':checked') ? 1 : 0);
                     if (sectionId) {
                         formData.append(`sections[${sectionIndex}][id]`, sectionId);
                     }
 
-                    // Normal alanlar
+                    // Normal input, select, textarea'ları işle (repeater dışında)
                     sectionItem.find('> .accordion-collapse > .accordion-body > .field-wrapper').not('.repeater-items-container').find('input, select, textarea').each(function () {
                         const input = $(this);
                         const originalName = input.attr('data-name');
@@ -774,10 +746,38 @@
                         }
                     });
 
-                    // Repeater alanlarını işle (nested dahil)
-                    processRepeaterFields(sectionItem, formData, sectionIndex, '');
+                    // Repeater alanlarını işle (YENİ ACCORDION YAPISI İLE)
+                    sectionItem.find('.repeater-items-container').each(function () {
+                        const repeaterContainer = $(this);
+                        const repeaterName = repeaterContainer.data('repeater-name');
+
+                        // Accordion yapısındaki repeater item'ları bul
+                        repeaterContainer.find('.repeater-item-accordion').each(function (itemIndex) {
+                            const repeaterItem = $(this);
+
+                            // Her repeater item'ın body kısmındaki input'ları bul
+                            repeaterItem.find('.repeater-item-body input, .repeater-item-body select, .repeater-item-body textarea').each(function () {
+                                const input = $(this);
+                                const originalName = input.attr('data-name');
+                                const lang = input.attr('data-lang');
+                                const value = input.val();
+
+                                if (input.attr('type') === 'file') {
+                                    const files = input[0].files;
+                                    if (files && files.length > 0) {
+                                        formData.append(`sections[${sectionIndex}][content][${repeaterName}][${itemIndex}][files][${originalName}]`, files[0]);
+                                    }
+                                } else if (lang) {
+                                    formData.append(`sections[${sectionIndex}][content][${repeaterName}][${itemIndex}][${originalName}][${lang}]`, value || '');
+                                } else if (originalName) {
+                                    formData.append(`sections[${sectionIndex}][content][${repeaterName}][${itemIndex}][${originalName}]`, value || '');
+                                }
+                            });
+                        });
+                    });
                 });
 
+                // FormData ile AJAX gönder
                 $.ajax({
                     url: $(form).attr('action'),
                     method: 'POST',
@@ -785,9 +785,11 @@
                     processData: false,
                     contentType: false,
                     success: function (response) {
+                        // Başarılı olursa sayfayı yenile
                         location.reload();
                     },
                     error: function (xhr) {
+                        // Hata mesajlarını göster
                         if (xhr.status === 422) {
                             const errors = xhr.responseJSON.errors;
                             let errorHtml = '<div class="alert alert-danger"><ul class="mb-0">';
@@ -807,72 +809,6 @@
                 return false;
             });
 
-            // YENİ: Nested repeater'ları işlemek için recursive fonksiyon
-            function processRepeaterFields(container, formData, sectionIndex, pathPrefix) {
-                container.find('> .accordion-collapse > .accordion-body > .repeater-items-container, > .repeater-item-body > .repeater-items-container').each(function () {
-                    const repeaterContainer = $(this);
-                    const repeaterName = repeaterContainer.data('repeater-name');
-                    const fullPath = pathPrefix ? `${pathPrefix}[${repeaterName}]` : repeaterName;
-
-                    repeaterContainer.children('.repeater-item-accordion').each(function (itemIndex) {
-                        const repeaterItem = $(this);
-                        const currentPath = `${fullPath}[${itemIndex}]`;
-
-                        // Bu item'daki direkt input'ları işle
-                        repeaterItem.find('> .collapse > .repeater-item-body > .field-wrapper > input, > .collapse > .repeater-item-body > .field-wrapper > select, > .collapse > .repeater-item-body > .field-wrapper > textarea').each(function () {
-                            const input = $(this);
-                            const originalName = input.attr('data-name');
-                            const lang = input.attr('data-lang');
-                            const value = input.val();
-
-                            if (input.attr('type') === 'file') {
-                                const files = input[0].files;
-                                if (files && files.length > 0) {
-                                    formData.append(`sections[${sectionIndex}][content][${currentPath}][files][${originalName}]`, files[0]);
-                                }
-                            } else if (lang) {
-                                formData.append(`sections[${sectionIndex}][content][${currentPath}][${originalName}][${lang}]`, value || '');
-                            } else if (originalName) {
-                                formData.append(`sections[${sectionIndex}][content][${currentPath}][${originalName}]`, value || '');
-                            }
-                        });
-
-                        // Nested repeater'ları işle (recursive)
-                        const nestedRepeaters = repeaterItem.find('> .collapse > .repeater-item-body > .repeater-items-container');
-                        if (nestedRepeaters.length > 0) {
-                            nestedRepeaters.each(function () {
-                                const nestedContainer = $(this);
-                                const nestedRepeaterName = nestedContainer.data('repeater-name');
-                                const nestedPath = `${currentPath}[${nestedRepeaterName}]`;
-
-                                nestedContainer.children('.repeater-item-accordion').each(function (nestedIndex) {
-                                    const nestedItem = $(this);
-                                    const nestedCurrentPath = `${nestedPath}[${nestedIndex}]`;
-
-                                    nestedItem.find('> .collapse > .repeater-item-body input, > .collapse > .repeater-item-body select, > .collapse > .repeater-item-body textarea').each(function () {
-                                        const input = $(this);
-                                        const originalName = input.attr('data-name');
-                                        const lang = input.attr('data-lang');
-                                        const value = input.val();
-
-                                        if (input.attr('type') === 'file') {
-                                            const files = input[0].files;
-                                            if (files && files.length > 0) {
-                                                formData.append(`sections[${sectionIndex}][content][${nestedCurrentPath}][files][${originalName}]`, files[0]);
-                                            }
-                                        } else if (lang) {
-                                            formData.append(`sections[${sectionIndex}][content][${nestedCurrentPath}][${originalName}][${lang}]`, value || '');
-                                        } else if (originalName) {
-                                            formData.append(`sections[${sectionIndex}][content][${nestedCurrentPath}][${originalName}]`, value || '');
-                                        }
-                                    });
-                                });
-                            });
-                        }
-                    });
-                });
-            }
-
             function createSectionHtml(key, config) {
                 const uniqueId = key + '-' + Date.now();
                 let fieldsHtml = config.fields && config.fields.length > 0
@@ -880,21 +816,21 @@
                     : '<p class="text-muted">Bu alanın özel bir ayarı yoktur.</p>';
 
                 return `<div class="accordion-item canvas-item" data-unique-id="${uniqueId}" data-section-key="${key}">
-                        <h2 class="accordion-header d-flex align-items-center">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-${uniqueId}">
-                                <i class="bi bi-arrows-move me-2 sortable-handle"></i> ${config.name}
-                            </button>
-                            <div class="d-flex align-items-center ms-auto pe-3">
-                                <div class="form-check form-switch me-3">
-                                    <input class="form-check-input status-toggle" type="checkbox" role="switch" checked>
+                            <h2 class="accordion-header d-flex align-items-center">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-${uniqueId}">
+                                    <i class="bi bi-arrows-move me-2 sortable-handle"></i> ${config.name}
+                                </button>
+                                <div class="d-flex align-items-center ms-auto pe-3">
+                                    <div class="form-check form-switch me-3">
+                                        <input class="form-check-input status-toggle" type="checkbox" role="switch" checked>
+                                    </div>
+                                    <button type="button" class="btn-close remove-item"></button>
                                 </div>
-                                <button type="button" class="btn-close remove-item"></button>
+                            </h2>
+                            <div id="collapse-${uniqueId}" class="accordion-collapse collapse" data-bs-parent="#page-canvas">
+                                <div class="accordion-body">${fieldsHtml}</div>
                             </div>
-                        </h2>
-                        <div id="collapse-${uniqueId}" class="accordion-collapse collapse" data-bs-parent="#page-canvas">
-                            <div class="accordion-body">${fieldsHtml}</div>
-                        </div>
-                    </div>`;
+                        </div>`;
             }
 
             function createFieldHtml(field, uniqueId) {
@@ -902,13 +838,14 @@
 
                 if (field.type === 'repeater') {
                     fieldHtml += `<label class="form-label fw-bold">${field.label}</label>
-                              <div class="repeater-items-container sortable-repeater" data-repeater-name="${field.name}"></div>
-                              <button type="button" class="btn btn-success btn-sm add-repeater-item">+ Ekle</button>`;
+                                  <div class="repeater-items-container" data-repeater-name="${field.name}"></div>
+                                  <button type="button" class="btn btn-success btn-sm add-repeater-item">+ Ekle</button>`;
                 } else if (field.translatable) {
                     const tabId = `${uniqueId}-${field.name}`;
                     fieldHtml += `<label class="form-label">${field.label}</label>
-                              <ul class="nav nav-tabs nav-tabs-sm">`;
+                                  <ul class="nav nav-tabs nav-tabs-sm">`;
 
+                    // Tüm aktif diller için sekme oluştur
                     activeLanguages.forEach((code, index) => {
                         const isActive = index === 0 ? 'active' : '';
                         fieldHtml += `<li class="nav-item"><button class="nav-link ${isActive}" data-bs-toggle="tab" data-bs-target="#${tabId}-${code}" type="button">${code.toUpperCase()}</button></li>`;
@@ -916,6 +853,7 @@
 
                     fieldHtml += `</ul><div class="tab-content mt-2">`;
 
+                    // Tüm aktif diller için içerik alanları oluştur
                     activeLanguages.forEach((code, index) => {
                         const isActive = index === 0 ? 'show active' : '';
                         fieldHtml += `<div class="tab-pane fade ${isActive}" id="${tabId}-${code}">${createInputElement(field, code)}</div>`;
@@ -928,19 +866,13 @@
                 return fieldHtml + `</div>`;
             }
 
-            function createRepeaterItemHtml(fields, uniqueId, parentField) {
+            function createRepeaterItemHtml(fields, uniqueId) {
                 let itemFieldsHtml = fields.map(field => {
                     let fieldHtml = `<div class="mb-3 field-wrapper">`;
-
-                    // Nested repeater kontrolü
-                    if (field.type === 'repeater') {
-                        fieldHtml += `<label class="form-label fw-bold">${field.label}</label>
-                                  <div class="repeater-items-container sortable-repeater" data-repeater-name="${field.name}"></div>
-                                  <button type="button" class="btn btn-success btn-sm add-repeater-item">+ Ekle</button>`;
-                    } else if (field.translatable) {
+                    if (field.translatable) {
                         const tabId = `${uniqueId}-${field.name}`;
                         fieldHtml += `<label class="form-label">${field.label}</label>
-                      <ul class="nav nav-tabs nav-tabs-sm">`;
+                          <ul class="nav nav-tabs nav-tabs-sm">`;
 
                         activeLanguages.forEach((code, index) => {
                             const isActive = index === 0 ? 'active' : '';
@@ -987,6 +919,8 @@
                     return `<div class="quill-editor-wrapper"><div class="quill-editor"></div><input type="hidden" ${dataAttrs}></div>`;
                 } else if (field.type === 'file') {
                     return `<input type="file" class="form-control" ${dataAttrs}>`;
+                } else if (field.type === 'multi_image') {
+                    return '';
                 } else if (field.type === 'select' && field.options) {
                     const options = Object.entries(field.options).map(([val, label]) => `<option value="${val}">${label}</option>`).join('');
                     return `<select class="form-select" ${dataAttrs}>${options}</select>`;

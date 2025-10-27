@@ -66,7 +66,7 @@ Route::middleware('is_admin')->group(function () {
     Route::get('settings', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');
     Route::post('settings', [\App\Http\Controllers\Admin\SettingController::class, 'update'])->name('settings.update');
 
-    Route::delete('/menus/{menu}', [\App\Http\Controllers\Admin\MenuController::class, 'destroy'])->name('admin.menus.destroy');
+    Route::delete('/menus/{menu}', [\App\Http\Conktrollers\Admin\MenuController::class, 'destroy'])->name('admin.menus.destroy');
     Route::post('/menus/{menu}/placement', [\App\Http\Controllers\Admin\MenuController::class, 'updatePlacement'])->name('menus.placement');
     Route::post('/menus/items', [\App\Http\Controllers\Admin\MenuItemController::class, 'store'])->name('menus.items.store');
     Route::put('/menus/items/{item}', [\App\Http\Controllers\Admin\MenuItemController::class, 'update'])->name('menus.items.update');
