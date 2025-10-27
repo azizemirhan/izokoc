@@ -88,7 +88,7 @@
             </button>
             <div class="izokoc_search_modal_body">
                 <h3 class="izokoc_search_modal_title">Arama Yap</h3>
-                <form class="izokoc_search_modal_form" method="get" action="">
+                <form class="izokoc_search_modal_form" method="get" action="{{ route('frontend.search') }}">
                     <div class="izokoc_search_input_wrapper">
                         <i class="fas fa-search izokoc_search_icon"></i>
                         <input

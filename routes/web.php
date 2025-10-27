@@ -39,6 +39,8 @@ Route::get('/_mail-test', function () {
     }
 });
 
+Route::get('/arama', [\App\Http\Controllers\Frontend\SearchController::class, 'search'])->name('frontend.search');
+
 Route::post('/contact', [\App\Http\Controllers\Frontend\ContactController::class, '__invoke'])
     ->middleware('throttle:10,1')
     ->name('frontend.contact.submit');
