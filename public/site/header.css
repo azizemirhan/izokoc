@@ -687,10 +687,21 @@ ul {
     width: 4px;
 }
 
-/* Alt menüsü olan öğeler için ok işareti */
+/* Alt menüsü olan öğeler için ok işareti (Font Awesome) */
+.izokoc_submenu .izokoc_has_submenu > a::after {
+    content: '\f105'; /* Font Awesome chevron-right */
+    font-family: 'Font Awesome 5 Free', 'Font Awesome 5 Pro', 'Font Awesome 6 Free', 'Font Awesome 6 Pro';
+    font-weight: 900;
+    position: absolute;
+    left: 90%;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    color: var(--izokoc-text-light);
+    transition: var(--izokoc-transition);
+}
 
 .izokoc_submenu .izokoc_has_submenu:hover > a::after {
-    opacity: 1;
     color: var(--izokoc-primary);
     transform: translateY(-50%) translateX(2px);
 }
@@ -891,9 +902,12 @@ ul {
 }
 
 .izokoc_mobile_submenu a::before {
-    content: '→';
+    content: '\f105'; /* Font Awesome chevron-right */
+    font-family: 'Font Awesome 5 Free', 'Font Awesome 5 Pro', 'Font Awesome 6 Free', 'Font Awesome 6 Pro';
+    font-weight: 900;
     position: absolute;
     left: 25px;
+    font-size: 10px;
     opacity: 0;
     transition: var(--izokoc-transition);
 }

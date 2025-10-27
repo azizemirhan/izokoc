@@ -524,6 +524,46 @@ return [
         ],
     ],
 
+    'contact-info-boxes' => [
+        'name' => 'İletişim Bilgi Kutuları',
+        'view' => 'frontend.sections._contact-info-boxes',
+        'data_handler' => null,
+        'fields' => [
+            [
+                'name' => 'info_boxes',
+                'label' => 'İletişim Bilgi Kutuları',
+                'type' => 'repeater',
+                'fields' => [
+                    ['name' => 'icon', 'label' => 'İkon (Font Awesome class)', 'type' => 'text', 'default' => 'fal fa-map-marker-alt'],
+                    ['name' => 'title', 'label' => 'Başlık', 'type' => 'text', 'translatable' => true],
+                    ['name' => 'content', 'label' => 'İçerik', 'type' => 'textarea', 'translatable' => true],
+                    ['name' => 'link_text', 'label' => 'Link Metni', 'type' => 'text', 'translatable' => true],
+                    ['name' => 'link_url', 'label' => 'Link URL', 'type' => 'text'],
+                ]
+            ],
+        ],
+    ],
+    'contact-form-modern' => [
+        'name' => 'Modern İletişim Formu',
+        'view' => 'frontend.sections._contact-form-modern',
+        'data_handler' => null,
+        'fields' => [
+            ['name' => 'sub_title', 'label' => 'Alt Başlık', 'type' => 'text', 'translatable' => true, 'default' => 'Get In Touch'],
+            ['name' => 'main_title', 'label' => 'Ana Başlık', 'type' => 'text', 'translatable' => true, 'default' => 'Contact Form'],
+            ['name' => 'form_action', 'label' => 'Form Action URL', 'type' => 'text', 'default' => '#'],
+        ],
+    ],
+    'google-map-section' => [
+        'name' => 'Google Harita',
+        'view' => 'frontend.sections._google-map-section',
+        'data_handler' => null,
+        'fields' => [
+            ['name' => 'map_location', 'label' => 'Harita Konumu (örn: New York)', 'type' => 'text', 'default' => 'New York'],
+            ['name' => 'map_zoom', 'label' => 'Zoom Seviyesi (1-20)', 'type' => 'number', 'default' => '13'],
+            ['name' => 'map_height', 'label' => 'Harita Yüksekliği (px)', 'type' => 'number', 'default' => '600'],
+            ['name' => 'map_embed_url', 'label' => 'Özel Google Maps Embed URL (opsiyonel)', 'type' => 'textarea'],
+        ],
+    ],
     // SON
 
 
