@@ -62,7 +62,7 @@
                                 </div>
                                 <div class="izokoc-stat-card__value">{{ $featureValue }}</div>
                                 <h5 class="izokoc-stat-card__title">{{ $featureTitle }}</h5>
-                                <p class="izokoc-stat-card__description">{{ $featureDescription }}</p>
+                                <p class="izokoc-stat-card__description">{!! $featureDescription !!}</p>
                             </div>
                         @endforeach
                     </div>
@@ -86,7 +86,7 @@
                                 <i class="{{ $initiativeIcon }}"></i>
                             </div>
                             <h5 class="izokoc-green-card__title">{{ $initiativeTitle }}</h5>
-                            <p class="izokoc-green-card__description">{{ $initiativeDescription }}</p>
+                            <p class="izokoc-green-card__description">{!! $initiativeDescription !!}</p>
                         </div>
                     </div>
                 @endforeach

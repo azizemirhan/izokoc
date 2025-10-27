@@ -41,7 +41,7 @@
                                     </div>
                                     <div class="izokoc-tech-item__content">
                                         <h5 class="izokoc-tech-item__title">{{ $techTitle }}</h5>
-                                        <p class="izokoc-tech-item__description">{{ $techDescription }}</p>
+                                        <p class="izokoc-tech-item__description">{!! $techDescription !!}</p>
                                     </div>
                                 </div>
                             @endforeach

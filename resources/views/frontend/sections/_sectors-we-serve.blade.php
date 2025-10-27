@@ -40,7 +40,7 @@
                             </div>
                             <div class="izokoc-sector-card__content">
                                 <h4 class="izokoc-sector-card__title">{{ $sectorName }}</h4>
-                                <p class="izokoc-sector-card__description">{{ $sectorDescription }}</p>
+                                <p class="izokoc-sector-card__description">{!! $sectorDescription !!}</p>
                             </div>
                         </div>
                     </div>

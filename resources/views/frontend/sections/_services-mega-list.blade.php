@@ -65,14 +65,6 @@
 
 <section class="ikzserlist-section ikzserlist-bg-{{ $bgColor }}" id="{{ $uniqueId }}">
     <div class="container">
-        {{-- Section Header --}}
-        <div class="ikzserlist-header">
-            <div class="ikzserlist-header-content">
-                <h6 class="ikzserlist-subtitle">{{ $sectionSubtitle }}</h6>
-                <h2 class="ikzserlist-title">{{ $sectionTitle }}</h2>
-            </div>
-        </div>
-
         {{-- Service Categories --}}
         <div class="ikzserlist-categories">
             @foreach($serviceCategories as $categoryIndex => $category)
@@ -95,9 +87,9 @@
                             <i class="{{ $categoryIcon }}"></i>
                         </div>
                         <div class="ikzserlist-category-info">
-                            <h3 class="ikzserlist-category-title">{{ $categoryTitle }}</h3>
+                            <h3 class="ikzserlist-category-title" style="color: #fff">{{ $categoryTitle }}</h3>
                             @if($categoryDesc)
-                                <p class="ikzserlist-category-desc">{{ $categoryDesc }}</p>
+                                <p class="ikzserlist-category-desc">{!! $categoryDesc  !!}</p>
                             @endif
                         </div>
                         <button class="ikzserlist-expand-btn" type="button" aria-label="Genişlet">
@@ -131,7 +123,7 @@
                                         <div class="ikzserlist-service-text">
                                             <h4 class="ikzserlist-service-title">{{ $serviceTitle }}</h4>
                                             @if($serviceDesc)
-                                                <p class="ikzserlist-service-desc">{{ $serviceDesc }}</p>
+                                                <p class="ikzserlist-service-desc">{!! $serviceDesc !!}</p>
                                             @endif
                                         </div>
                                     </div>
@@ -313,7 +305,7 @@
 
         .ikzserlist-category-desc {
             font-size: 15px;
-            color: rgba(255, 255, 255, 0.9);
+            color: #fff;
             margin: 0;
             line-height: 1.6;
         }

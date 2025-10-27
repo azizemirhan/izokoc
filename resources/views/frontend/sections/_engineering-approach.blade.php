@@ -16,8 +16,9 @@
                     <h2 class="izokoc-section__title">{{ $mainTitle }}</h2>
                 @endif
                 @if($description)
-                    <p class="izokoc-section__description">{{ $description }}</p>
+                    <p class="izokoc-section__description">{!! $description !!}</p>
                 @endif
+                <br>
             </div>
         </div>
 
@@ -40,7 +41,7 @@
                                 </div>
                                 <div class="izokoc-process-step__content">
                                     <h4 class="izokoc-process-step__title">{{ $stepTitle }}</h4>
-                                    <p class="izokoc-process-step__description">{{ $stepDescription }}</p>
+                                    <p class="izokoc-process-step__description">{!! $stepDescription !!}</p>
                                 </div>
                                 @if(!$loop->last)
                                     <div class="izokoc-process-step__connector"></div>

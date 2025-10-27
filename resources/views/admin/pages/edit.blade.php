@@ -822,69 +822,81 @@
             });
 
             // RECURSIVE REPEATER PROCESSOR - RADIKAL ÇÖZÜM
+            // RECURSIVE REPEATER PROCESSOR - GHOST DATA DÜZELTMESİ
             function processRepeaterItems($container, sectionIndex, formData, parentPath) {
                 console.log('processRepeaterItems called with:', {
                     container: $container[0],
-                    sectionIndex: sectionIndex,
-                    parentPath: parentPath,
-                    directContainers: $container.find('.repeater-items-container').length,
-                    allContainers: $container.find('.repeater-items-container').length
+                    parentPath: parentPath
                 });
+
+                // DÜZELTME:
+                // Hangi seçiciyi kullanacağımızı belirle.
+                // parentPath boşsa, bu bir L1 çağrısıdır ve $container = .accordion-body
+                // .field-wrapper'ların *içindeki* repeater'ları ararız.
+                //
+                // parentPath doluysa, bu bir L2+ çağrısıdır ve $container = .field-wrapper
+                // *Doğrudan* .field-wrapper içindeki repeater'ı ararız.
                 
-                // REPEATER CONTAINER'LARI İŞLE ama nested olanları atla
-                $container.find('.repeater-items-container').each(function () {
-                    // Eğer bu container bir repeater item içindeyse ve parentPath boşsa atla
-                    // (Bu nested container'ın ana seviyede işlenmesini engeller)
-                    if ($(this).closest('.repeater-item-accordion').length > 0 && parentPath === '') {
-                        console.log('Skipping nested repeater container in main level');
-                        return;
-                    }
+                let $repeaterContainers;
+                if (parentPath === '') {
+                    // L1 ARAMA: .accordion-body > .field-wrapper > .repeater-items-container
+                    $repeaterContainers = $container.find('> .field-wrapper > .repeater-items-container');
+                } else {
+                    // L2+ ARAMA: .field-wrapper > .repeater-items-container
+                    $repeaterContainers = $container.find('> .repeater-items-container');
+                }
+                
+                console.log('Found containers:', $repeaterContainers.length);
+
+                $repeaterContainers.each(function () {
+                    // BU DÜZELTME SAYESİNDE ARTIK "if" KONTROLÜNE GEREK YOK:
+                    // if ($(this).closest('.repeater-item-accordion').length > 0 && parentPath === '') { ... }
+                    
                     const repeaterContainer = $(this);
                     const repeaterName = repeaterContainer.data('repeater-name');
-                    
+
                     console.log('Found repeater container:', {
                         repeaterName: repeaterName,
-                        items: repeaterContainer.find('.repeater-item-accordion').length
+                        items: repeaterContainer.find('> .repeater-item-accordion').length // '>' eklendi
                     });
 
                     // Yolu PHP array formatında oluştur: [repeaterName]
                     const currentPath = parentPath + `[${repeaterName}]`;
 
-                    repeaterContainer.find('.repeater-item-accordion').each(function (itemIndex) {
+                    repeaterContainer.find('> .repeater-item-accordion').each(function (itemIndex) { // '>' eklendi
                         const repeaterItem = $(this);
                         
                         console.log('Processing repeater item:', {
                             itemIndex: itemIndex,
-                            repeaterName: repeaterName,
-                            fields: repeaterItem.find('.collapse .repeater-item-body .mb-3, .show .repeater-item-body .mb-3').length
+                            repeaterName: repeaterName
                         });
 
                         // Yolu PHP array formatında oluştur: [repeaterName][index]
                         const itemPath = `${currentPath}[${itemIndex}]`;
 
-                        // Bu item'ın field-wrapper'larını işle (hem .collapse hem de .show class'ları için)
-                        repeaterItem.find('.collapse .repeater-item-body .mb-3, .show .repeater-item-body .mb-3').each(function() {
+                        // DÜZELTME: Sadece doğrudan alt öğeleri bulmak için '>' seçicilerini ekle
+                        repeaterItem.find('> .collapse > .repeater-item-body > .mb-3, > .show > .repeater-item-body > .mb-3').each(function() {
                             const fieldWrapper = $(this);
 
-                            // Eğer bu bir nested repeater container ise, recursive olarak işle
-                            if (fieldWrapper.find('.repeater-items-container').length > 0) {
+                            // DÜZELTME: Sadece doğrudan alt öğeleri bulmak için '>' seçicisini ekle
+                            if (fieldWrapper.find('> .repeater-items-container').length > 0) {
                                 console.log('Found nested repeater, processing recursively with itemPath:', itemPath);
                                 processRepeaterItems(fieldWrapper, sectionIndex, formData, itemPath);
                                 return;
                             }
 
                             // Normal inputları işle (direkt child)
-                            fieldWrapper.find('input, select, textarea').each(function () {
+                            fieldWrapper.find('> input, > select, > textarea').each(function () {
                                 processInput($(this), sectionIndex, formData, itemPath);
                             });
 
                             // Quill editor wrapper içindeki hidden input
-                            fieldWrapper.find('.quill-editor-wrapper input[type="hidden"]').each(function () {
+                            fieldWrapper.find('> .quill-editor-wrapper > input[type="hidden"]').each(function () {
                                 processInput($(this), sectionIndex, formData, itemPath);
                             });
 
                             // Tab content içindeki inputlar (çok dilli alanlar)
-                            fieldWrapper.find('.tab-content .tab-pane').each(function() {
+                            fieldWrapper.find('> .tab-content > .tab-pane').each(function() {
                                 $(this).find('input, select, textarea').each(function () {
                                     processInput($(this), sectionIndex, formData, itemPath);
                                 });

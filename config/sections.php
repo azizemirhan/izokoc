@@ -569,8 +569,6 @@ return [
         'view' => 'frontend.sections._services-mega-list',
         'data_handler' => null,
         'fields' => [
-            ['name' => 'section_title', 'label' => 'Bölüm Başlığı', 'type' => 'text', 'translatable' => true, 'default' => 'Hizmetlerimiz'],
-            ['name' => 'section_subtitle', 'label' => 'Alt Başlık', 'type' => 'text', 'translatable' => true, 'default' => 'Profesyonel İzolasyon Çözümleri'],
             ['name' => 'background_color', 'label' => 'Arkaplan Rengi', 'type' => 'select', 'options' => [
                 'light' => 'Açık',
                 'dark' => 'Koyu',
