@@ -14,96 +14,103 @@ class ServiceSeeder extends Seeder
     public function run(): void
     {
         // Başlamadan önce mevcut verileri temizle
-        Service::truncate();
 
         $services = [
+            // HİZMET 1: Mekanik Tesisat / Boru İzolasyonu
             [
-                'title' => ['tr' => 'Genel Müteahhitlik', 'en' => 'General Contracting'],
-                'slug' => 'genel-muteahhitlik',
-                'summary' => ['tr' => 'Projenizin başlangıcından bitişine kadar tüm süreçleri profesyonel ekibimizle yönetiyoruz.', 'en' => 'We manage all processes of your project from start to finish with our professional team.'],
-                'content' => ['tr' => 'Tuncay İnşaat olarak, projenizin vizyonundan anahtar teslimine kadar her aşamada yanınızdayız. Tedarik zinciri yönetiminden saha operasyonlarına, kalite kontrolden bütçe yönetimine kadar tüm sorumluluğu üstlenerek size sorunsuz bir inşaat deneyimi sunuyoruz.', 'en' => 'As Tuncay Construction, we are with you at every stage, from the vision of your project to the turnkey delivery. We offer you a seamless construction experience by taking full responsibility, from supply chain management to field operations, from quality control to budget management.'],
+                'title' => ['tr' => 'Mekanik Tesisat ve Boru İzolasyonu', 'en' => 'Mechanical/HVAC & Pipe Insulation'],
+                'slug' => 'mekanik-tesisat-izolasyonu',
+                'summary' => ['tr' => 'Isıtma, soğutma, buhar ve kızgın yağ hatlarında enerji kayıplarını önleyen profesyonel yalıtım çözümleri.', 'en' => 'Professional insulation solutions to prevent energy loss in heating, cooling, steam, and hot oil lines.'],
+                'content' => ['tr' => 'Tesislerdeki en büyük enerji kayıpları genellikle boru hatlarından kaynaklanır. İzokoç olarak, buhar hatları, kızgın yağ tesisatları ve soğutma (chiller) hatları için en uygun malzemelerle (taşyünü, kauçuk köpüğü vb.) ve alüminyum/galvaniz sac kaplama ile yalıtım uygulamaları yapıyoruz. Amacımız, proses verimliliğinizi artırmak ve işletme maliyetlerinizi düşürmektir.', 'en' => 'The largest energy losses in facilities often come from pipelines. As İzokoç, we apply insulation with the most suitable materials (rockwool, rubber foam, etc.) and aluminum/galvanized sheet metal cladding for steam lines, hot oil installations, and cooling (chiller) lines. Our goal is to increase your process efficiency and reduce your operating costs.'],
                 'benefits' => [
-                    ['text' => ['tr' => 'Tek noktadan proje yönetimi ve sorumluluk', 'en' => 'Single-point project management and accountability']],
-                    ['text' => ['tr' => 'Optimize edilmiş bütçe ve zaman çizelgesi', 'en' => 'Optimized budget and timeline']],
-                    ['text' => ['tr' => 'Yüksek kalite standartları ve iş güvenliği', 'en' => 'High quality standards and work safety']],
-                    ['text' => ['tr' => 'Geniş tedarikçi ve alt yüklenici ağı', 'en' => 'Extensive network of suppliers and subcontractors']],
+                    ['text' => ['tr' => 'Maksimum enerji tasarrufu ve verimlilik', 'en' => 'Maximum energy savings and efficiency']],
+                    ['text' => ['tr' => 'İşletme maliyetlerinde ölçülebilir azalma', 'en' => 'Measurable reduction in operating costs']],
+                    ['text' => ['tr' => 'İSG için güvenli yüzey sıcaklıkları', 'en' => 'Safe surface temperatures for OHS']],
+                    ['text' => ['tr' => 'Korozyona karşı koruma ve uzun ömür', 'en' => 'Corrosion protection and long lifespan']],
                 ],
-                'expectations_content' => ['tr' => 'Her projede en yüksek beklentileri karşılamayı hedefleriz. Şeffaf raporlama ve sürekli iletişim ile projenizin her anında kontrolün sizde olmasını sağlarız.', 'en' => 'We aim to meet the highest expectations in every project. With transparent reporting and constant communication, we ensure you are in control at every moment of your project.'],
+                'expectations_content' => ['tr' => 'Prosesinize (buhar, soğuk, yağ) özel malzeme seçimi ve uluslararası standartlarda uygulama garantisi sunuyoruz. Hatlarınızdaki enerji kaçağını durduruyoruz.', 'en' => 'We offer material selection specific to your process (steam, cold, oil) and guarantee application at international standards. We stop the energy leakage in your lines.'],
                 'support_items' => [
-                    ['text' => ['tr' => 'Fizibilite ve konsept çalışmaları', 'en' => 'Feasibility and concept studies']],
-                    ['text' => ['tr' => 'Ruhsat ve yasal izinlerin takibi', 'en' => 'Follow-up of permits and legal permissions']],
-                    ['text' => ['tr' => 'Malzeme seçimi ve tedariği', 'en' => 'Material selection and procurement']],
-                    ['text' => ['tr' => 'Saha denetimi ve yönetimi', 'en' => 'Site supervision and management']],
+                    ['text' => ['tr' => 'Buhar Hattı İzolasyonu', 'en' => 'Steam Line Insulation']],
+                    ['text' => ['tr' => 'Kızgın Yağ Hattı İzolasyonu', 'en' => 'Hot Oil Line Insulation']],
+                    ['text' => ['tr' => 'Soğutma ve Chiller Hattı İzolasyonu', 'en' => 'Cooling and Chiller Line Insulation']],
+                    ['text' => ['tr' => 'Sıcak & Soğuk Su Tesisatı Yalıtımı', 'en' => 'Hot & Cold Water Plumbing Insulation']],
                 ],
                 'faqs' => [
                     [
-                        'question' => ['tr' => 'Proje maliyetleri nasıl belirleniyor?', 'en' => 'How are project costs determined?'],
-                        'answer' => ['tr' => 'Proje maliyetleri, detaylı bir keşif, malzeme seçimi ve işçilik analizleri sonucunda şeffaf bir şekilde belirlenir.', 'en' => 'Project costs are determined transparently as a result of a detailed survey, material selection, and labor analysis.'],
+                        'question' => ['tr' => 'Doğru izolasyon kalınlığı nasıl belirlenir?', 'en' => 'How is the correct insulation thickness determined?'],
+                        'answer' => ['tr' => 'Kalınlık, hattın sıcaklığına, boru çapına ve hedeflenen enerji tasarrufu miktarına göre mühendislik hesaplamalarıyla belirlenir.', 'en' => 'The thickness is determined by engineering calculations based on the line temperature, pipe diameter, and targeted amount of energy savings.'],
                     ],
                     [
-                        'question' => ['tr' => 'Proje ne kadar sürede tamamlanır?', 'en' => 'How long does the project take to complete?'],
-                        'answer' => ['tr' => 'Süre, projenin büyüklüğüne ve kapsamına bağlı olarak değişmekle birlikte, sözleşmede belirtilen zaman çizelgesine sıkı sıkıya bağlı kalırız.', 'en' => 'Although the duration varies depending on the size and scope of the project, we strictly adhere to the timeline specified in the contract.'],
+                        'question' => ['tr' => 'Kaplama malzemesi (Sac, PVC) neye göre seçilir?', 'en' => 'How is the cladding material (Sheet Metal, PVC) chosen?'],
+                        'answer' => ['tr' => 'İç ortam uygulamalarında alüminyum veya PVC, dış ortam ve ağır sanayi koşullarında ise galvaniz veya paslanmaz sac kaplama tercih edilir.', 'en' => 'Aluminum or PVC is preferred for indoor applications, while galvanized or stainless steel cladding is preferred for outdoor and heavy industry conditions.'],
                     ],
                 ],
                 'cover_image' => 'placeholders/service_cover_1.jpg',
                 'gallery_images' => ['placeholders/service_gallery_1.jpg', 'placeholders/service_gallery_2.jpg', 'placeholders/service_gallery_3.jpg'],
                 'order' => 1, 'is_active' => true,
             ],
+            // HİZMET 2: Endüstriyel Ekipman İzolasyonu
             [
-                'title' => ['tr' => 'Kentsel Dönüşüm', 'en' => 'Urban Transformation'],
-                'slug' => 'kentsel-donusum',
-                'summary' => ['tr' => 'Riskli yapılarınızı, modern yönetmeliklere uygun, güvenli ve değerli yaşam alanlarına dönüştürüyoruz.', 'en' => 'We transform your risky buildings into safe, valuable living spaces in compliance with modern regulations.'],
-                'content' => ['tr' => 'Deprem kuşağında yer alan ülkemizde kentsel dönüşüm, bir tercih değil, zorunluluktur. Tuncay İnşaat olarak, riskli yapılarınızı güncel deprem yönetmeliklerine uygun, modern ve estetik binalara dönüştürme sürecinde hukuki ve teknik danışmanlık sağlıyoruz.', 'en' => 'In our country, located in an earthquake zone, urban transformation is not a choice but a necessity. As Tuncay Construction, we provide legal and technical consultancy in the process of transforming your risky buildings into modern and aesthetic structures compliant with current earthquake regulations.'],
+                'title' => ['tr' => 'Kazan, Tank ve Ekipman İzolasyonu', 'en' => 'Boiler, Tank & Equipment Insulation'],
+                'slug' => 'kazan-tank-izolasyonu',
+                'summary' => ['tr' => 'Kazanlar, depolama tankları, eşanjörler ve diğer endüstriyel ekipmanlar için özel yalıtım uygulamaları.', 'en' => 'Custom insulation applications for boilers, storage tanks, heat exchangers, and other industrial equipment.'],
+                'content' => ['tr' => 'Endüstriyel ekipmanların (buhar kazanları, depolama tankları, eşanjörler, filtreler) yalıtımı, hem prosesin kararlılığı hem de enerji tasarrufu için kritik öneme sahiptir. Yüksek sıcaklıktaki yüzeyler için taşyünü, düşük sıcaklıktaki tanklar için kauçuk veya poliüretan bazlı çözümler sunarak prosesinizi güvence altına alıyoruz.', 'en' => 'Insulating industrial equipment (steam boilers, storage tanks, exchangers, filters) is critical for both process stability and energy savings. We secure your process by offering rockwool solutions for high-temperature surfaces and rubber or polyurethane-based solutions for low-temperature tanks.'],
                 'benefits' => [
-                    ['text' => ['tr' => 'Depreme dayanıklı ve güvenli konutlar', 'en' => 'Earthquake-resistant and safe housing']],
-                    ['text' => ['tr' => 'Mülkünüzün değerinde artış', 'en' => 'Increase in your property\'s value']],
-                    ['text' => ['tr' => 'Modern ve konforlu yaşam alanları', 'en' => 'Modern and comfortable living spaces']],
-                    ['text' => ['tr' => 'Yasal süreçlerde profesyonel destek', 'en' => 'Professional support in legal processes']],
+                    ['text' => ['tr' => 'Proses sıcaklığının sabit tutulması', 'en' => 'Maintaining stable process temperature']],
+                    ['text' => ['tr' => 'Çalışma ortamı güvenliğinin artırılması', 'en' => 'Increasing workplace safety']],
+                    ['text' => ['tr' => 'Ekipman ömrünün uzatılması', 'en' => 'Extending equipment lifespan']],
+                    ['text' => ['tr' => 'Yoğuşma ve donma riskinin önlenmesi', 'en' => 'Prevention of condensation and freezing risks']],
                 ],
-                'expectations_content' => ['tr' => 'Kat malikleriyle tam bir uyum içinde çalışarak, herkes için en adil ve kazançlı çözümleri üretmek önceliğimizdir.', 'en' => 'Our priority is to work in full harmony with the flat owners to produce the fairest and most profitable solutions for everyone.'],
+                'expectations_content' => ['tr' => 'Ekipmanınızın geometrisine tam uyumlu, sökülüp takılabilir veya sabit, en yüksek kalitede yalıtım sağlıyoruz.', 'en' => 'We provide the highest quality insulation, either removable or fixed, perfectly matching your equipment\'s geometry.'],
                 'support_items' => [
-                    ['text' => ['tr' => 'Riskli yapı tespiti ve raporlama', 'en' => 'Risky building assessment and reporting']],
-                    ['text' => ['tr' => 'Hukuki danışmanlık ve sözleşme hazırlığı', 'en' => 'Legal consultancy and contract preparation']],
-                    ['text' => ['tr' => 'Yeni proje tasarımı ve sunumu', 'en' => 'New project design and presentation']],
+                    ['text' => ['tr' => 'Kazan İzolasyonu ve Sac Kaplaması', 'en' => 'Boiler Insulation and Cladding']],
+                    ['text' => ['tr' => 'Depolama Tankı İzolasyonu (Sıcak/Soğuk)', 'en' => 'Storage Tank Insulation (Hot/Cold)']],
+                    ['text' => ['tr' => 'Eşanjör ve Filtre Yalıtımı', 'en' => 'Heat Exchanger and Filter Insulation']],
                 ],
-                'faqs' => [
-                    [
-                        'question' => ['tr' => 'Dönüşüm süreci ne kadar sürer?', 'en' => 'How long does the transformation process take?'],
-                        'answer' => ['tr' => 'Süreç, anlaşma, projelendirme ve inşaat aşamaları dahil olmak üzere binanın durumuna göre 18 ila 24 ay arasında değişebilir.', 'en' => 'The process can vary between 18 to 24 months depending on the building\'s condition, including agreement, design, and construction phases.'],
-                    ]
-                ],
+                'faqs' => null,
                 'cover_image' => 'placeholders/service_cover_2.jpg',
                 'gallery_images' => ['placeholders/service_gallery_4.jpg', 'placeholders/service_gallery_5.jpg'],
                 'order' => 2, 'is_active' => true,
             ],
+            // HİZMET 3: Vana Ceketleri
             [
-                'title' => ['tr' => 'Anahtar Teslim Villa Projeleri', 'en' => 'Turnkey Villa Projects'],
-                'slug' => 'anahtar-teslim-villa-projeleri',
-                'summary' => ['tr' => 'Arsanız üzerine, hayallerinizdeki villayı tasarlıyor, inşa ediyor ve size sadece kapıyı açıp yerleşmeyi bırakıyoruz.', 'en' => 'We design and build your dream villa on your land, leaving you only to open the door and settle in.'],
-                'content' => ['tr' => 'Kişiye özel tasarımlarla, lüks ve konforu bir araya getiren villa projeleri geliştiriyoruz. Mimari tasarımdan peyzaj düzenlemesine kadar her detayı sizin için düşünüyoruz.', 'en' => 'We develop villa projects that combine luxury and comfort with personalized designs. We consider every detail for you, from architectural design to landscape arrangement.'],
+                'title' => ['tr' => 'Sökülebilir Vana ve Ekipman Ceketleri', 'en' => 'Removable Valve & Equipment Jackets'],
+                'slug' => 'vana-ceketleri',
+                'summary' => ['tr' => 'Bakım kolaylığı sağlayan, sökülüp takılabilir, yüksek tasarruflu termal yalıtım ceketleri.', 'en' => 'Easy-to-maintain, removable, and high-efficiency thermal insulation jackets.'],
+                'content' => ['tr' => 'Vana, flanş, kompansatör gibi sık bakım gerektiren ekipmanlar, sabit yalıtımın en zayıf halkalarıdır. İzokoç Vana Ceketleri, bu noktalar için özel olarak tasarlanır. Yüksek sıcaklığa dayanıklı kumaşlar ve yalıtım malzemeleri ile üretilirler. Kolayca sökülüp takılabilir, bakım süresini kısaltır ve enerji kaçağını %100\'e yakın oranda engeller.', 'en' => 'Equipment requiring frequent maintenance, such as valves, flanges, and expansion joints, are the weakest links in fixed insulation. İzokoç Valve Jackets are specially designed for these points. They are produced with high-temperature resistant fabrics and insulation materials. They can be easily removed and reinstalled, shorten maintenance time, and prevent energy leakage by nearly 100%.'],
                 'benefits' => [
-                    ['text' => ['tr' => 'Size özel özgün mimari tasarım', 'en' => 'Unique architectural design tailored for you']],
-                    ['text' => ['tr' => 'A+ kalite malzeme ve işçilik', 'en' => 'A+ quality materials and craftsmanship']],
-                    ['text' => ['tr' => 'Belirlenen bütçe ve zamanda teslimat', 'en' => 'Delivery on the specified budget and time']],
-                    ['text' => ['tr' => 'Tek sözleşme ile tüm süreçlerin yönetimi', 'en' => 'Management of all processes with a single contract']],
+                    ['text' => ['tr' => 'Bakım ve onarımda hız ve kolaylık', 'en' => 'Speed and ease of maintenance and repair']],
+                    ['text' => ['tr' => 'Yalıtımın tekrar tekrar kullanılabilmesi', 'en' => 'Reusability of the insulation']],
+                    ['text' => ['tr' => 'Noktasal ısı kayıplarının tamamen önlenmesi', 'en' => 'Complete prevention of point heat losses']],
+                    ['text' => ['tr' => 'Çok kısa sürede yatırım geri dönüşü (ROI)', 'en' => 'Very short investment return period (ROI)']],
                 ],
-                'expectations_content' => ['tr' => 'Lüks ve estetiği, fonksiyonellikle birleştirerek size sadece bir ev değil, bir yaşam tarzı sunuyoruz.', 'en' => 'By combining luxury and aesthetics with functionality, we offer you not just a house, but a lifestyle.'],
-                'support_items' => null, 'faqs' => null,
+                'expectations_content' => ['tr' => 'Her vana ve ekipman için yerinde ölçü alarak, ekipmana özel, tam uyumlu ceket imalatı yapıyoruz.', 'en' => 'We manufacture custom-fit jackets for each valve and piece of equipment by taking on-site measurements.'],
+                'support_items' => [
+                    ['text' => ['tr' => 'Buhar Vana Yalıtım Ceketi', 'en' => 'Steam Valve Insulation Jacket']],
+                    ['text' => ['tr' => 'Kızgın Yağ Vana Yalıtım Ceketi', 'en' => 'Hot Oil Valve Insulation Jacket']],
+                    ['text' => ['tr' => 'Soğutma Vana Yalıtım Ceketi', 'en' => 'Cooling Valve Insulation Jacket']],
+                    ['text' => ['tr' => 'Kazan Kapakları Yalıtım Ceketi', 'en' => 'Boiler Cap Insulation Jacket']],
+                ],
+                'faqs' => null,
                 'cover_image' => 'placeholders/service_cover_3.jpg',
                 'gallery_images' => null,
                 'order' => 3, 'is_active' => true,
             ],
+            // HİZMET 4: Havalandırma İzolasyonu
             [
-                'title' => ['tr' => 'Endüstriyel Tesis İnşaatı', 'en' => 'Industrial Facility Construction'],
-                'slug' => 'endustriyel-tesis-insaati',
-                'summary' => ['tr' => 'Fabrika, depo ve üretim tesisleri gibi büyük ölçekli endüstriyel yapıların projelendirilmesi ve inşası.', 'en' => 'Project planning and construction of large-scale industrial buildings such as factories, warehouses, and production facilities.'],
-                'content' => ['tr' => 'Endüstriyel projeler, özel uzmanlık ve deneyim gerektirir. Üretim akışınıza uygun, verimli ve dayanıklı tesisleri, uluslararası standartlarda ve zamanında teslim ediyoruz.', 'en' => 'Industrial projects require special expertise and experience. We deliver efficient and durable facilities suitable for your production flow, on time and in compliance with international standards.'],
+                'title' => ['tr' => 'Havalandırma & Klima Kanalı İzolasyonu', 'en' => 'Ventilation & HVAC Duct Insulation'],
+                'slug' => 'havalandirma-izolasyonu',
+                'summary' => ['tr' => 'Klima kanallarında ısı kaybını, yoğuşmayı (terlemeyi) ve gürültüyü önleyen profesyonel kanal yalıtımı.', 'en' => 'Professional duct insulation that prevents heat loss, condensation (sweating), and noise in HVAC ducts.'],
+                'content' => ['tr' => 'Havalandırma ve klima (HVAC) sistemlerinde, şartlandırılmış havanın (sıcak veya soğuk) taşındığı kanalların yalıtımı, sistem verimliliği için zorunludur. Yanlış yalıtım, enerji kaybına, terlemeye (yoğuşma) ve gürültüye neden olur. Hem kauçuk köpüğü hem de camyünü/taşyünü bazlı kanal yalıtım uygulamalarıyla sisteminizin performansını maksimize ediyoruz.', 'en' => 'In ventilation and air conditioning (HVAC) systems, insulating the ducts that carry conditioned air (hot or cold) is mandatory for system efficiency. Incorrect insulation causes energy loss, sweating (condensation), and noise. We maximize your system\'s performance with both rubber foam and glasswool/rockwool-based duct insulation applications.'],
                 'benefits' => [
-                    ['text' => ['tr' => 'Üretim verimliliğine odaklı tasarım', 'en' => 'Design focused on production efficiency']],
-                    ['text' => ['tr' => 'Uluslararası standartlarda inşaat', 'en' => 'Construction at international standards']],
-                    ['text' => ['tr' => 'Ağır sanayi yüklerine dayanıklı yapılar', 'en' => 'Structures resistant to heavy industrial loads']],
+                    ['text' => ['tr' => 'Yoğuşma (terleme) riskinin ortadan kaldırılması', 'en' => 'Elimination of condensation (sweating) risk']],
+                    ['text' => ['tr' => 'Kanal kaynaklı gürültünün azaltılması (Akustik Yalıtım)', 'en' => 'Reduction of duct-borne noise (Acoustic Insulation)']],
+                    ['text' => ['tr' => 'HVAC sistem verimliliğinin artırılması', 'en' => 'Increased HVAC system efficiency']],
+                    ['text' => ['tr' => 'İç hava kalitesinin korunması', 'en' => 'Preservation of indoor air quality']],
                 ],
-                'expectations_content' => null, 'support_items' => null, 'faqs' => null,
+                'expectations_content' => null,
+                'support_items' => null,
+                'faqs' => null,
                 'cover_image' => 'placeholders/service_cover_4.jpg',
                 'gallery_images' => ['placeholders/service_gallery_6.jpg'],
                 'order' => 4, 'is_active' => true,
@@ -111,6 +118,7 @@ class ServiceSeeder extends Seeder
         ];
 
         foreach ($services as $serviceData) {
+            // Spatie translatable modelinde create() metodu bu yapıyı destekler
             Service::create($serviceData);
         }
     }

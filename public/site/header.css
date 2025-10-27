@@ -1093,3 +1093,154 @@ ul {
 .izokoc_mobile_sidebar::-webkit-scrollbar-thumb:hover {
     background: #e62929;
 }
+
+/* ========== MULTI-LEVEL SUBMENU (3+ SEVİYE) ========== */
+
+/* Desktop 3. seviye submenu */
+.izokoc_submenu .izokoc_submenu {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    margin-left: 0;
+}
+
+.izokoc_submenu li {
+    position: relative;
+}
+
+.izokoc_submenu .izokoc_has_submenu > a::after {
+    content: '\f054';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 10px;
+    opacity: 0.5;
+}
+
+.izokoc_submenu .izokoc_has_submenu:hover > a::after {
+    opacity: 1;
+}
+
+/* Mobile 3+ seviye submenu */
+.izokoc_mobile_submenu .izokoc_mobile_submenu {
+    background: #f0f2f5;
+    margin-left: 0;
+}
+
+.izokoc_mobile_submenu .izokoc_mobile_submenu a {
+    padding-left: 65px;
+}
+
+.izokoc_mobile_submenu .izokoc_mobile_submenu .izokoc_mobile_submenu a {
+    padding-left: 85px;
+    font-size: 12px;
+}
+
+/* ========== 3. SEVİYE VE ÜSTÜ ALT MENÜLER ========== */
+
+/* Desktop - 3. seviye ve üstü için stil */
+.izokoc_submenu li {
+    position: relative;
+}
+
+.izokoc_submenu .izokoc_submenu {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    margin-left: 2px;
+    min-width: 250px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-10px);
+    transition: var(--izokoc-transition);
+}
+
+.izokoc_has_submenu:hover > .izokoc_submenu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+}
+
+/* 3. seviye menü ok işareti */
+.izokoc_submenu .izokoc_has_submenu > a::after {
+    content: '\f054';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 10px;
+    opacity: 0.5;
+    transition: var(--izokoc-transition);
+}
+
+.izokoc_submenu .izokoc_has_submenu:hover > a::after {
+    opacity: 1;
+    transform: translateY(-50%) translateX(2px);
+}
+
+/* 4. seviye ve üstü */
+.izokoc_submenu .izokoc_submenu .izokoc_submenu {
+    left: 100%;
+    top: 0;
+}
+
+/* Mobile - Tüm seviyeler için */
+.izokoc_mobile_submenu {
+    background: #f8f9fa;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out;
+}
+
+.izokoc_mobile_submenu.izokoc_active {
+    max-height: 2000px; /* Daha yüksek değer verdik */
+}
+
+/* 3. seviye mobil */
+.izokoc_mobile_submenu .izokoc_mobile_submenu {
+    background: #f0f2f5;
+}
+
+.izokoc_mobile_submenu .izokoc_mobile_submenu a {
+    padding-left: 65px !important;
+    font-size: 13px;
+}
+
+.izokoc_mobile_submenu .izokoc_mobile_submenu a::before {
+    left: 45px;
+}
+
+/* 4. seviye mobil */
+.izokoc_mobile_submenu .izokoc_mobile_submenu .izokoc_mobile_submenu {
+    background: #e8eaed;
+}
+
+.izokoc_mobile_submenu .izokoc_mobile_submenu .izokoc_mobile_submenu a {
+    padding-left: 85px !important;
+    font-size: 12px;
+}
+
+.izokoc_mobile_submenu .izokoc_mobile_submenu .izokoc_mobile_submenu a::before {
+    left: 65px;
+}
+
+/* 5. seviye mobil (eğer gerekirse) */
+.izokoc_mobile_submenu .izokoc_mobile_submenu .izokoc_mobile_submenu .izokoc_mobile_submenu a {
+    padding-left: 105px !important;
+    font-size: 11px;
+}
+
+/* Alt menü toggle butonları için renk farklılıkları */
+.izokoc_mobile_submenu .izokoc_submenu_toggle {
+    background: rgba(255, 49, 49, 0.1);
+    border-radius: 50%;
+}
+
+.izokoc_mobile_submenu .izokoc_mobile_submenu .izokoc_submenu_toggle {
+    background: rgba(41, 98, 255, 0.1);
+}

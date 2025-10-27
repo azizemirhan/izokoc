@@ -159,25 +159,36 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // ========== MOBİL ALT MENÜ TOGGLE ==========
+    // ========== MOBİL ALT MENÜ TOGGLE ==========
     submenuToggles.forEach(toggle => {
         toggle.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
 
             const parentItem = this.closest('.izokoc_mobile_item');
-            const submenu = parentItem.querySelector('.izokoc_mobile_submenu');
+            const submenu = parentItem.querySelector(':scope > .izokoc_mobile_submenu');
 
             // Toggle işlemi
             this.classList.toggle('izokoc_active');
-            submenu.classList.toggle('izokoc_active');
+            if (submenu) {
+                submenu.classList.toggle('izokoc_active');
+            }
 
-            // Diğer açık menüleri kapat (accordion efekti)
-            submenuToggles.forEach(otherToggle => {
-                if (otherToggle !== toggle) {
-                    const otherParent = otherToggle.closest('.izokoc_mobile_item');
-                    const otherSubmenu = otherParent.querySelector('.izokoc_mobile_submenu');
-                    otherToggle.classList.remove('izokoc_active');
-                    otherSubmenu.classList.remove('izokoc_active');
+            // SADECE aynı seviyedeki diğer menüleri kapat (kardeş elemanlar)
+            const parentList = parentItem.parentElement;
+            const siblingItems = Array.from(parentList.children).filter(child =>
+                child !== parentItem && child.classList.contains('izokoc_mobile_item')
+            );
+
+            siblingItems.forEach(siblingItem => {
+                const siblingToggle = siblingItem.querySelector(':scope > .izokoc_submenu_toggle');
+                const siblingSubmenu = siblingItem.querySelector(':scope > .izokoc_mobile_submenu');
+
+                if (siblingToggle) {
+                    siblingToggle.classList.remove('izokoc_active');
+                }
+                if (siblingSubmenu) {
+                    siblingSubmenu.classList.remove('izokoc_active');
                 }
             });
         });

@@ -3,9 +3,12 @@
     $currentUrl = url()->current();
     $itemUrl = $item->url ?? '#';
     $isActive = $itemUrl === $currentUrl || ($itemUrl !== '#' && request()->is(trim($itemUrl, '/') . '/*'));
+
+    // Alt menü var mı kontrol et
+    $hasChildren = $item->children && $item->children->isNotEmpty();
 @endphp
 
-@if ($item->children->isNotEmpty())
+@if ($hasChildren)
     {{-- Desktop için alt menüsü olan öğe --}}
     @if(!$isMobile)
         <li class="izokoc_menu_item izokoc_has_submenu {{ $isActive ? 'izokoc_active' : '' }}">

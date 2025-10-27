@@ -1,8 +1,9 @@
 @extends('frontend.layouts.master')
 
-{{-- SAYFAYA ÖZEL SEO BİLGİLERİ (mantık korunmuştur) --}}
-@section('page_meta')
-    <title>{{ $service->getTranslation('title', app()->getLocale()) }}</title>
+@section('title', $service->getTranslation('title', app()->getLocale()))
+
+{{-- SEO Meta Tags --}}
+@section('meta')
     <meta name="description" content="{{ $service->getTranslation('summary', app()->getLocale()) }}">
     <meta name="keywords" content="hizmet, {{ $service->getTranslation('title', app()->getLocale()) }}">
     <meta name="robots" content="index,follow">
@@ -18,227 +19,417 @@
 
 @push('styles')
     <style>
-        :root{
-            --nx-primary:#e8d32a; /* kurumsal sarı */
-            --nx-bg:#0f1115;      /* koyu arka plan */
-            --nx-card:#151922;    /* kart arka planı */
-            --nx-text:#e9edf1;    /* temel metin */
-            --nx-muted:#a7b0be;   /* ikincil metin */
-            --nx-border:rgba(255,255,255,.08);
-            --nx-glow:0 10px 40px rgba(15, 52, 96, .15);
+        /* ========================================
+           İZOKOÇ SERVICE DETAIL STYLES
+        ======================================== */
+
+        :root {
+            --izokoc-primary: #FF3131;
+            --izokoc-secondary: #1a237e;
+            --izokoc-blue: #2962FF;
+            --izokoc-white: #ffffff;
+            --izokoc-black: #000000;
+            --izokoc-text-dark: #2c3e50;
+            --izokoc-text-light: #7f8c8d;
+            --izokoc-border: #e0e0e0;
+            --izokoc-bg-light: #f8f9fa;
+            --izokoc-shadow: rgba(0, 0, 0, 0.1);
         }
-        h2 {
-            color: #fff;
+
+        /* ========== SERVICE DETAIL LAYOUT ========== */
+        .izokoc_service_detail {
+            padding: 60px 0 100px;
+            background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%);
         }
-        p {
-            color: #fff;
+
+        /* ========== SERVICE HEADER ========== */
+        .izokoc_service_header {
+            margin-bottom: 40px;
         }
 
-        .nx-service{background:radial-gradient(1400px 400px at 10% -10%, rgba(232,211,42,.08), transparent 60%),
-        radial-gradient(1200px 350px at 110% -20%, rgba(232,211,42,.06), transparent 60%),
-        var(--nx-bg);color:var(--nx-text)}
-        .nx-wrap{padding:64px 0}
+        .izokoc_service_category {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--izokoc-primary), var(--izokoc-blue));
+            color: var(--izokoc-white);
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 20px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
 
-        /* tipografi */
-        .nx-h1{font-size:clamp(26px,2.6vw,34px);font-weight:800;letter-spacing:.2px;margin:0 0 14px}
-        .nx-lead{font-size:clamp(16px,1.2vw,18px);color:var(--nx-muted);margin-bottom:24px}
+        .izokoc_service_category:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 49, 49, 0.3);
+        }
 
-        /* kart */
-        .nx-card{background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.01));
-            border:1px solid var(--nx-border);border-radius:16px;box-shadow:var(--nx-glow);
-            backdrop-filter:saturate(120%) blur(2px)}
-        .nx-card .nx-card-body{padding:22px}
-        .nx-card + .nx-card{margin-top:16px}
+        .izokoc_service_title {
+            font-size: clamp(28px, 3vw, 38px);
+            color: var(--izokoc-secondary);
+            font-weight: 800;
+            margin-bottom: 20px;
+            line-height: 1.3;
+        }
 
-        /* görsel kapak */
-        .nx-cover{display:block;border-radius:14px;overflow:hidden;border:1px solid var(--nx-border)}
-        .nx-cover img{width:100%;height:auto;display:block;aspect-ratio:16/9;object-fit:cover;transition:transform .35s ease}
-        .nx-cover:hover img{transform:scale(1.02)}
+        .izokoc_service_summary {
+            font-size: 18px;
+            color: var(--izokoc-text-light);
+            line-height: 1.7;
+            margin-bottom: 30px;
+        }
 
-        /* sticky side */
-        .nx-sticky{position:sticky;top:110px}
+        /* ========== COVER IMAGE ========== */
+        .izokoc_service_cover {
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 40px var(--izokoc-shadow);
+            position: relative;
+        }
 
-        /* içerik gövdesi */
-        .nx-prose{line-height:1.7;color:var(--nx-text)}
-        .nx-prose h2{font-size:clamp(20px,1.8vw,26px);margin:28px 0 14px;font-weight:700}
-        .nx-prose p{margin:0 0 14px}
+        .izokoc_service_cover img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.5s ease;
+        }
 
-        .nx-prose img {
+        .izokoc_service_cover:hover img {
+            transform: scale(1.05);
+        }
+
+        /* ========== CONTENT CARD ========== */
+        .izokoc_content_card {
+            background: var(--izokoc-white);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px var(--izokoc-shadow);
+            border: 1px solid var(--izokoc-border);
+        }
+
+        .izokoc_content_card h2 {
+            font-size: clamp(22px, 2vw, 28px);
+            color: var(--izokoc-secondary);
+            margin-bottom: 20px;
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .izokoc_content_card h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--izokoc-primary), var(--izokoc-blue));
+            border-radius: 2px;
+        }
+
+        .izokoc_content_card h3 {
+            font-size: clamp(18px, 1.5vw, 22px);
+            color: var(--izokoc-text-dark);
+            margin: 25px 0 15px;
+            font-weight: 600;
+        }
+
+        .izokoc_content_card p {
+            font-size: 16px;
+            line-height: 1.8;
+            color: var(--izokoc-text-dark);
+            margin-bottom: 16px;
+        }
+
+        .izokoc_content_card ul,
+        .izokoc_content_card ol {
+            padding-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        .izokoc_content_card li {
+            margin-bottom: 10px;
+            color: var(--izokoc-text-dark);
+            line-height: 1.7;
+        }
+
+        .izokoc_content_card img {
             max-width: 100%;
             height: auto;
-            border-radius: 8px;
-            margin: 16px 0
-        }
-        .nx-panel{border:1px dashed rgba(255,255,255,.14);border-radius:12px;padding:18px 18px 2px;margin-top:18px}
-
-        /* faydalar */
-        .nx-benefits{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
-        @media (max-width:768px){.nx-benefits{grid-template-columns:1fr}}
-        .nx-benefit{display:flex;gap:12px;align-items:flex-start;padding:14px;border:1px solid var(--nx-border);border-radius:12px;background:rgba(255,255,255,.02)}
-        .nx-benefit i{color:var(--nx-primary);font-size:18px;margin-top:4px}
-
-        /* destek kutuları */
-        .nx-support{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
-        @media (max-width:768px){.nx-support{grid-template-columns:1fr}}
-        .nx-support-item{display:flex;gap:14px;align-items:center;padding:16px;border:1px solid var(--nx-border);border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.01));transition:transform .2s ease,border .2s ease}
-        .nx-support-item:hover{transform:translateY(-3px);border-color:rgba(232,211,42,.45)}
-        .nx-support-item i{color:var(--nx-primary);font-size:20px}
-
-        /* akordiyon (Bootstrap ile uyumlu) */
-        .nx-accordion .accordion-item{background:transparent;border:1px solid var(--nx-border);border-radius:12px;overflow:hidden}
-        .nx-accordion .accordion-item + .accordion-item{margin-top:12px}
-        .nx-accordion .accordion-button{background:rgba(255,255,255,.02);color:var(--nx-text);font-weight:600}
-        .nx-accordion .accordion-button:focus{box-shadow:0 0 0 .25rem rgba(232,211,42,.25)}
-        .nx-accordion .accordion-button:not(.collapsed){background:rgba(232,211,42,.15);color:#0d0f14}
-        .nx-accordion .accordion-body{color:var(--nx-text)}
-        .nx-accordion .accordion-button::after{filter:grayscale(100%)}
-
-        /* TOC */
-        .nx-toc{padding:16px}
-        .nx-toc h6{font-weight:700;margin:0 0 10px;color:var(--nx-muted);text-transform:uppercase;letter-spacing:.6px;font-size:12px}
-        .nx-toc ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
-        .nx-toc a{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--nx-text);padding:10px 12px;border:1px solid var(--nx-border);border-radius:10px}
-        .nx-toc a:hover{border-color:rgba(232,211,42,.5)}
-        .nx-dot{width:8px;height:8px;border-radius:999px;background:var(--nx-primary)}
-
-        /* CTA kartı */
-        .nx-cta{display:flex;align-items:center;justify-content:space-between;gap:12px}
-        .nx-cta .btn{font-weight:700;border-radius:10px; color: #fff}
-        .btn-nx{--bs-btn-color:#0d0f14;--bs-btn-bg:var(--nx-primary);--bs-btn-border-color:var(--nx-primary);--bs-btn-hover-bg:#f0e95e;--bs-btn-hover-border-color:#f0e95e}
-
-        /* yardımcı */
-        .visually-hidden{position:absolute!important;clip:rect(1px,1px,1px,1px);padding:0;border:0;height:1px;width:1px;overflow:hidden}
-        @media (prefers-reduced-motion:reduce){
-            *{transition:none!important;animation:none!important}
+            border-radius: 12px;
+            margin: 20px 0;
         }
 
-        /* Diğer Hizmetler mini kartı */
-        .nx-card-services .nx-svc-items{display:flex;flex-direction:column;gap:10px}
-        .nx-svc-item{display:flex;gap:12px;align-items:center;text-decoration:none;color:var(--nx-text);
-            border:1px solid var(--nx-border);border-radius:12px;padding:10px;background:rgba(255,255,255,.02);
-            transition:transform .2s ease,border-color .2s ease}
-        .nx-svc-item:hover{transform:translateY(-2px);border-color:rgba(232,211,42,.45)}
-        .nx-svc-thumb{width:64px;height:64px;border-radius:10px;overflow:hidden;flex:0 0 64px;
-            background:rgba(255,255,255,.04);display:grid;place-items:center}
-        .nx-svc-thumb img{width:100%;height:100%;object-fit:cover;display:block}
-        .nx-svc-placeholder{width:36px;height:36px;border-radius:8px;
-            background:linear-gradient(135deg, rgba(232,211,42,.30), rgba(232,211,42,.08));box-shadow:var(--nx-glow)}
-        .nx-svc-meta{display:flex;flex-direction:column;gap:2px;min-width:0}
-        .nx-svc-title{font-weight:700;font-size:14px;line-height:1.2}
-        .nx-svc-desc{font-size:12px;color:var(--nx-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-
-        /* Öne Çıkan Hizmet Kartı */
-        .nx-featured-service {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            border: 2px solid rgba(255, 255, 255, .15);
+        /* ========== EXPECTATIONS PANEL ========== */
+        .izokoc_expectations_panel {
+            background: linear-gradient(135deg, rgba(255, 49, 49, 0.05), rgba(41, 98, 255, 0.05));
+            border: 2px dashed var(--izokoc-border);
             border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 20px
+            padding: 30px;
+            margin-top: 30px;
         }
 
-        .nx-featured-service h3 {
-            color: var(--nx-primary);
-            margin-bottom: 12px;
-            font-size: 18px;
-            font-weight: 800
-        }
-
-        .nx-featured-service p {
-            color: var(--nx-text);
-            margin-bottom: 16px;
-            font-size: 14px
-        }
-
-        .nx-featured-service .btn {
-            width: 100%
-        }
-
-        /* Modern Galeri */
-        .nx-gallery {
+        /* ========== BENEFITS GRID ========== */
+        .izokoc_benefits_grid {
             display: grid;
-            grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(2, 1fr);
             gap: 20px;
-            margin-top: 20px
+            margin-top: 25px;
         }
 
         @media (max-width: 768px) {
-            .nx-gallery {
-                grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));
-                gap: 15px
+            .izokoc_benefits_grid {
+                grid-template-columns: 1fr;
             }
         }
 
-        .nx-gallery-item {
-            position: relative;
+        .izokoc_benefit_item {
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+            padding: 20px;
+            background: var(--izokoc-white);
+            border: 2px solid var(--izokoc-border);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .izokoc_benefit_item:hover {
+            border-color: var(--izokoc-primary);
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px var(--izokoc-shadow);
+        }
+
+        .izokoc_benefit_item i {
+            color: var(--izokoc-primary);
+            font-size: 22px;
+            margin-top: 3px;
+            flex-shrink: 0;
+        }
+
+        .izokoc_benefit_item span {
+            color: var(--izokoc-text-dark);
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        /* ========== SUPPORT GRID ========== */
+        .izokoc_support_grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        @media (max-width: 768px) {
+            .izokoc_support_grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .izokoc_support_item {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(255, 49, 49, 0.05), rgba(41, 98, 255, 0.05));
+            border: 1px solid var(--izokoc-border);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .izokoc_support_item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px var(--izokoc-shadow);
+            background: linear-gradient(135deg, rgba(255, 49, 49, 0.1), rgba(41, 98, 255, 0.1));
+        }
+
+        .izokoc_support_item i {
+            color: var(--izokoc-blue);
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .izokoc_support_item p {
+            margin: 0;
+            color: var(--izokoc-text-dark);
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        /* ========== FAQ ACCORDION ========== */
+        .izokoc_faq_accordion .accordion-item {
+            background: var(--izokoc-white);
+            border: 1px solid var(--izokoc-border);
+            border-radius: 12px;
+            margin-bottom: 15px;
             overflow: hidden;
+        }
+
+        .izokoc_faq_accordion .accordion-button {
+            background: var(--izokoc-bg-light);
+            color: var(--izokoc-text-dark);
+            font-weight: 600;
+            font-size: 16px;
+            padding: 20px 25px;
+            border: none;
+        }
+
+        .izokoc_faq_accordion .accordion-button:not(.collapsed) {
+            background: linear-gradient(135deg, var(--izokoc-primary), var(--izokoc-blue));
+            color: var(--izokoc-white);
+            box-shadow: none;
+        }
+
+        .izokoc_faq_accordion .accordion-button:focus {
+            box-shadow: 0 0 0 0.25rem rgba(255, 49, 49, 0.25);
+            border: none;
+        }
+
+        .izokoc_faq_accordion .accordion-button::after {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23FF3131'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+        }
+
+        .izokoc_faq_accordion .accordion-button:not(.collapsed)::after {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ffffff'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+        }
+
+        .izokoc_faq_accordion .accordion-body {
+            padding: 20px 25px;
+            color: var(--izokoc-text-dark);
+            line-height: 1.7;
+        }
+
+        /* ========== CTA CARD ========== */
+        .izokoc_cta_card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 30px;
+            background: linear-gradient(135deg, var(--izokoc-secondary), var(--izokoc-blue));
             border-radius: 16px;
-            background: rgba(255, 255, 255, .02);
-            border: 1px solid var(--nx-border);
-            transition: transform .3s ease, box-shadow .3s ease
+            margin-top: 30px;
+            color: var(--izokoc-white);
         }
 
-        .nx-gallery-item:hover {
+        .izokoc_cta_content h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--izokoc-white);
+        }
+
+        .izokoc_cta_content p {
+            font-size: 14px;
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .izokoc_cta_button {
+            background: var(--izokoc-white);
+            color: var(--izokoc-secondary);
+            padding: 15px 35px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 15px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .izokoc_cta_button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            color: var(--izokoc-primary);
+        }
+
+        /* ========== GALLERY ========== */
+        .izokoc_gallery_grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .izokoc_gallery_item {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            background: var(--izokoc-bg-light);
+            border: 2px solid var(--izokoc-border);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .izokoc_gallery_item:hover {
             transform: translateY(-8px);
-            box-shadow: var(--nx-glow)
+            box-shadow: 0 10px 40px var(--izokoc-shadow);
+            border-color: var(--izokoc-primary);
         }
 
-        .nx-gallery-image {
+        .izokoc_gallery_image {
             position: relative;
             width: 100%;
             height: 240px;
-            overflow: hidden
+            overflow: hidden;
         }
 
-        .nx-gallery-image img {
+        .izokoc_gallery_image img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform .5s ease
+            transition: transform 0.5s ease;
         }
 
-        .nx-gallery-item:hover .nx-gallery-image img {
-            transform: scale(1.1)
+        .izokoc_gallery_item:hover .izokoc_gallery_image img {
+            transform: scale(1.1);
         }
 
-        .nx-gallery-overlay {
+        .izokoc_gallery_overlay {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(45deg, rgba(0, 0, 0, .6), rgba(232, 211, 42, .2));
+            background: linear-gradient(45deg, rgba(26, 35, 126, 0.8), rgba(255, 49, 49, 0.8));
             opacity: 0;
-            transition: opacity .3s ease;
+            transition: opacity 0.3s ease;
             display: flex;
             align-items: center;
-            justify-content: center
+            justify-content: center;
         }
 
-        .nx-gallery-item:hover .nx-gallery-overlay {
-            opacity: 1
+        .izokoc_gallery_item:hover .izokoc_gallery_overlay {
+            opacity: 1;
         }
 
-        .nx-gallery-btn {
-            background: var(--nx-primary);
+        .izokoc_gallery_btn {
+            background: var(--izokoc-white);
             border: none;
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            color: #0d0f14;
+            color: var(--izokoc-primary);
             font-size: 20px;
             cursor: pointer;
-            transition: transform .2s ease;
+            transition: transform 0.2s ease;
             display: flex;
             align-items: center;
-            justify-content: center
+            justify-content: center;
         }
 
-        .nx-gallery-btn:hover {
-            transform: scale(1.1)
+        .izokoc_gallery_btn:hover {
+            transform: scale(1.1) rotate(90deg);
         }
 
-        /* Lightbox */
-        .nx-lightbox {
+        /* ========== LIGHTBOX ========== */
+        .izokoc_lightbox {
             display: none;
             position: fixed;
             z-index: 9999;
@@ -246,32 +437,31 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, .95);
-            backdrop-filter: blur(10px)
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
         }
 
-        .nx-lightbox.active {
+        .izokoc_lightbox.active {
             display: flex;
             align-items: center;
-            justify-content: center
+            justify-content: center;
         }
 
-        .nx-lightbox-content {
+        .izokoc_lightbox_content {
             position: relative;
             max-width: 90vw;
             max-height: 90vh;
-            margin: auto
         }
 
-        .nx-lightbox-content img {
+        .izokoc_lightbox_content img {
             width: 100%;
             height: auto;
             max-height: 90vh;
             object-fit: contain;
-            border-radius: 12px
+            border-radius: 12px;
         }
 
-        .nx-lightbox-close {
+        .izokoc_lightbox_close {
             position: absolute;
             top: -50px;
             right: 0;
@@ -279,417 +469,624 @@
             font-size: 35px;
             font-weight: bold;
             cursor: pointer;
-            transition: color .2s ease;
-            z-index: 10001
+            transition: color 0.2s ease;
         }
 
-        .nx-lightbox-close:hover {
-            color: var(--nx-primary)
+        .izokoc_lightbox_close:hover {
+            color: var(--izokoc-primary);
         }
 
-        .nx-lightbox-prev, .nx-lightbox-next {
+        .izokoc_lightbox_prev,
+        .izokoc_lightbox_next {
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            background: rgba(255, 255, 255, .1);
-            border: 1px solid rgba(255, 255, 255, .2);
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
             color: white;
             padding: 16px 20px;
             cursor: pointer;
             font-size: 18px;
             font-weight: bold;
             border-radius: 8px;
-            transition: all .2s ease;
-            backdrop-filter: blur(10px)
+            transition: all 0.2s ease;
+            backdrop-filter: blur(10px);
         }
 
-        .nx-lightbox-prev:hover, .nx-lightbox-next:hover {
-            background: var(--nx-primary);
-            color: #0d0f14
+        .izokoc_lightbox_prev:hover,
+        .izokoc_lightbox_next:hover {
+            background: var(--izokoc-primary);
+            border-color: var(--izokoc-primary);
         }
 
-        .nx-lightbox-prev {
-            left: -80px
+        .izokoc_lightbox_prev {
+            left: -80px;
         }
 
-        .nx-lightbox-next {
-            right: -80px
+        .izokoc_lightbox_next {
+            right: -80px;
         }
 
-        .nx-lightbox-counter {
+        .izokoc_lightbox_counter {
             position: absolute;
             bottom: -40px;
             left: 50%;
             transform: translateX(-50%);
             color: white;
             font-size: 14px;
-            background: rgba(0, 0, 0, .7);
+            background: rgba(0, 0, 0, 0.7);
             padding: 8px 16px;
-            border-radius: 20px
+            border-radius: 20px;
         }
 
-        @media (max-width: 768px) {
-            .nx-lightbox-prev {
-                left: 10px
+        /* ========== SIDEBAR ========== */
+        .izokoc_sidebar {
+            position: sticky;
+            top: 110px;
+        }
+
+        /* ========== SIDEBAR: Featured Service ========== */
+        .izokoc_featured_service {
+            background: linear-gradient(135deg, var(--izokoc-secondary), var(--izokoc-blue));
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+            color: var(--izokoc-white);
+        }
+
+        .izokoc_featured_service h3 {
+            color: var(--izokoc-white);
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .izokoc_featured_service p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .izokoc_featured_service .izokoc_feature_thumb {
+            width: 70px;
+            height: 70px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.1);
+            flex-shrink: 0;
+        }
+
+        .izokoc_featured_service .izokoc_feature_thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .izokoc_featured_service .btn {
+            background: var(--izokoc-white);
+            color: var(--izokoc-secondary);
+            font-weight: 700;
+            border-radius: 30px;
+            padding: 12px 30px;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .izokoc_featured_service .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            color: var(--izokoc-primary);
+        }
+
+        /* ========== SIDEBAR: TOC ========== */
+        .izokoc_toc_card {
+            background: var(--izokoc-white);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 2px solid var(--izokoc-border);
+        }
+
+        .izokoc_toc_card h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--izokoc-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 20px;
+        }
+
+        .izokoc_toc_list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .izokoc_toc_list a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            border: 1px solid var(--izokoc-border);
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--izokoc-text-dark);
+            transition: all 0.3s ease;
+        }
+
+        .izokoc_toc_list a:hover {
+            border-color: var(--izokoc-primary);
+            background: rgba(255, 49, 49, 0.05);
+            transform: translateX(5px);
+        }
+
+        .izokoc_toc_dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--izokoc-primary);
+            flex-shrink: 0;
+        }
+
+        /* ========== SIDEBAR: Quick CTA ========== */
+        .izokoc_quick_cta {
+            background: var(--izokoc-white);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 2px solid var(--izokoc-border);
+        }
+
+        .izokoc_quick_cta h4 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--izokoc-secondary);
+            margin-bottom: 8px;
+        }
+
+        .izokoc_quick_cta p {
+            font-size: 13px;
+            color: var(--izokoc-text-light);
+            margin-bottom: 15px;
+        }
+
+        .izokoc_quick_cta .btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--izokoc-primary), var(--izokoc-blue));
+            color: var(--izokoc-white);
+            font-weight: 700;
+            border-radius: 30px;
+            padding: 12px;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .izokoc_quick_cta .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(255, 49, 49, 0.3);
+        }
+
+        /* ========== SIDEBAR: Services List ========== */
+        .izokoc_services_list {
+            background: var(--izokoc-white);
+            border-radius: 16px;
+            padding: 25px;
+            border: 2px solid var(--izokoc-border);
+        }
+
+        .izokoc_services_list h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--izokoc-secondary);
+            margin-bottom: 20px;
+        }
+
+        .izokoc_service_item {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid var(--izokoc-border);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            text-decoration: none;
+            color: var(--izokoc-text-dark);
+            transition: all 0.3s ease;
+            background: var(--izokoc-bg-light);
+        }
+
+        .izokoc_service_item:hover {
+            transform: translateY(-3px);
+            border-color: var(--izokoc-primary);
+            box-shadow: 0 5px 15px var(--izokoc-shadow);
+        }
+
+        .izokoc_service_thumb {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            overflow: hidden;
+            flex-shrink: 0;
+            background: var(--izokoc-white);
+        }
+
+        .izokoc_service_thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .izokoc_service_placeholder {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 49, 49, 0.2), rgba(41, 98, 255, 0.2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--izokoc-primary);
+            font-size: 24px;
+        }
+
+        .izokoc_service_meta h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: var(--izokoc-secondary);
+        }
+
+        .izokoc_service_meta p {
+            font-size: 12px;
+            color: var(--izokoc-text-light);
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media screen and (max-width: 991px) {
+            .izokoc_sidebar {
+                position: static;
+                margin-top: 50px;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            .izokoc_service_detail {
+                padding: 40px 0 60px;
             }
 
-            .nx-lightbox-next {
-                right: 10px
+            .izokoc_content_card {
+                padding: 25px 20px;
             }
 
-            .nx-lightbox-close {
+            .izokoc_cta_card {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .izokoc_cta_button {
+                width: 100%;
+            }
+
+            .izokoc_lightbox_prev {
+                left: 10px;
+            }
+
+            .izokoc_lightbox_next {
+                right: 10px;
+            }
+
+            .izokoc_lightbox_close {
                 top: 10px;
-                right: 20px
+                right: 20px;
             }
 
-            .nx-lightbox-counter {
-                bottom: 20px
+            .izokoc_lightbox_counter {
+                bottom: 20px;
+            }
+
+            .izokoc_gallery_grid {
+                grid-template-columns: 1fr;
             }
         }
-
     </style>
 @endpush
+
 @section('content')
-    {{-- Üst bant (mevcut bileşen korunur) --}}
-    <x-page-banner :title="$pageTitle" :subtitle="$pageSubtitle"/>
+    <section class="izokoc_service_detail">
+        <div class="izokoc_container">
+            <div class="row g-4">
+                {{-- LEFT COLUMN: Main Content --}}
+                <div class="col-lg-8">
+                    {{-- Service Header --}}
+                    <div class="izokoc_service_header">
+                        <a href="#" class="izokoc_service_category">
+                            <i class="fas fa-tools"></i>
+                            {{ __('Hizmetlerimiz') }}
+                        </a>
+                        <h1 class="izokoc_service_title">
+                            {{ $service->getTranslation('title', app()->getLocale()) }}
+                        </h1>
+                        @if($service->getTranslation('summary', app()->getLocale()))
+                            <p class="izokoc_service_summary">
+                                {{ $service->getTranslation('summary', app()->getLocale()) }}
+                            </p>
+                        @endif
+                    </div>
 
-    <section class="nx-service">
-        <div class="container nx-wrap">
-            <div class="row g-4 g-xxl-5">
-                {{-- SOL SÜTUN --}}
-                <div class="col-lg-8" data-aos="fade-up">
-
-                    <h1 class="visually-hidden">{{ $service->getTranslation('title', app()->getLocale()) }}</h1>
-
-                    {{-- Özet/Kısa Tanım --}}
-                    @if($service->getTranslation('summary', app()->getLocale()))
-                        <p class="nx-lead">{{ $service->getTranslation('summary', app()->getLocale()) }}</p>
-                    @endif
-
-                    {{-- Kapak görseli (varsa) --}}
+                    {{-- Cover Image --}}
                     @if($service->cover_image)
-                        <a class="nx-cover mb-3 d-block"
-                           href="{{ asset($service->cover_image) }}" target="_blank"
-                           rel="noopener">
+                        <div class="izokoc_service_cover">
                             <img src="{{ asset($service->cover_image) }}"
                                  alt="{{ $service->getTranslation('title', app()->getLocale()) }}">
-                        </a>
+                        </div>
                     @endif
 
-                    {{-- Ana içerik --}}
-                    <article id="details" class="nx-card">
-                        <div class="nx-card-body nx-prose">
+                    {{-- Main Content --}}
+                    <article id="details" class="izokoc_content_card">
+                        <div class="izokoc_prose">
                             {!! $service->getTranslation('content', app()->getLocale()) !!}
 
+                            {{-- Expectations Content --}}
                             @if($service->expectations_content)
-                                <div class="nx-panel">
-                                    <h2 class="mt-1 mb-2">{{ __('Highest Expectations') }}</h2>
-                                    <div
-                                        class="nx-prose">{!! $service->getTranslation('expectations_content', app()->getLocale()) !!}</div>
+                                <div class="izokoc_expectations_panel">
+                                    <h2>{{ __('Yüksek Beklentiler') }}</h2>
+                                    <div class="izokoc_prose">
+                                        {!! $service->getTranslation('expectations_content', app()->getLocale()) !!}
+                                    </div>
                                 </div>
                             @endif
                         </div>
                     </article>
 
-                    {{-- Faydalar --}}
+                    {{-- Benefits Section --}}
                     @if(!empty($service->benefits))
-                        <section id="benefits" class="mt-4" data-aos="fade-up"
-                                 data-aos-delay="50">
-                            <div class="nx-card">
-                                <div class="nx-card-body">
-                                    <h2 class="mb-3">{{ __('Benefits of the Service') }}</h2>
-                                    <div class="nx-benefits">
-                                        @foreach($service->benefits as $benefit)
-                                            <div class="nx-benefit">
-                                                <i class="fa-solid fa-check-circle"
-                                                   aria-hidden="true"></i>
-                                                <span>{{ data_get($benefit, 'text.' . app()->getLocale()) }}</span>
-                                            </div>
-                                        @endforeach
+                        <section id="benefits" class="izokoc_content_card">
+                            <h2>{{ __('Hizmetin Faydaları') }}</h2>
+                            <div class="izokoc_benefits_grid">
+                                @foreach($service->benefits as $benefit)
+                                    <div class="izokoc_benefit_item">
+                                        <i class="fas fa-check-circle"></i>
+                                        <span>{{ data_get($benefit, 'text.' . app()->getLocale()) }}</span>
                                     </div>
-                                </div>
+                                @endforeach
                             </div>
                         </section>
                     @endif
 
-                    {{-- Destek Öğeleri --}}
+                    {{-- Support Items Section --}}
                     @if(!empty($service->support_items) && collect($service->support_items)->isNotEmpty())
-                        <section id="support" class="mt-4" data-aos="fade-up"
-                                 data-aos-delay="100">
-                            <div class="nx-card">
-                                <div class="nx-card-body">
-                                    <h2 class="mb-3">{{ __('How Can We Help?') }}</h2>
-                                    <div class="nx-support">
-                                        @foreach($service->support_items as $item)
-                                            <div class="nx-support-item">
-                                                <i class="fa-solid fa-shield-halved"
-                                                   aria-hidden="true"></i>
-                                                <p class="m-0 fw-medium">{{ data_get($item, 'text.' . app()->getLocale()) }}</p>
-                                            </div>
-                                        @endforeach
+                        <section id="support" class="izokoc_content_card">
+                            <h2>{{ __('Nasıl Yardımcı Olabiliriz?') }}</h2>
+                            <div class="izokoc_support_grid">
+                                @foreach($service->support_items as $item)
+                                    <div class="izokoc_support_item">
+                                        <i class="fas fa-shield-alt"></i>
+                                        <p>{{ data_get($item, 'text.' . app()->getLocale()) }}</p>
                                     </div>
-                                </div>
+                                @endforeach
                             </div>
                         </section>
                     @endif
 
-                    {{-- SSS --}}
+                    {{-- FAQ Section --}}
                     @if(!empty($service->faqs))
-                        <section id="faq" class="mt-4" data-aos="fade-up" data-aos-delay="150">
-                            <div class="nx-card">
-                                <div class="nx-card-body">
-                                    <h2 class="mb-3">{{ __('Frequently Asked Questions') }}</h2>
-                                    <div class="accordion nx-accordion"
-                                         id="accordion-service-faq">
-                                        @foreach($service->faqs as $faq)
-                                            <div class="accordion-item">
-                                                <h2 class="accordion-header"
-                                                    id="heading-faq-{{ $loop->index }}">
-                                                    <button class="accordion-button collapsed"
-                                                            type="button"
-                                                            data-bs-toggle="collapse"
-                                                            data-bs-target="#collapse-faq-{{ $loop->index }}"
-                                                            aria-expanded="false"
-                                                            aria-controls="collapse-faq-{{ $loop->index }}">
-                                                        {{ data_get($faq, 'question.' . app()->getLocale()) }}
-                                                    </button>
-                                                </h2>
-                                                <div id="collapse-faq-{{ $loop->index }}"
-                                                     class="accordion-collapse collapse"
-                                                     data-bs-parent="#accordion-service-faq"
-                                                     aria-labelledby="heading-faq-{{ $loop->index }}">
-                                                    <div
-                                                        class="accordion-body nx-prose">{!! data_get($faq, 'answer.' . app()->getLocale()) !!}</div>
-                                                </div>
+                        <section id="faq" class="izokoc_content_card">
+                            <h2>{{ __('Sıkça Sorulan Sorular') }}</h2>
+                            <div class="accordion izokoc_faq_accordion" id="serviceAccordion">
+                                @foreach($service->faqs as $faq)
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="heading{{ $loop->index }}">
+                                            <button class="accordion-button collapsed"
+                                                    type="button"
+                                                    data-bs-toggle="collapse"
+                                                    data-bs-target="#collapse{{ $loop->index }}"
+                                                    aria-expanded="false"
+                                                    aria-controls="collapse{{ $loop->index }}">
+                                                {{ data_get($faq, 'question.' . app()->getLocale()) }}
+                                            </button>
+                                        </h2>
+                                        <div id="collapse{{ $loop->index }}"
+                                             class="accordion-collapse collapse"
+                                             aria-labelledby="heading{{ $loop->index }}"
+                                             data-bs-parent="#serviceAccordion">
+                                            <div class="accordion-body">
+                                                {!! data_get($faq, 'answer.' . app()->getLocale()) !!}
                                             </div>
-                                        @endforeach
+                                        </div>
                                     </div>
-                                </div>
+                                @endforeach
                             </div>
                         </section>
                     @endif
 
-                    {{-- Alt CTA --}}
-                    <div class="nx-card mt-4" data-aos="fade-up" data-aos-delay="200">
-                        <div class="nx-card-body nx-cta">
-                            <div>
-                                <div class="fw-bold">{{ __('Schedule a quick discovery call about this service') }}
-                                </div>
-                                <div class="text-muted">{{ __('Average response: same business day') }}</div>
-                            </div>
-                            <a href="#" class="btn btn-nx btn-lg" data-contact-trigger>{{ __('Get a Quote') }}</a>
+                    {{-- CTA Card --}}
+                    <div class="izokoc_cta_card">
+                        <div class="izokoc_cta_content">
+                            <h3>{{ __('Bu hizmet hakkında hızlı keşif görüşmesi planlayın') }}</h3>
+                            <p>{{ __('Ortalama yanıt süresi: Aynı iş günü') }}</p>
                         </div>
+                        <a href="" class="izokoc_cta_button">
+                            {{ __('Teklif Alın') }}
+                        </a>
                     </div>
 
-                    {{-- Proje Galerisi --}}
+                    {{-- Gallery Section --}}
                     @if(!empty($service->gallery_images) && count($service->gallery_images) > 0)
-                        <section id="projects" class="mt-4" data-aos="fade-up"
-                                 data-aos-delay="250">
-                            <div class="nx-card">
-                                <div class="nx-card-body">
-                                    <h2 class="mb-4">{{ __('Projects Related to This Service') }}</h2>
-                                    <div class="nx-gallery">
-                                        @foreach($service->gallery_images as $index => $image)
-                                            <div class="nx-gallery-item" data-aos="fade-up"
-                                                 data-aos-delay="{{ 50 * ($index % 6) }}">
-                                                <div class="nx-gallery-image">
-                                                    <img src="{{ asset($image) }}"
-                                                         alt="Proje {{ $index + 1 }}"
-                                                         loading="lazy">
-                                                    <div class="nx-gallery-overlay">
-                                                        <button class="nx-gallery-btn"
-                                                                onclick="openLightbox({{ $index }})">
-                                                            <i class="fa-solid fa-expand"
-                                                               aria-hidden="true"></i>
-                                                        </button>
-                                                    </div>
-                                                </div>
+                        <section id="projects" class="izokoc_content_card">
+                            <h2>{{ __('Bu Hizmetle İlgili Projeler') }}</h2>
+                            <div class="izokoc_gallery_grid">
+                                @foreach($service->gallery_images as $index => $image)
+                                    <div class="izokoc_gallery_item" onclick="openLightbox({{ $index }})">
+                                        <div class="izokoc_gallery_image">
+                                            <img src="{{ asset($image) }}" alt="Proje {{ $index + 1 }}">
+                                            <div class="izokoc_gallery_overlay">
+                                                <button class="izokoc_gallery_btn">
+                                                    <i class="fas fa-expand"></i>
+                                                </button>
                                             </div>
-                                        @endforeach
+                                        </div>
                                     </div>
-                                </div>
+                                @endforeach
                             </div>
                         </section>
 
-                        {{-- Lightbox Modal --}}
-                        <div id="lightbox" class="nx-lightbox" onclick="closeLightbox()">
-                            <div class="nx-lightbox-content">
-                                <span class="nx-lightbox-close" onclick="closeLightbox()">&times;</span>
-                                <button class="nx-lightbox-prev" onclick="changeImage(-1)">
-                                    &#10094;
-                                </button>
+                        {{-- Lightbox --}}
+                        <div id="lightbox" class="izokoc_lightbox" onclick="closeLightbox()">
+                            <div class="izokoc_lightbox_content" onclick="event.stopPropagation()">
+                                <span class="izokoc_lightbox_close" onclick="closeLightbox()">&times;</span>
+                                <button class="izokoc_lightbox_prev" onclick="changeImage(-1)">&#10094;</button>
                                 <img id="lightbox-image" src="" alt="">
-                                <button class="nx-lightbox-next" onclick="changeImage(1)">
-                                    &#10095;
-                                </button>
-                                <div class="nx-lightbox-counter">
+                                <button class="izokoc_lightbox_next" onclick="changeImage(1)">&#10095;</button>
+                                <div class="izokoc_lightbox_counter">
                                     <span id="image-counter"></span>
                                 </div>
                             </div>
                         </div>
                     @endif
-
                 </div>
 
-                {{-- SAĞ SÜTUN --}}
-                <div class="col-lg-4" data-aos="fade-left" data-aos-delay="150">
-                    <aside class="nx-sticky">
-
-                        {{-- Diğer Hizmetlerimiz Kartı --}}
+                {{-- RIGHT COLUMN: Sidebar --}}
+                <div class="col-lg-4">
+                    <aside class="izokoc_sidebar">
+                        {{-- Featured Service --}}
                         @php
-                            // Bir sonraki hizmet (sıra bazında veya ID bazında)
                             $nextService = \App\Models\Service::query()
                                 ->where('is_active', true)
                                 ->where('id', '!=', $service->id)
-                                ->where(function($q) use ($service) {
-                                    $q->where('order', '>', $service->order)
-                                      ->orWhere(function($subQ) use ($service) {
-                                          $subQ->where('order', $service->order)
-                                               ->where('id', '>', $service->id);
-                                      });
-                                })
+                                ->where('order', '>', $service->order)
                                 ->orderBy('order')
-                                ->orderBy('id')
                                 ->first();
 
-                            // Eğer bir sonraki hizmet yoksa, en baştan al
                             if (!$nextService) {
                                 $nextService = \App\Models\Service::query()
                                     ->where('is_active', true)
                                     ->where('id', '!=', $service->id)
                                     ->orderBy('order')
-                                    ->orderBy('id')
                                     ->first();
                             }
                         @endphp
 
                         @if($nextService)
-                            <div class="nx-featured-service">
-                                <div class="d-flex gap-3 align-items-start mb-3">
-                                    @if($nextService->cover_image)
-                                        <div class="nx-svc-thumb">
+                            <div class="izokoc_featured_service">
+                                <div class="d-flex gap-3 mb-3">
+                                    <div class="izokoc_feature_thumb">
+                                        @if($nextService->cover_image)
                                             <img src="{{ asset($nextService->cover_image) }}"
                                                  alt="{{ $nextService->getTranslation('title', app()->getLocale()) }}">
-                                        </div>
-                                    @else
-                                        <div class="nx-svc-thumb">
-                                                                    <span class="nx-svc-placeholder"
-                                                                          aria-hidden="true"></span>
-                                        </div>
-                                    @endif
+                                        @else
+                                            <div class="izokoc_service_placeholder">
+                                                <i class="fas fa-tools"></i>
+                                            </div>
+                                        @endif
+                                    </div>
                                     <div>
-                                        <h4 style="font-size: 16px; font-weight: 700; margin-bottom: 8px; color: var(--nx-text);">
-                                            {{ $nextService->getTranslation('title', app()->getLocale()) }}
-                                        </h4>
+                                        <h3>{{ $nextService->getTranslation('title', app()->getLocale()) }}</h3>
                                         @if($nextService->getTranslation('summary', app()->getLocale()))
-                                            <p style="font-size: 13px; margin-bottom: 0;">
-                                                {{ \Illuminate\Support\Str::limit(strip_tags($nextService->getTranslation('summary', app()->getLocale())), 80) }}
-                                            </p>
+                                            <p>{{ \Illuminate\Support\Str::limit(strip_tags($nextService->getTranslation('summary', app()->getLocale())), 80) }}</p>
                                         @endif
                                     </div>
                                 </div>
-                                <a href="{{ route('frontend.services.show', $nextService->slug) }}"
-                                   class="btn-contact">
-                                    {{ __('Our Other Services')  }}
+                                <a href="{{ route('frontend.services.show', $nextService->slug) }}" class="btn">
+                                    {{ __('Diğer Hizmetlerimiz') }}
                                 </a>
                             </div>
                         @endif
 
-                        {{-- İçindekiler / TOC --}}
-                        <div class="nx-card">
-                            <div class="nx-toc">
-                                <h6> {{ __('Contents')  }}</h6>
-                                <ul>
-                                    <li><a href="#details"><span class="nx-dot"></span><span>{{ __('Details')  }}</span></a>
+                        {{-- Table of Contents --}}
+                        <div class="izokoc_toc_card">
+                            <h3>{{ __('İçindekiler') }}</h3>
+                            <ul class="izokoc_toc_list">
+                                <li>
+                                    <a href="#details">
+                                        <span class="izokoc_toc_dot"></span>
+                                        <span>{{ __('Detaylar') }}</span>
+                                    </a>
+                                </li>
+                                @if(!empty($service->benefits))
+                                    <li>
+                                        <a href="#benefits">
+                                            <span class="izokoc_toc_dot"></span>
+                                            <span>{{ __('Faydalar') }}</span>
+                                        </a>
                                     </li>
-                                    @if(!empty($service->benefits))
-                                        <li><a href="#benefits"><span
-                                                    class="nx-dot"></span><span>{{ __('Benefits')  }}</span></a>
-                                        </li>
-                                    @endif
-                                    @if(!empty($service->support_items) && collect($service->support_items)->isNotEmpty())
-                                        <li><a href="#support"><span
-                                                    class="nx-dot"></span><span>{{ __('Areas of Support')  }}</span></a>
-                                        </li>
-                                    @endif
-                                    @if(!empty($service->faqs))
-                                        <li><a href="#faq"><span
-                                                    class="nx-dot"></span><span>{{ __('FAQ')  }}</span></a>
-                                        </li>
-                                    @endif
-                                    @if(!empty($service->gallery_images) && count($service->gallery_images) > 0)
-                                        <li><a href="#projects"><span
-                                                    class="nx-dot"></span><span>{{ __('Projects')  }}</span></a>
-                                        </li>
-                                    @endif
-                                </ul>
-                            </div>
+                                @endif
+                                @if(!empty($service->support_items))
+                                    <li>
+                                        <a href="#support">
+                                            <span class="izokoc_toc_dot"></span>
+                                            <span>{{ __('Destek Alanları') }}</span>
+                                        </a>
+                                    </li>
+                                @endif
+                                @if(!empty($service->faqs))
+                                    <li>
+                                        <a href="#faq">
+                                            <span class="izokoc_toc_dot"></span>
+                                            <span>{{ __('SSS') }}</span>
+                                        </a>
+                                    </li>
+                                @endif
+                                @if(!empty($service->gallery_images))
+                                    <li>
+                                        <a href="#projects">
+                                            <span class="izokoc_toc_dot"></span>
+                                            <span>{{ __('Projeler') }}</span>
+                                        </a>
+                                    </li>
+                                @endif
+                            </ul>
                         </div>
 
-                        {{-- Hızlı CTA --}}
-                        <div class="nx-card">
-                            <div class="nx-card-body">
-                                <div
-                                    class="d-flex align-items-center justify-content-between gap-2">
-                                    <div>
-                                        <div class="fw-bold">{{ __('Contact Us Now')  }}</div>
-                                        <small class="text-muted">{{ __('Quick Response to Your Questions')  }}</small>
-                                    </div>
-                                    <a href="#" class="btn btn-nx" data-contact-trigger>{{ __('Get in touch') }}</a>
-                                </div>
-                            </div>
+                        {{-- Quick CTA --}}
+                        <div class="izokoc_quick_cta">
+                            <h4>{{ __('Hemen İletişime Geçin') }}</h4>
+                            <p>{{ __('Sorularınıza Hızlı Yanıt') }}</p>
+                            <a href="" class="btn">
+                                {{ __('İletişim Kurun') }}
+                            </a>
                         </div>
 
-                        {{-- Diğer Tüm Hizmetler Listesi --}}
+                        {{-- Other Services List --}}
                         @php
-                            if (!isset($sidebarServices)) {
-                                $sidebarServices = \App\Models\Service::query()
-                                    ->where('is_active', true)
-                                    ->where('id','!=',$service->id)
-                                    ->orderBy('order')
-                                    ->orderByDesc('id')
-                                    ->limit(4)
-                                    ->get();
-                            }
+                            $sidebarServices = \App\Models\Service::query()
+                                ->where('is_active', true)
+                                ->where('id', '!=', $service->id)
+                                ->orderBy('order')
+                                ->limit(4)
+                                ->get();
                         @endphp
-                        @if(isset($sidebarServices) && $sidebarServices->isNotEmpty())
-                            <div class="nx-card nx-card-services">
-                                <div class="nx-card-body">
-                                    <h3 class="mb-3" style="font-size:16px;font-weight:800">{{ __('All Our Services')  }}</h3>
 
-                                    <div class="nx-svc-items">
-                                        @foreach($sidebarServices as $s)
-                                            @php
-                                                $title   = $s->getTranslation('title', app()->getLocale());
-                                                $summary = $s->getTranslation('summary', app()->getLocale());
-                                                $href    = \Illuminate\Support\Facades\Route::has('frontend.services.show')
-                                                            ? route('frontend.services.show', $s->slug)
-                                                            : url('services/'.$s->slug);
-                                            @endphp
-
-                                            <a class="nx-svc-item" href="{{ $href }}"
-                                               aria-label="{{ $title }}">
-                    <span class="nx-svc-thumb">
-                        @if($s->cover_image)
-                            <img src="{{ asset($s->cover_image) }}" alt="{{ $title }}">
-                        @else
-                            <span class="nx-svc-placeholder" aria-hidden="true"></span>
-                        @endif
-                    </span>
-                                                <span class="nx-svc-meta">
-                        <span class="nx-svc-title">{{ $title }}</span>
-                        @if(!empty($summary))
-                                                        <span
-                                                            class="nx-svc-desc">{{ \Illuminate\Support\Str::limit(strip_tags($summary), 70) }}</span>
-                                                    @endif
-                    </span>
-                                            </a>
-                                        @endforeach
-                                    </div>
-                                </div>
+                        @if($sidebarServices->isNotEmpty())
+                            <div class="izokoc_services_list">
+                                <h3>{{ __('Tüm Hizmetlerimiz') }}</h3>
+                                @foreach($sidebarServices as $svc)
+                                    <a href="{{ route('frontend.services.show', $svc->slug) }}" class="izokoc_service_item">
+                                        <div class="izokoc_service_thumb">
+                                            @if($svc->cover_image)
+                                                <img src="{{ asset($svc->cover_image) }}"
+                                                     alt="{{ $svc->getTranslation('title', app()->getLocale()) }}">
+                                            @else
+                                                <div class="izokoc_service_placeholder">
+                                                    <i class="fas fa-tools"></i>
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <div class="izokoc_service_meta">
+                                            <h4>{{ $svc->getTranslation('title', app()->getLocale()) }}</h4>
+                                            @if($svc->getTranslation('summary', app()->getLocale()))
+                                                <p>{{ \Illuminate\Support\Str::limit(strip_tags($svc->getTranslation('summary', app()->getLocale())), 60) }}</p>
+                                            @endif
+                                        </div>
+                                    </a>
+                                @endforeach
                             </div>
                         @endif
-
                     </aside>
                 </div>
             </div>
@@ -712,8 +1109,6 @@
             lightboxImage.src = "{{ asset('') }}" + images[currentImageIndex];
             counter.textContent = `${currentImageIndex + 1} / ${images.length}`;
             lightbox.classList.add('active');
-
-            // Prevent body scroll when lightbox is open
             document.body.style.overflow = 'hidden';
         }
 
@@ -740,7 +1135,7 @@
         }
 
         // Keyboard navigation
-        document.addEventListener('keydown', function (e) {
+        document.addEventListener('keydown', function(e) {
             const lightbox = document.getElementById('lightbox');
             if (lightbox && lightbox.classList.contains('active')) {
                 if (e.key === 'Escape') {
@@ -753,9 +1148,18 @@
             }
         });
 
-        // Prevent event bubbling on lightbox content
-        document.querySelector('.nx-lightbox-content')?.addEventListener('click', function (e) {
-            e.stopPropagation();
+        // Smooth scroll for TOC links
+        document.querySelectorAll('.izokoc_toc_list a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
         });
     </script>
 @endpush
