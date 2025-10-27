@@ -778,6 +778,8 @@
                     });
 
                     // Repeater alanlarını işle
+                    console.log('Processing repeater items for section:', sectionIndex);
+                    console.log('Section DOM:', sectionItem.find('> .accordion-collapse > .accordion-body')[0]);
                     processRepeaterItems(sectionItem.find('> .accordion-collapse > .accordion-body'), sectionIndex, formData, '');
                 });
 
@@ -819,39 +821,70 @@
                 return false;
             });
 
-            // RECURSIVE REPEATER PROCESSOR
+            // RECURSIVE REPEATER PROCESSOR - RADIKAL ÇÖZÜM
             function processRepeaterItems($container, sectionIndex, formData, parentPath) {
-                $container.find('> .repeater-items-container').each(function () {
+                console.log('processRepeaterItems called with:', {
+                    container: $container[0],
+                    sectionIndex: sectionIndex,
+                    parentPath: parentPath,
+                    directContainers: $container.find('.repeater-items-container').length,
+                    allContainers: $container.find('.repeater-items-container').length
+                });
+                
+                // REPEATER CONTAINER'LARI İŞLE ama nested olanları atla
+                $container.find('.repeater-items-container').each(function () {
+                    // Eğer bu container bir repeater item içindeyse ve parentPath boşsa atla
+                    // (Bu nested container'ın ana seviyede işlenmesini engeller)
+                    if ($(this).closest('.repeater-item-accordion').length > 0 && parentPath === '') {
+                        console.log('Skipping nested repeater container in main level');
+                        return;
+                    }
                     const repeaterContainer = $(this);
                     const repeaterName = repeaterContainer.data('repeater-name');
-                    const currentPath = parentPath ? `${parentPath}.${repeaterName}` : repeaterName;
+                    
+                    console.log('Found repeater container:', {
+                        repeaterName: repeaterName,
+                        items: repeaterContainer.find('.repeater-item-accordion').length
+                    });
 
-                    repeaterContainer.find('> .repeater-item-accordion').each(function (itemIndex) {
+                    // Yolu PHP array formatında oluştur: [repeaterName]
+                    const currentPath = parentPath + `[${repeaterName}]`;
+
+                    repeaterContainer.find('.repeater-item-accordion').each(function (itemIndex) {
                         const repeaterItem = $(this);
-                        const itemPath = `${currentPath}.${itemIndex}`;
+                        
+                        console.log('Processing repeater item:', {
+                            itemIndex: itemIndex,
+                            repeaterName: repeaterName,
+                            fields: repeaterItem.find('.collapse .repeater-item-body .mb-3, .show .repeater-item-body .mb-3').length
+                        });
 
-                        // Bu item'ın field-wrapper'larını işle
-                        repeaterItem.find('> .collapse > .repeater-item-body > .mb-3').each(function() {
+                        // Yolu PHP array formatında oluştur: [repeaterName][index]
+                        const itemPath = `${currentPath}[${itemIndex}]`;
+
+                        // Bu item'ın field-wrapper'larını işle (hem .collapse hem de .show class'ları için)
+                        repeaterItem.find('.collapse .repeater-item-body .mb-3, .show .repeater-item-body .mb-3').each(function() {
                             const fieldWrapper = $(this);
 
                             // Eğer bu bir nested repeater container ise, recursive olarak işle
-                            if (fieldWrapper.find('> .repeater-items-container').length > 0) {
+                            if (fieldWrapper.find('.repeater-items-container').length > 0) {
+                                console.log('Found nested repeater, processing recursively with itemPath:', itemPath);
                                 processRepeaterItems(fieldWrapper, sectionIndex, formData, itemPath);
                                 return;
                             }
 
                             // Normal inputları işle (direkt child)
-                            fieldWrapper.find('> input, > select, > textarea').each(function () {
+                            fieldWrapper.find('input, select, textarea').each(function () {
                                 processInput($(this), sectionIndex, formData, itemPath);
                             });
 
                             // Quill editor wrapper içindeki hidden input
-                            fieldWrapper.find('> .quill-editor-wrapper > input[type="hidden"]').each(function () {
+                            fieldWrapper.find('.quill-editor-wrapper input[type="hidden"]').each(function () {
                                 processInput($(this), sectionIndex, formData, itemPath);
                             });
 
                             // Tab content içindeki inputlar (çok dilli alanlar)
-                            fieldWrapper.find('> .tab-content > .tab-pane').each(function() {
+                            fieldWrapper.find('.tab-content .tab-pane').each(function() {
                                 $(this).find('input, select, textarea').each(function () {
                                     processInput($(this), sectionIndex, formData, itemPath);
                                 });
@@ -861,23 +894,43 @@
                 });
             }
 
-            // Input işleme yardımcı fonksiyonu
+            // Input işleme yardımcı fonksiyonu - DÜZELTİLMİŞ VERSİYON
             function processInput($input, sectionIndex, formData, itemPath) {
                 const originalName = $input.attr('data-name');
                 const lang = $input.attr('data-lang');
                 const value = $input.val();
 
+                console.log('processInput called:', {
+                    originalName: originalName,
+                    lang: lang,
+                    value: value,
+                    itemPath: itemPath,
+                    inputType: $input.attr('type'),
+                    finalKey: originalName ? `sections[${sectionIndex}][content]${itemPath}[${originalName}]${lang ? `[${lang}]` : ''}` : 'N/A'
+                });
+
                 if (!originalName) return;
+
+                // itemPath artık [repeaterName][index][subRepeaterName][subIndex] formatında
 
                 if ($input.attr('type') === 'file') {
                     const files = $input[0].files;
                     if (files && files.length > 0) {
-                        formData.append(`sections[${sectionIndex}][content][${itemPath}][files][${originalName}]`, files[0]);
+                        // DÜZELTME: sections[index][content][repeater][index]...[files][name]
+                        const key = `sections[${sectionIndex}][content]${itemPath}[files][${originalName}]`;
+                        formData.append(key, files[0]);
+                        console.log('Added file to FormData:', key, files[0].name);
                     }
                 } else if (lang) {
-                    formData.append(`sections[${sectionIndex}][content][${itemPath}][${originalName}][${lang}]`, value || '');
+                    // DÜZELTME: sections[index][content][repeater][index]...[name][lang]
+                    const key = `sections[${sectionIndex}][content]${itemPath}[${originalName}][${lang}]`;
+                    formData.append(key, value || '');
+                    console.log('Added translatable field to FormData:', key, value);
                 } else {
-                    formData.append(`sections[${sectionIndex}][content][${itemPath}][${originalName}]`, value || '');
+                    // DÜZELTME: sections[index][content][repeater][index]...[name]
+                    const key = `sections[${sectionIndex}][content]${itemPath}[${originalName}]`;
+                    formData.append(key, value || '');
+                    console.log('Added field to FormData:', key, value);
                 }
             }
 

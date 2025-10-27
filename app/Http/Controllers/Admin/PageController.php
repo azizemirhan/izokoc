@@ -236,8 +236,9 @@ class PageController extends Controller
             'og_description' => 'nullable|array',
             'og_image' => 'nullable|url',
             'sections.*.files.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:50048',
-            'sections.*.content.menu_items.*.files.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
-            'sections.*.content.service_cards.*.files.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'sections.*.content.*.files.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'sections.*.content.*.*.files.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'sections.*.content.*.*.*.files.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
         ]);
 
         // 2. ADIM: Sayfanın temel bilgilerini güncelle
@@ -283,33 +284,30 @@ class PageController extends Controller
                     }
                 }
 
-                // Repeater alanlarındaki dosya yüklemelerini işle
+                // Repeater alanlarındaki dosya yüklemelerini işle (RECURSIVE)
                 $sectionConfig = config('sections.' . $sectionData['section_key'], []);
-                foreach ($sectionConfig['fields'] as $field) {
-                    if ($field['type'] === 'repeater' && isset($content[$field['name']])) {
-                        $repeaterName = $field['name'];
-                        foreach ($content[$repeaterName] as $itemIndex => &$item) {
-                            $repeaterFilePathPrefix = "sections.{$order}.content.{$repeaterName}.{$itemIndex}.files";
-                            if ($request->hasFile($repeaterFilePathPrefix)) {
-                                foreach ($request->file($repeaterFilePathPrefix) as $repeaterFieldName => $uploadedFile) {
-                                    // Eski resmi sil
-                                    if (isset($oldContent[$repeaterName][$itemIndex][$repeaterFieldName])) {
-                                        $this->deleteImage($oldContent[$repeaterName][$itemIndex][$repeaterFieldName]);
-                                    }
-                                    // Yeni resmi yükle
-                                    $imagePath = $this->uploadImage($request, "{$repeaterFilePathPrefix}.{$repeaterFieldName}", 'uploads/sections');
-                                    $item[$repeaterFieldName] = $imagePath;
-                                }
-                            } else {
-                                // Yeni resim gelmediyse, eski repeater item resim yolunu koru
-                                foreach ($field['fields'] as $repeaterField) {
-                                    if ($repeaterField['type'] === 'file' && isset($oldContent[$repeaterName][$itemIndex][$repeaterField['name']])) {
-                                        $item[$repeaterField['name']] = $oldContent[$repeaterName][$itemIndex][$repeaterField['name']];
-                                    }
-                                }
-                            }
-                        }
-                    }
+                if (!empty($sectionConfig['fields'])) {
+                    // Debug: Gelen content'i logla
+                    \Log::info('Processing section: ' . $sectionData['section_key'], [
+                        'content' => $content,
+                        'files' => $request->allFiles()
+                    ]);
+                    
+                    // $content değişkenini, recursive dosya işleme fonksiyonundan gelen
+                    // güncellenmiş haliyle değiştiriyoruz.
+                    $content = $this->processRepeaterFields(
+                        $request,
+                        $order, // $order, section'ın index'idir
+                        $content,
+                        $oldContent,
+                        $sectionConfig['fields'],
+                        '' // Başlangıç path'i boş
+                    );
+                    
+                    // Debug: İşlenmiş content'i logla
+                    \Log::info('Processed content for section: ' . $sectionData['section_key'], [
+                        'processed_content' => $content
+                    ]);
                 }
 
                 $section->fill([
@@ -362,7 +360,7 @@ class PageController extends Controller
     }
 
     /**
-     * Repeater alanlarını recursive olarak işle (iç içe repeater desteği ile)
+     * Repeater alanlarını recursive olarak işle (iç içe repeater desteği ile) - DÜZELTİLMİŞ VERSİYON
      */
     private function processRepeaterFields($request, $sectionOrder, $content, $oldContent, $fields, $parentPath = '')
     {
@@ -376,8 +374,18 @@ class PageController extends Controller
                     $repeaterFilePathPrefix = "sections.{$sectionOrder}.content.{$currentPath}.files";
 
                     // Bu repeater item için dosya yüklemelerini işle
+                    \Log::info("Checking files for path: {$repeaterFilePathPrefix}", [
+                        'has_file' => $request->hasFile($repeaterFilePathPrefix),
+                        'all_files' => $request->allFiles()
+                    ]);
+                    
                     if ($request->hasFile($repeaterFilePathPrefix)) {
                         foreach ($request->file($repeaterFilePathPrefix) as $repeaterFieldName => $uploadedFile) {
+                            \Log::info("Processing file: {$repeaterFieldName}", [
+                                'file_name' => $uploadedFile->getClientOriginalName(),
+                                'file_size' => $uploadedFile->getSize()
+                            ]);
+                            
                             // Eski resmi sil
                             $oldValue = $this->getNestedValue($oldContent, "{$repeaterName}.{$itemIndex}.{$repeaterFieldName}");
                             if ($oldValue) {
@@ -387,6 +395,11 @@ class PageController extends Controller
                             // Yeni resmi yükle
                             $imagePath = $this->uploadImage($request, "{$repeaterFilePathPrefix}.{$repeaterFieldName}", 'uploads/sections');
                             $item[$repeaterFieldName] = $imagePath;
+                            
+                            \Log::info("File uploaded successfully", [
+                                'field_name' => $repeaterFieldName,
+                                'image_path' => $imagePath
+                            ]);
                         }
                     } else {
                         // Yeni resim gelmediyse, eski resim yolunu koru
