@@ -7,6 +7,7 @@ use App\Models\Page;
 use App\Models\PageSection;
 use App\Models\Post;
 use App\Models\Category;
+use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -43,11 +44,15 @@ class SearchController extends Controller
         $pageSections = $this->searchPageSections($query, $locale);
         $results = $results->concat($pageSections);
 
-        // 3. POSTS ARAMA
+        // 3. SERVICES ARAMA (YENİ!)
+        $services = $this->searchServices($query, $locale);
+        $results = $results->concat($services);
+
+        // 4. POSTS ARAMA
         $posts = $this->searchPosts($query, $locale);
         $results = $results->concat($posts);
 
-        // 4. CATEGORIES ARAMA
+        // 5. CATEGORIES ARAMA
         $categories = $this->searchCategories($query, $locale);
         $results = $results->concat($categories);
 
@@ -138,6 +143,60 @@ class SearchController extends Controller
                     'breadcrumb' => 'Ana Sayfa / ' . ($page->getTranslation('title', $locale, false) ?? ''),
                     'icon' => 'fas fa-paragraph',
                     'date' => $section->updated_at->format('d.m.Y'),
+                ];
+            });
+    }
+
+    /**
+     * Services içinde arama (YENİ!)
+     */
+    protected function searchServices($query, $locale)
+    {
+        $searchTerm = strtolower($query);
+
+        return Service::where('is_active', true)
+            ->get()
+            ->filter(function ($service) use ($searchTerm, $locale) {
+                $title = strtolower($service->getTranslation('title', $locale, false) ?? '');
+                $summary = strtolower($service->getTranslation('summary', $locale, false) ?? '');
+                $content = strtolower(strip_tags($service->getTranslation('content', $locale, false) ?? ''));
+                $expectationsContent = strtolower(strip_tags($service->getTranslation('expectations_content', $locale, false) ?? ''));
+
+                // Benefits, support_items ve faqs içinde de ara
+                $benefits = $service->getTranslation('benefits', $locale, false) ?? [];
+                $supportItems = $service->getTranslation('support_items', $locale, false) ?? [];
+                $faqs = $service->getTranslation('faqs', $locale, false) ?? [];
+
+                $benefitsText = $this->extractTextFromArray($benefits, $locale);
+                $supportText = $this->extractTextFromArray($supportItems, $locale);
+                $faqsText = $this->extractTextFromArray($faqs, $locale);
+
+                return Str::contains($title, $searchTerm) ||
+                    Str::contains($summary, $searchTerm) ||
+                    Str::contains($content, $searchTerm) ||
+                    Str::contains($expectationsContent, $searchTerm) ||
+                    Str::contains(strtolower($benefitsText), $searchTerm) ||
+                    Str::contains(strtolower($supportText), $searchTerm) ||
+                    Str::contains(strtolower($faqsText), $searchTerm);
+            })
+            ->map(function ($service) use ($query, $locale, $searchTerm) {
+                $title = $service->getTranslation('title', $locale, false) ?? '';
+                $summary = $service->getTranslation('summary', $locale, false) ?? '';
+                $content = strip_tags($service->getTranslation('content', $locale, false) ?? '');
+
+                $description = !empty($summary) ? $summary : $content;
+
+                return [
+                    'type' => 'service',
+                    'type_label' => 'Hizmet',
+                    'title' => $title,
+                    'description' => $this->generateSnippet($description, $searchTerm),
+                    'url' => route('frontend.services.show', $service->slug), // hizmetlerimiz/{slug} rotası
+                    'relevance' => $this->calculateServiceRelevance($service, $searchTerm, $locale),
+                    'breadcrumb' => 'Ana Sayfa / Hizmetlerimiz / ' . $title,
+                    'icon' => 'fas fa-cogs',
+                    'date' => $service->updated_at->format('d.m.Y'),
+                    'image' => $service->cover_image,
                 ];
             });
     }
@@ -246,6 +305,35 @@ class SearchController extends Controller
     }
 
     /**
+     * Array'den text çıkar (benefits, support_items, faqs için)
+     */
+    protected function extractTextFromArray($array, $locale)
+    {
+        $text = '';
+
+        if (!is_array($array)) {
+            return $text;
+        }
+
+        foreach ($array as $item) {
+            if (is_array($item)) {
+                foreach ($item as $key => $value) {
+                    if (is_array($value)) {
+                        // Çok dilli alan
+                        if (isset($value[$locale])) {
+                            $text .= ' ' . strip_tags($value[$locale]);
+                        }
+                    } else {
+                        $text .= ' ' . strip_tags($value);
+                    }
+                }
+            }
+        }
+
+        return trim($text);
+    }
+
+    /**
      * Snippet oluştur - arama kelimesi etrafındaki metni göster
      */
     protected function generateSnippet($text, $searchTerm, $length = 200)
@@ -341,6 +429,41 @@ class SearchController extends Controller
 
         // Başlangıçta mı?
         if (Str::startsWith($text, $searchTerm)) $relevance += 20;
+
+        return $relevance;
+    }
+
+    /**
+     * Service relevance hesapla (YENİ!)
+     */
+    protected function calculateServiceRelevance($service, $searchTerm, $locale)
+    {
+        $relevance = 0;
+        $searchTerm = strtolower($searchTerm);
+
+        $title = strtolower($service->getTranslation('title', $locale, false) ?? '');
+        $summary = strtolower($service->getTranslation('summary', $locale, false) ?? '');
+        $content = strtolower(strip_tags($service->getTranslation('content', $locale, false) ?? ''));
+
+        // Title'da tam eşleşme
+        if ($title === $searchTerm) $relevance += 100;
+        elseif (Str::contains($title, $searchTerm)) $relevance += 60;
+
+        // Title başlangıcında eşleşme
+        if (Str::startsWith($title, $searchTerm)) $relevance += 40;
+
+        // Summary'de eşleşme
+        if (Str::contains($summary, $searchTerm)) $relevance += 30;
+
+        // Content'te eşleşme
+        if (Str::contains($content, $searchTerm)) $relevance += 20;
+
+        // Aktif mi? (Aktif hizmetler daha üstte)
+        if ($service->is_active) $relevance += 10;
+
+        // Kelime sayısına göre bonus
+        $wordCount = substr_count($title . ' ' . $summary . ' ' . $content, $searchTerm);
+        $relevance += $wordCount * 5;
 
         return $relevance;
     }

@@ -588,8 +588,7 @@ ul {
 }
 
 
-.izokoc_menu_item:hover > a,
-.izokoc_menu_item.izokoc_active > a {
+.izokoc_menu_item:hover > a {
     color: var(--izokoc-primary);
 }
 
@@ -795,7 +794,7 @@ ul {
 }
 
 .izokoc_mobile_header {
-    background: linear-gradient(135deg, var(--izokoc-secondary) 0%, #283593 100%);
+    background:#fff;
     padding: 25px 20px;
     display: flex;
     justify-content: space-between;
@@ -1106,7 +1105,7 @@ ul {
     }
 
     .izokoc_info_text a {
-        font-size: 12px;
+        font-size: 10px;
     }
 
     .izokoc_search_btn,
@@ -1127,10 +1126,6 @@ ul {
 
     .izokoc_contact_info {
         gap: 15px;
-    }
-
-    .izokoc_info_text {
-        display: none;
     }
 
     .izokoc_info_item i {

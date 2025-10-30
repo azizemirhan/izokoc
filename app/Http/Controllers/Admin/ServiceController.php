@@ -75,18 +75,6 @@ class ServiceController extends Controller
         return redirect()->route('admin.services.index')->with('success', 'Hizmet başarıyla güncellendi.');
     }
 
-    // ... Diğer metodlar (destroy, trash, restore vb.) aynı kalabilir ...
-    public function destroy(Service $service){ /* ... */ }
-    public function trash(){ /* ... */ }
-    public function restore($id){ /* ... */ }
-    public function forceDelete($id){ /* ... */ }
-    public function bulkAction(Request $request){ /* ... */ }
-
-
-    /**
-     * Aktif dilleri ayarlardan alır.
-     * Hatalı json_decode kaldırıldı.
-     */
     private function getActiveLanguages(): array
     {
         try {
@@ -205,5 +193,135 @@ class ServiceController extends Controller
 
         // Başarısız olursa hata döndür
         return response()->json(['error' => 'Resim yüklenemedi.'], 500);
+    }
+
+    /**
+     * Hizmeti soft delete ile siler (çöp kutusuna taşır)
+     */
+    public function destroy(Service $service)
+    {
+        try {
+            $service->delete();
+            return redirect()->route('admin.services.index')
+                ->with('success', 'Hizmet başarıyla çöp kutusuna taşındı.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Hizmet silinirken bir hata oluştu: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Çöp kutusundaki hizmetleri listeler
+     */
+    public function trash()
+    {
+        $services = Service::onlyTrashed()->latest('deleted_at')->paginate(20);
+        return view('admin.services.trash', compact('services'));
+    }
+
+    /**
+     * Çöp kutusundan hizmeti geri yükler
+     */
+    public function restore($id)
+    {
+        try {
+            $service = Service::onlyTrashed()->findOrFail($id);
+            $service->restore();
+            return redirect()->route('admin.services.trash')
+                ->with('success', 'Hizmet başarıyla geri yüklendi.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Hizmet geri yüklenirken bir hata oluştu: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Hizmeti kalıcı olarak siler
+     */
+    public function forceDelete($id)
+    {
+        try {
+            $service = Service::onlyTrashed()->findOrFail($id);
+
+            // İlgili resimleri sil
+            if ($service->cover_image) {
+                $this->deleteImage($service->cover_image);
+            }
+
+            if (!empty($service->gallery_images)) {
+                foreach ($service->gallery_images as $image) {
+                    $this->deleteImage($image);
+                }
+            }
+
+            $service->forceDelete();
+
+            return redirect()->route('admin.services.trash')
+                ->with('success', 'Hizmet kalıcı olarak silindi.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Hizmet silinirken bir hata oluştu: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Toplu işlemler (silme, geri yükleme, kalıcı silme)
+     */
+    public function bulkAction(Request $request)
+    {
+        $request->validate([
+            'action' => 'required|in:delete,restore,force-delete',
+            'ids' => 'required|array',
+            'ids.*' => 'exists:services,id'
+        ]);
+
+        try {
+            $ids = $request->ids;
+            $action = $request->action;
+            $count = count($ids);
+
+            switch ($action) {
+                case 'delete':
+                    Service::whereIn('id', $ids)->delete();
+                    $message = "{$count} hizmet çöp kutusuna taşındı.";
+                    $route = 'admin.services.index';
+                    break;
+
+                case 'restore':
+                    Service::onlyTrashed()->whereIn('id', $ids)->restore();
+                    $message = "{$count} hizmet geri yüklendi.";
+                    $route = 'admin.services.trash';
+                    break;
+
+                case 'force-delete':
+                    $services = Service::onlyTrashed()->whereIn('id', $ids)->get();
+
+                    foreach ($services as $service) {
+                        // Resimleri sil
+                        if ($service->cover_image) {
+                            $this->deleteImage($service->cover_image);
+                        }
+                        if (!empty($service->gallery_images)) {
+                            foreach ($service->gallery_images as $image) {
+                                $this->deleteImage($image);
+                            }
+                        }
+                        $service->forceDelete();
+                    }
+
+                    $message = "{$count} hizmet kalıcı olarak silindi.";
+                    $route = 'admin.services.trash';
+                    break;
+
+                default:
+                    return redirect()->back()->with('error', 'Geçersiz işlem.');
+            }
+
+            return redirect()->route($route)->with('success', $message);
+
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Toplu işlem sırasında bir hata oluştu: ' . $e->getMessage());
+        }
     }
 }

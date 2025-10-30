@@ -113,13 +113,13 @@
             flex-shrink: 0;
             width: 60px;
             height: 60px;
-            background: linear-gradient(135deg, #ffc107, #ffab00);
+            background: linear-gradient(135deg, var(--izokoc-primary), var(--izokoc-blue));
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 28px;
-            color: #1a1a1a;
+            color: #fff;
         }
 
         .izokoc-tech-item__title {

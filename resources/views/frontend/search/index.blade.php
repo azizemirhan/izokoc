@@ -92,10 +92,10 @@
                                     {!! $result['description'] !!}
                                 </p>
 
-                                {{-- Post için özel: Featured Image --}}
-                                @if($result['type'] === 'post' && !empty($result['image']))
+                                {{-- Post ve Service için özel: Featured Image --}}
+                                @if(($result['type'] === 'post' || $result['type'] === 'service') && !empty($result['image']))
                                     <div class="izokoc_result_image">
-                                        <img src="{{ asset($result['image']) }}" alt="{{ $result['title'] }}">
+                                        <img src="{{ asset($result['image']) }}" alt="{{ $result['title'] }}" loading="lazy">
                                     </div>
                                 @endif
 
@@ -323,6 +323,11 @@
             .izokoc_result_type.section {
                 background: linear-gradient(135deg, #f3e5f5, #e1bee7);
                 color: #7b1fa2;
+            }
+
+            .izokoc_result_type.service {
+                background: linear-gradient(135deg, #e0f2f1, #b2dfdb);
+                color: #00695c;
             }
 
             .izokoc_result_type.post {

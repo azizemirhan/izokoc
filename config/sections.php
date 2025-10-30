@@ -582,7 +582,7 @@ return [
                     ['name' => 'category_icon', 'label' => 'Kategori İkonu (Font Awesome)', 'type' => 'text', 'default' => 'fas fa-layer-group'],
                     ['name' => 'category_color', 'label' => 'Kategori Rengi (hex)', 'type' => 'text', 'default' => '#2563eb'],
                     ['name' => 'category_title', 'label' => 'Kategori Başlığı', 'type' => 'text', 'translatable' => true],
-                    ['name' => 'category_description', 'label' => 'Kategori Açıklaması', 'type' => 'textarea', 'translatable' => true],
+                    ['name' => 'category_description', 'label' => 'Kategori Açıklaması', 'type' => 'text', 'translatable' => true],
                     [
                         'name' => 'services',
                         'label' => 'Hizmetler',
@@ -594,6 +594,111 @@ return [
                             ['name' => 'service_link', 'label' => 'Detay Linki', 'type' => 'text'],
                             ['name' => 'service_image', 'label' => 'Hizmet Görseli (opsiyonel)', 'type' => 'file'],
                         ]
+                    ],
+                ]
+            ],
+        ],
+    ],
+    'projects-gallery' => [
+        'name' => 'Projeler Galerisi',
+        'view' => 'frontend.sections._projects-gallery',
+        'data_handler' => null,
+        'fields' => [
+            [
+                'name' => 'sub_title',
+                'label' => 'Üst Başlık',
+                'type' => 'text',
+                'translatable' => true,
+                'default' => 'Projelerimiz'
+            ],
+            [
+                'name' => 'main_title',
+                'label' => 'Ana Başlık',
+                'type' => 'text',
+                'translatable' => true,
+                'default' => 'Başarıyla Tamamlanan Projeler'
+            ],
+            [
+                'name' => 'description',
+                'label' => 'Açıklama Metni',
+                'type' => 'textarea',
+                'translatable' => true,
+                'default' => 'Farklı sektörlerden firmalarla gerçekleştirdiğimiz projeler'
+            ],
+            [
+                'name' => 'layout_style',
+                'label' => 'Görünüm Stili',
+                'type' => 'select',
+                'options' => [
+                    'grid' => 'Grid (Karo)',
+                    'masonry' => 'Masonry (Düzensiz)',
+                ],
+                'default' => 'grid'
+            ],
+            [
+                'name' => 'projects',
+                'label' => 'Projeler',
+                'type' => 'repeater',
+                'fields' => [
+                    [
+                        'name' => 'company_name',
+                        'label' => 'Firma İsmi',
+                        'type' => 'text',
+                        'translatable' => true
+                    ],
+                    [
+                        'name' => 'project_category',
+                        'label' => 'Proje Kategorisi',
+                        'type' => 'text',
+                        'translatable' => true
+                    ],
+                    [
+                        'name' => 'project_date',
+                        'label' => 'Proje Tarihi',
+                        'type' => 'text',
+                        'default' => '2025'
+                    ],
+                    [
+                        'name' => 'project_location',
+                        'label' => 'Proje Lokasyonu',
+                        'type' => 'text',
+                        'translatable' => true
+                    ],
+                    [
+                        'name' => 'project_summary',
+                        'label' => 'Proje Özeti',
+                        'type' => 'textarea',
+                        'translatable' => true
+                    ],
+                    [
+                        'name' => 'main_image',
+                        'label' => 'Ana Görsel (Kapak)',
+                        'type' => 'file'
+                    ],
+                    [
+                        'name' => 'gallery_image_1',
+                        'label' => 'Galeri Görseli 1',
+                        'type' => 'file'
+                    ],
+                    [
+                        'name' => 'gallery_image_2',
+                        'label' => 'Galeri Görseli 2',
+                        'type' => 'file'
+                    ],
+                    [
+                        'name' => 'gallery_image_3',
+                        'label' => 'Galeri Görseli 3',
+                        'type' => 'file'
+                    ],
+                    [
+                        'name' => 'gallery_image_4',
+                        'label' => 'Galeri Görseli 4',
+                        'type' => 'file'
+                    ],
+                    [
+                        'name' => 'project_link',
+                        'label' => 'Proje Detay Linki',
+                        'type' => 'text'
                     ],
                 ]
             ],

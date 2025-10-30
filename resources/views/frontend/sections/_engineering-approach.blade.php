@@ -63,7 +63,7 @@
         }
 
         .izokoc-section__subtitle {
-            color: #ffc107;
+            color: #1a237e;
             font-size: 16px;
             font-weight: 600;
             text-transform: uppercase;
@@ -114,8 +114,8 @@
             left: 30px;
             width: 50px;
             height: 50px;
-            background: linear-gradient(135deg, #ffc107, #ffab00);
-            color: #1a1a1a;
+            background: linear-gradient(135deg, var(--izokoc-primary), var(--izokoc-blue));
+            color: #fff;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -127,7 +127,7 @@
 
         .izokoc-process-step__icon {
             font-size: 48px;
-            color: #ffc107;
+            color: #1a237e;
             margin-bottom: 20px;
         }
 

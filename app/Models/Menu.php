@@ -76,4 +76,31 @@ class Menu extends Model
             'type' => $type ?? 'desktop'
         ])->render();
     }
+
+    /**
+     * Footer için özel menü render metodu
+     * Footer menüleri için farklı view ve class yapısı kullanır
+     *
+     * @param string $placement Menü konumu (örn: 'footer', 'footer-services')
+     * @param string $view Footer view dosyası yolu
+     * @return string
+     */
+    public static function renderFooterMenu(
+        string $placement,
+        string $view = 'frontend.partials._footer_menu'
+    ): string
+    {
+        $menu = static::where('placement', $placement)->first();
+
+        if (!$menu) {
+            return '';
+        }
+
+        $items = $menu->items()
+            ->whereNull('parent_id')
+            ->with('childrenRecursive')
+            ->get();
+
+        return view($view, ['items' => $items])->render();
+    }
 }

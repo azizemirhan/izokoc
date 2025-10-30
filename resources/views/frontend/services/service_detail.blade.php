@@ -874,7 +874,7 @@
                         </section>
                     @endif
 
-                    {{-- FAQ Section --}}
+                    {{-- FAQ Section - DÜZELTILMIŞ VERSİYON --}}
                     @if(!empty($service->faqs))
                         <section id="faq" class="izokoc_content_card">
                             <h2>{{ __('Sıkça Sorulan Sorular') }}</h2>
@@ -888,7 +888,8 @@
                                                     data-bs-target="#collapse{{ $loop->index }}"
                                                     aria-expanded="false"
                                                     aria-controls="collapse{{ $loop->index }}">
-                                                {{ data_get($faq, 'question.' . app()->getLocale()) }}
+                                                {{-- DÜZELTME: data_get yerine doğrudan array akses --}}
+                                                {{ $faq['question'][app()->getLocale()] ?? $faq['question']['tr'] ?? '' }}
                                             </button>
                                         </h2>
                                         <div id="collapse{{ $loop->index }}"
@@ -896,7 +897,8 @@
                                              aria-labelledby="heading{{ $loop->index }}"
                                              data-bs-parent="#serviceAccordion">
                                             <div class="accordion-body">
-                                                {!! data_get($faq, 'answer.' . app()->getLocale()) !!}
+                                                {{-- DÜZELTME: data_get yerine doğrudan array akses --}}
+                                                {!! $faq['answer'][app()->getLocale()] ?? $faq['answer']['tr'] ?? '' !!}
                                             </div>
                                         </div>
                                     </div>
@@ -911,7 +913,7 @@
                             <h3>{{ __('Bu hizmet hakkında hızlı keşif görüşmesi planlayın') }}</h3>
                             <p>{{ __('Ortalama yanıt süresi: Aynı iş günü') }}</p>
                         </div>
-                        <a href="" class="izokoc_cta_button">
+                        <a href="/iletisim" class="izokoc_cta_button">
                             {{ __('Teklif Alın') }}
                         </a>
                     </div>
@@ -985,7 +987,7 @@
                                             </div>
                                         @endif
                                     </div>
-                                    <div>
+                                    <div style="margin-left: 10px">
                                         <h3>{{ $nextService->getTranslation('title', app()->getLocale()) }}</h3>
                                         @if($nextService->getTranslation('summary', app()->getLocale()))
                                             <p>{{ \Illuminate\Support\Str::limit(strip_tags($nextService->getTranslation('summary', app()->getLocale())), 80) }}</p>

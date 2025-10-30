@@ -506,7 +506,13 @@
                     </div>
                     {{-- Sayfa İçeriği Kartı --}}
                     <div class="card">
-                        <div class="card-header"><h5 class="mb-0">Sayfa İçeriği (Alanları buraya sürükleyin)</h5></div>
+                        <div class="card-header"><h5 class="mb-0">Sayfa İçeriği (Alanları buraya sürükleyin)</h5>
+                            {{-- YENİ YAPIŞTIR BUTONU --}}
+                            <button type="button" class="btn btn-sm btn-success" id="paste-section-btn"
+                                    title="Kopyalanan bölümü yapıştır">
+                                <i class="bi bi-clipboard-plus-fill"></i> Yapıştır
+                            </button>
+                            {{-- YENİ BUTON BİTİŞİ --}}</div>
                         <div class="card-body">
                             <div class="accordion" id="page-canvas">
                                 {{-- Mevcut Section'lar buraya render edilecek --}}
@@ -523,6 +529,11 @@
                                                     {{ $sectionConfig['name'] }}
                                                 </button>
                                                 <div class="d-flex align-items-center ms-auto pe-3">
+                                                    {{-- YENİ KOPYALA BUTONU (Mevcut) --}}
+                                                    <button type="button" class="btn btn-sm btn-outline-primary me-2 copy-section" title="Bu bölümü kopyala">
+                                                        <i class="bi bi-clipboard"></i>
+                                                    </button>
+                                                    {{-- YENİ BUTON BİTİŞİ --}}
                                                     <div class="form-check form-switch me-3">
                                                         <input class="form-check-input status-toggle" type="checkbox"
                                                                role="switch" @checked($section->is_active)>
@@ -567,8 +578,17 @@
             const pageCanvas = $("#page-canvas");
             let quillInstances = new Map();
 
-            function initializeQuill(selector) {
-                document.querySelectorAll(selector).forEach(el => {
+            function initializeQuill(selectorOrElement) {
+                // DÜZELTME BAŞLANGICI: Fonksiyon artık tek bir elementi veya seçiciyi kabul ediyor
+                let elements = [];
+                if (typeof selectorOrElement === 'string') {
+                    elements = document.querySelectorAll(selectorOrElement);
+                } else if (selectorOrElement instanceof Element) {
+                    elements = [selectorOrElement];
+                }
+                // DÜZELTME BİTİŞİ
+
+                elements.forEach(el => { // document.querySelectorAll yerine 'elements' kullan
                     if (el && !el.classList.contains('quill-initialized')) {
                         const quill = new Quill(el, {
                             theme: 'snow',
@@ -953,21 +973,25 @@
                     : '<p class="text-muted">Bu alanın özel bir ayarı yoktur.</p>';
 
                 return `<div class="accordion-item canvas-item" data-unique-id="${uniqueId}" data-section-key="${key}">
-                            <h2 class="accordion-header d-flex align-items-center">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-${uniqueId}">
-                                    <i class="bi bi-arrows-move me-2 sortable-handle"></i> ${config.name}
-                                </button>
-                                <div class="d-flex align-items-center ms-auto pe-3">
-                                    <div class="form-check form-switch me-3">
-                                        <input class="form-check-input status-toggle" type="checkbox" role="switch" checked>
-                                    </div>
-                                    <button type="button" class="btn-close remove-item"></button>
-                                </div>
-                            </h2>
-                            <div id="collapse-${uniqueId}" class="accordion-collapse collapse" data-bs-parent="#page-canvas">
-                                <div class="accordion-body">${fieldsHtml}</div>
-                            </div>
-                        </div>`;
+                <h2 class="accordion-header d-flex align-items-center">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-${uniqueId}">
+                        <i class="bi bi-arrows-move me-2 sortable-handle"></i> ${config.name}
+                    </button>
+                    <div class="d-flex align-items-center ms-auto pe-3">
+
+                        <button type="button" class="btn btn-sm btn-outline-primary me-2 copy-section" title="Bu bölümü kopyala">
+                            <i class="bi bi-clipboard"></i>
+                        </button>
+                        <div class="form-check form-switch me-3">
+                            <input class="form-check-input status-toggle" type="checkbox" role="switch" checked>
+                        </div>
+                        <button type="button" class="btn-close remove-item"></button>
+                    </div>
+                </h2>
+                <div id="collapse-${uniqueId}" class="accordion-collapse collapse" data-bs-parent="#page-canvas">
+                    <div class="accordion-body">${fieldsHtml}</div>
+                </div>
+            </div>`;
             }
 
             function createFieldHtml(field, uniqueId) {
@@ -1000,6 +1024,234 @@
                 }
                 return fieldHtml + `</div>`;
             }
+
+            /**
+             * BÖLÜM KOPYALAMA (SERIALIZE) İŞLEMİ
+             * BİR ÖNCEKİ SÜRÜMDEN GÜNCELLENDİ - "HAYALET VERİ" SORUNU DÜZELTİLDİ
+             */
+            function serializeSectionData($container, fieldsConfig) {
+                let content = {};
+
+                fieldsConfig.forEach(field => {
+                    const fieldName = field.name;
+
+                    if (field.type === 'repeater') {
+                        // REPEATER ALANI
+                        content[fieldName] = [];
+                        // DÜZELTME: Seçiciyi "> .field-wrapper" ile sınırla
+                        const $repeaterContainer = $container.find(`> .field-wrapper > .repeater-items-container[data-repeater-name="${fieldName}"]`);
+
+                        $repeaterContainer.find('> .repeater-item-accordion').each(function() {
+                            const $repeaterItem = $(this);
+                            const $repeaterBody = $repeaterItem.find('> .collapse > .repeater-item-body, > .show > .repeater-item-body');
+
+                            const itemData = serializeSectionData($repeaterBody, field.fields);
+                            content[fieldName].push(itemData);
+                        });
+
+                    } else if (field.translatable) {
+                        // ÇOK DİLLİ ALAN
+                        content[fieldName] = {};
+                        activeLanguages.forEach(code => {
+                            // DÜZELTME: Seçiciyi "> .field-wrapper" ile sınırla
+                            const $input = $container.find(`> .field-wrapper [data-name="${fieldName}"][data-lang="${code}"]`);
+                            if ($input.length > 0) {
+                                if ($input.is('input[type="hidden"]') && $input.prev('.quill-editor').length > 0) {
+                                    const quill = quillInstances.get($input.prev('.quill-editor')[0]);
+                                    if (quill) {
+                                        content[fieldName][code] = quill.root.innerHTML;
+                                    }
+                                } else {
+                                    content[fieldName][code] = $input.val();
+                                }
+                            }
+                        });
+
+                    } else {
+                        // TEK DİLLİ ALAN (File hariç)
+                        // DÜZELTME: Seçiciyi "> .field-wrapper" ile sınırla
+                        const $input = $container.find(`> .field-wrapper [data-name="${fieldName}"]:not([data-lang])`);
+                        if ($input.length > 0 && $input.attr('type') !== 'file') {
+                            if ($input.is('input[type="hidden"]') && $input.prev('.quill-editor').length > 0) {
+                                const quill = quillInstances.get($input.prev('.quill-editor')[0]);
+                                if (quill) {
+                                    content[fieldName] = quill.root.innerHTML;
+                                }
+                            } else {
+                                content[fieldName] = $input.val();
+                            }
+                        }
+                    }
+                });
+
+                return content;
+            }
+
+            pageCanvas.on('click', '.copy-section', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const $sectionItem = $(this).closest('.canvas-item');
+                const sectionKey = $sectionItem.data('section-key');
+                const config = allSectionsConfig[sectionKey];
+
+                if (!config) {
+                    alert('Bu bölümün yapılandırması bulunamadı.');
+                    return;
+                }
+
+                console.log('Kopyalanıyor:', sectionKey);
+
+                const $accordionBody = $sectionItem.find('> .accordion-collapse > .accordion-body');
+                const sectionContent = serializeSectionData($accordionBody, config.fields);
+
+                const clipboardData = {
+                    section_key: sectionKey,
+                    content: sectionContent
+                };
+
+                // Veriyi localStorage'a JSON string olarak kaydet
+                localStorage.setItem('pageBuilderClipboard', JSON.stringify(clipboardData));
+
+                // Basit bir görsel geri bildirim
+                const $icon = $(this).find('i');
+                $icon.removeClass('bi-clipboard').addClass('bi-check-lg text-success');
+                setTimeout(() => {
+                    $icon.removeClass('bi-check-lg text-success').addClass('bi-clipboard');
+                }, 1500);
+            });
+
+            /**
+             * BÖLÜM YAPIŞTIRMA (POPULATE) İŞLEMİ
+             * GÜNCELLENDİ - Quill editörlerini doldurmadan önce başlatıyor.
+             */
+            function populateSection($container, content, fieldsConfig) {
+                if (!content) return;
+
+                fieldsConfig.forEach(field => {
+                    const fieldName = field.name;
+                    const value = content[fieldName] || null;
+
+                    if (field.type === 'repeater' && Array.isArray(value)) {
+                        // REPEATER ALANI
+                        // DÜZELTME: Seçiciyi "> .field-wrapper" ile sınırla
+                        const $repeaterContainer = $container.find(`> .field-wrapper > .repeater-items-container[data-repeater-name="${fieldName}"]`);
+
+                        value.forEach((itemData, index) => {
+                            const uniqueId = `${$container.closest('.canvas-item').data('unique-id')}-${fieldName}-${index}-${Date.now()}`;
+                            const newItemHtml = createRepeaterItemHtml(field.fields, uniqueId);
+                            const $newItem = $(newItemHtml);
+
+                            $repeaterContainer.append($newItem);
+
+                            const $repeaterBody = $newItem.find('.repeater-item-body');
+
+                            // Recursive çağrı (Bu çağrı artık Quill'i de başlatacak)
+                            populateSection($repeaterBody, itemData, field.fields);
+                        });
+
+                    } else if (field.translatable && value) {
+                        // ÇOK DİLLİ ALAN
+                        activeLanguages.forEach(code => {
+                            const langValue = value[code] || '';
+                            // DÜZELTME: Seçiciyi "> .field-wrapper" ile sınırla
+                            const $input = $container.find(`> .field-wrapper [data-name="${fieldName}"][data-lang="${code}"]`);
+
+                            if ($input.length > 0) {
+                                if ($input.is('input[type="hidden"]') && $input.prev('.quill-editor').length > 0) {
+                                    // ===== YENİ QUILL LOGIC BAŞLANGIÇ =====
+                                    const $quillEditorDiv = $input.prev('.quill-editor');
+                                    // 1. Önce Quill'i başlat
+                                    initializeQuill($quillEditorDiv[0]);
+                                    // 2. Instance'ı al
+                                    const quill = quillInstances.get($quillEditorDiv[0]);
+                                    if (quill) {
+                                        // 3. Sonra içeriği doldur
+                                        quill.root.innerHTML = langValue;
+                                    }
+                                    $input.val(langValue);
+                                    // ===== YENİ QUILL LOGIC BİTİŞ =====
+                                } else {
+                                    $input.val(langValue);
+                                }
+                            }
+                        });
+
+                    } else if (value !== null && field.type !== 'file') {
+                        // TEK DİLLİ ALAN (File hariç)
+                        // DÜZELTME: Seçiciyi "> .field-wrapper" ile sınırla
+                        const $input = $container.find(`> .field-wrapper [data-name="${fieldName}"]:not([data-lang])`);
+
+                        if ($input.length > 0) {
+                            if ($input.is('input[type="hidden"]') && $input.prev('.quill-editor').length > 0) {
+                                // ===== YENİ QUILL LOGIC BAŞLANGIÇ =====
+                                const $quillEditorDiv = $input.prev('.quill-editor');
+                                // 1. Önce Quill'i başlat
+                                initializeQuill($quillEditorDiv[0]);
+                                // 2. Instance'ı al
+                                const quill = quillInstances.get($quillEditorDiv[0]);
+                                if (quill) {
+                                    // 3. Sonra içeriği doldur
+                                    quill.root.innerHTML = value;
+                                }
+                                $input.val(value);
+                                // ===== YENİ QUILL LOGIC BİTİŞ =====
+                            } else {
+                                $input.val(value);
+                            }
+                        }
+                    }
+                });
+            }
+
+            $('#paste-section-btn').on('click', function(e) {
+                e.preventDefault();
+
+                const clipboardDataString = localStorage.getItem('pageBuilderClipboard');
+                if (!clipboardDataString) {
+                    alert('Pano boş. Lütfen önce bir bölümü kopyalayın.');
+                    return;
+                }
+
+                try {
+                    const clipboardData = JSON.parse(clipboardDataString);
+                    const sectionKey = clipboardData.section_key;
+                    const content = clipboardData.content;
+                    const config = allSectionsConfig[sectionKey];
+
+                    if (!config) {
+                        alert('Kopyalanan bölümün yapılandırması bu sayfada bulunamadı. (Hata: ' + sectionKey + ')');
+                        return;
+                    }
+
+                    // 1. Yeni bölüm HTML kabuğunu oluştur
+                    const newItemHtml = createSectionHtml(sectionKey, config);
+                    const $newItem = $(newItemHtml);
+
+                    // 2. Kabuğu sayfaya ekle
+                    pageCanvas.append($newItem);
+                    checkCanvasEmpty();
+
+                    // 3. Recursive olarak bölümü doldur (Bu artık Quill'i de BAŞLATIYOR)
+                    const $accordionBody = $newItem.find('.accordion-body');
+                    populateSection($accordionBody, content, config.fields);
+
+                    // 4. SADECE Sortable'ı yeniden başlat
+                    initializeRepeaterSortable();
+
+                    // DÜZELTME: initializeQuill(...) ÇAĞRISI BURADAN KALDIRILDI
+                    // ÇÜNKÜ ARTIK populateSection İÇİNDE YAPILIYOR.
+
+                    // 5. Yeni bölümü aç
+                    new bootstrap.Collapse($newItem.find('.accordion-collapse'));
+
+                    console.log('Bölüm yapıştırıldı:', sectionKey, content);
+
+                } catch (error) {
+                    console.error('Yapıştırma hatası:', error);
+                    alert('Panodaki veri bozuk. Yapıştırma işlemi başarısız oldu.');
+                }
+            });
 
             function createRepeaterItemHtml(fields, uniqueId, parentSectionKey) {
                 let itemFieldsHtml = fields.map(field => {

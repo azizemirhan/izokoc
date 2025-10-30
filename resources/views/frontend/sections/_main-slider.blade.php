@@ -105,6 +105,9 @@
 
     @push('styles')
         <style>
+            a:hover {
+                color: #fff;
+            }
             /* Hero Slider Section */
             .izokoc-hero-slider {
                 position: relative;
@@ -291,15 +294,15 @@
             /* Subtitle */
             .izokoc-slide__subtitle {
                 display: inline-block;
-                color: #ffc107;
+                color: #fff;
                 font-size: 16px;
                 font-weight: 600;
                 text-transform: uppercase;
                 letter-spacing: 2px;
                 margin-bottom: 20px;
                 padding: 10px 25px;
-                background: rgba(255, 193, 7, 0.15);
-                border-left: 3px solid #ffc107;
+                background: rgba(41, 98, 255, 0.15);
+                border-left: 3px solid #2962FF;
                 opacity: 0;
                 transform: translateY(30px);
             }
@@ -365,9 +368,9 @@
             }
 
             .izokoc-btn--primary {
-                background: #ffc107;
-                color: #1a1a1a;
-                box-shadow: 0 10px 30px rgba(255, 193, 7, 0.4);
+                background: #2962FF;
+                color: #fff;
+                box-shadow: 0 10px 30px rgba(41, 98, 255, 0.4);
             }
 
             .izokoc-btn--primary::before {
@@ -384,7 +387,6 @@
 
             .izokoc-btn--primary:hover {
                 transform: translateY(-3px);
-                box-shadow: 0 15px 40px rgba(255, 193, 7, 0.5);
             }
 
             .izokoc-btn--primary:hover::before {
@@ -422,9 +424,9 @@
             }
 
             .izokoc-slider-nav:hover {
-                background: #ffc107;
-                border-color: #ffc107;
-                color: #1a1a1a;
+                background: #2962FF;
+                border-color: #2962FF;
+                color: #fff;
                 transform: translateY(-50%) scale(1.1);
             }
 
@@ -466,8 +468,8 @@
             .izokoc-slider-pagination__dot.active {
                 width: 40px;
                 border-radius: 20px;
-                background: #ffc107;
-                border-color: #ffc107;
+                background: #2962FF;
+                border-color: #1a237e;
             }
 
             /* Animations */

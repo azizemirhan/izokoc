@@ -33,26 +33,53 @@
                         <button type="submit" class="btn btn-danger">Uygula</button>
                     </form>
                 </div>
-                <a href="{{ route('admin.services.create') }}" class="btn btn-success">Yeni Hizmet Ekle</a>
+                <div>
+                    <a href="{{ route('admin.services.trash') }}" class="btn btn-warning me-2">
+                        <i class="fas fa-trash"></i> Çöp Kutusu
+                    </a>
+                    <a href="{{ route('admin.services.create') }}" class="btn btn-success">
+                        <i class="fas fa-plus"></i> Yeni Hizmet Ekle
+                    </a>
+                </div>
             </div>
+
+            @if(session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
 
             <div class="table-responsive">
                 <table class="table table-bordered">
                     <thead>
                     <tr>
-                        <th><input type="checkbox" id="select-all"></th>
-                        <th>Görsel</th>
+                        <th width="30"><input type="checkbox" id="select-all"></th>
+                        <th width="100">Görsel</th>
                         <th>Başlık</th>
-                        <th class="text-center">Sıralama</th>
-                        <th class="text-center">Durum</th>
-                        <th class="text-center">İşlemler</th>
+                        <th class="text-center" width="100">Sıralama</th>
+                        <th class="text-center" width="100">Durum</th>
+                        <th class="text-center" width="180">İşlemler</th>
                     </tr>
                     </thead>
                     <tbody>
                     @forelse ($services as $service)
                         <tr>
                             <td><input type="checkbox" name="ids[]" value="{{ $service->id }}" form="bulk-action-form"></td>
-                            <td><img src="{{ asset($service->cover_image) }}" alt="{{ $service->title }}" width="80" class="img-thumbnail"></td>
+                            <td>
+                                @if($service->cover_image)
+                                    <img src="{{ asset($service->cover_image) }}" alt="{{ $service->title }}" width="80" class="img-thumbnail">
+                                @else
+                                    <span class="badge bg-secondary">Görsel Yok</span>
+                                @endif
+                            </td>
                             <td>{{ Str::limit($service->title, 50) }}</td>
                             <td class="text-center">{{ $service->order }}</td>
                             <td class="text-center">
@@ -63,10 +90,15 @@
                                 @endif
                             </td>
                             <td class="text-center">
-                                <a href="{{ route('admin.services.edit', $service) }}" class="btn btn-sm btn-warning">Düzenle</a>
+                                <a href="{{ route('admin.services.edit', $service) }}" class="btn btn-sm btn-warning" title="Düzenle">
+                                    <i class="fas fa-edit"></i>
+                                </a>
                                 <form action="{{ route('admin.services.destroy', $service) }}" method="POST" class="d-inline" onsubmit="return confirm('Bu hizmeti çöpe taşımak istediğinizden emin misiniz?');">
-                                    @csrf @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger">Sil</button>
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-danger" title="Sil">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
                                 </form>
                             </td>
                         </tr>
@@ -82,8 +114,44 @@
 
     @push('scripts')
         <script>
-            $('#select-all').on('click', function() {
-                $('input[name="ids[]"]').prop('checked', this.checked);
+            document.addEventListener('DOMContentLoaded', function() {
+                // Tümünü seç/kaldır
+                const selectAll = document.getElementById('select-all');
+                if (selectAll) {
+                    selectAll.addEventListener('change', function() {
+                        const checkboxes = document.querySelectorAll('input[name="ids[]"]');
+                        checkboxes.forEach(checkbox => {
+                            checkbox.checked = this.checked;
+                        });
+                    });
+                }
+
+                // Form gönderiminde en az bir checkbox seçili mi kontrol et
+                const bulkForm = document.getElementById('bulk-action-form');
+                if (bulkForm) {
+                    bulkForm.addEventListener('submit', function(e) {
+                        const action = this.querySelector('select[name="action"]').value;
+                        const checkedBoxes = this.querySelectorAll('input[name="ids[]"]:checked');
+
+                        if (!action) {
+                            e.preventDefault();
+                            alert('Lütfen bir işlem seçin!');
+                            return false;
+                        }
+
+                        if (checkedBoxes.length === 0) {
+                            e.preventDefault();
+                            alert('Lütfen en az bir hizmet seçin!');
+                            return false;
+                        }
+
+                        if (action === 'delete') {
+                            return confirm(`Seçili ${checkedBoxes.length} hizmeti çöp kutusuna taşımak istediğinizden emin misiniz?`);
+                        }
+
+                        return true;
+                    });
+                }
             });
         </script>
     @endpush

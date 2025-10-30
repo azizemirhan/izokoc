@@ -89,7 +89,7 @@
                         <div class="ikzserlist-category-info">
                             <h3 class="ikzserlist-category-title" style="color: #fff">{{ $categoryTitle }}</h3>
                             @if($categoryDesc)
-                                <p class="ikzserlist-category-desc">{!! $categoryDesc  !!}</p>
+                                <p class="ikzserlist-category-desc" style="color: #fff">{{ $categoryDesc }}</p>
                             @endif
                         </div>
                         <button class="ikzserlist-expand-btn" type="button" aria-label="Genişlet">

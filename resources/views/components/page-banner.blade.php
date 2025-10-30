@@ -9,7 +9,7 @@
             <h2>{{ $title }}</h2>
 
             @if($subtitle)
-                <p class="page_banner__subtitle">{{ $subtitle }}</p>
+                <p class="page_banner__subtitle" style="color: #fff">{{ $subtitle }}</p>
             @endif
 
             <div class="breadcrumbs">

@@ -46,6 +46,7 @@
     <link rel="icon"
           href="{{ isset($settings['site_favicon']) ? asset($settings['site_favicon']->value) : '/favicon.ico' }}">
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css">
     <link rel="stylesheet" type="text/css" href="{{ asset('site/css/bootstrap.css') }}"/>
     <link rel="stylesheet" type="text/css" href="{{ asset('site/css/fontawesome-all.css') }}"/>
     <link rel="stylesheet" type="text/css" href="{{ asset('site/css/line-awesome.css') }}"/>
@@ -64,6 +65,7 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('site/css/responsive.css') }}"/>
     <link rel="stylesheet" type="text/css" href="{{ asset('site/css/presets/color1.css') }}" id="colorChange"/>
     <link rel="stylesheet" type="text/css" href="{{ asset('site/header.css') }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ asset('site/footer.css') }}"/>
 
     @stack('styles')
 </head>
@@ -95,6 +97,7 @@
 <script src="{{ asset('site/js/jquery.themepunch.tools.min.js') }}"></script>
 <script src="{{ asset('site/js/jquery.themepunch.revolution.min.js') }}"></script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>Retry
 <script src="{{ asset('site/js/extensions/revolution.extension.actions.min.js') }}"></script>
 <script src="{{ asset('site/js/extensions/revolution.extension.carousel.min.js') }}"></script>
 <script src="{{ asset('site/js/extensions/revolution.extension.kenburn.min.js') }}"></script>
@@ -107,6 +110,7 @@
 
 <script src="{{ asset('site/js/theme.js') }}"></script>
 <script src="{{ asset('site/header.js') }}"></script>
+<script src="{{ asset('site/footer.js') }}"></script>
 
 @stack('scripts')
 </body>

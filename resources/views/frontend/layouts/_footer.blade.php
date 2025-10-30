@@ -1,20 +1,22 @@
 @php
-    // data_get() helper'ı, ayar bulunamasa bile hata vermeden varsayılan bir değer döndürür.
-    // Yeni temadaki varsayılan değerleri buraya girdim.
+    /* |--------------------------------------------------------------------------
+    | Footer Veri Çekme Bloğu - Modern Tasarım
+    |--------------------------------------------------------------------------
+    | Footer için özel menu render metodları kullanılıyor.
+    */
 
     // Çevrilebilir Ayarlar
-    $footerInfoText = data_get($settings, 'footer_info_text.value.' . app()->getLocale(), 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.');
-    $footerContactText = data_get($settings, 'footer_contact_text.value.' . app()->getLocale(), 'Talk to Our Officers');
-    $footerLinksTitle = data_get($settings, 'footer_links_title.value.' . app()->getLocale(), 'Important Links');
-    $footerServicesTitle = data_get($settings, 'footer_services_title.value.' . app()->getLocale(), 'Our Services');
-    $newsletterTitle = data_get($settings, 'newsletter_title.value.' . app()->getLocale(), 'Subscribe Now');
-    $footerSocialTitle = data_get($settings, 'footer_social_title.value.' . app()->getLocale(), 'Get More Here');
-    $copyrightText = data_get($settings, 'copyright_text.value.' . app()->getLocale(), 'Copyright By &COPY;<a href="#">ThemeWar</a> - ' . date('Y'));
-
+    $footerInfoText = data_get($settings, 'footer_info_text.value.' . app()->getLocale(), 'Projelerinizi, uzman mühendislik çözümlerimiz ve yüksek kaliteli yalıtım uygulamalarımızla koruma altına alıyoruz.');
+    $footerContactText = data_get($settings, 'footer_contact_text.value.' . app()->getLocale(), 'Uzman Ekibimizle İletişime Geçin');
+    $footerLinksTitle = data_get($settings, 'footer_links_title.value.' . app()->getLocale(), 'Kurumsal');
+    $footerServicesTitle = data_get($settings, 'footer_services_title.value.' . app()->getLocale(), 'Hizmetlerimiz');
+    $newsletterTitle = data_get($settings, 'newsletter_title.value.' . app()->getLocale(), 'E-Bülten');
+    $footerSocialTitle = data_get($settings, 'footer_social_title.value.' . app()->getLocale(), 'Bizi Takip Edin');
+    $copyrightText = data_get($settings, 'copyright_text.value.' . app()->getLocale(), 'Tüm Hakları Saklıdır. &copy; ' . date('Y'));
 
     // Çevrilemez Ayarlar
     $footerLogo = data_get($settings, 'footer_logo.value') ? asset($settings['footer_logo']->value) : asset('images/logo_2.png');
-    $footerContactPhone = data_get($settings, 'footer_contact_phone.value', '+1 001-765-4321');
+    $footerContactPhone = data_get($settings, 'footer_contact_phone.value', '+90 (555) 123 45 67');
     $socialFacebook = data_get($settings, 'social_facebook.value', '#');
     $socialTwitter = data_get($settings, 'social_twitter.value', '#');
     $socialLinkedin = data_get($settings, 'social_linkedin.value', '#');
@@ -22,137 +24,171 @@
     $socialBehance = data_get($settings, 'social_behance.value', '#');
     $socialYoutube = data_get($settings, 'social_youtube.value', '#');
 
-    // Footer Menüsünü 'footer-menu' slug'ı ile çekiyoruz.
-    // Bu metodun <ul><li><a...></li></ul> yapısını döndürdüğünü varsayıyoruz.
-    $footerMenu = \App\Models\Menu::renderByPlacement('footer')
+    // Footer Menüleri - YENİ METOD KULLANIMI
+    $footerMenu = \App\Models\Menu::renderFooterMenu('footer'); // 'footer' placement'ı ile footer view kullanılacak
+    $footerServicesMenu = \App\Models\Menu::renderFooterMenu('footer-services'); // 'footer-services' placement'ı
 @endphp
 
-<footer class="footer_01">
-    <div class="container">
-        <div class="row">
-            <div class="col-xl-3 col-md-6 col-lg-3 noPaddingRight">
-                <aside class="widget">
-                    <div class="about_widget">
-                        {{-- Dinamik Logo --}}
-                        <a href="{{ route('frontend.home') }}"><img src="{{ $footerLogo }}" alt="Footer Logo"/></a>
-                        {{-- Dinamik Hakkında Metni --}}
-                        <p>
+{{-- Modern Footer Ana Container --}}
+<div class="izkc-footer-wrapper" id="izkc-footer-main">
+
+    {{-- Üst Gradient Dekoratif Çizgi --}}
+    <div class="izkc-footer-gradient-line"></div>
+
+    {{-- Ana Footer İçerik Alanı --}}
+    <div class="izkc-footer-content">
+        <div class="container">
+            <div class="row gy-5">
+
+                {{-- Sol Kolon: Marka & İletişim --}}
+                <div class="col-lg-4 col-md-6">
+                    <div class="izkc-footer-brand-section">
+                        {{-- Logo --}}
+                        <a href="{{ route('frontend.home') }}" class="izkc-footer-logo-link">
+                            <img src="{{ $footerLogo }}" alt="Footer Logo" class="izkc-footer-logo-img"/>
+                        </a>
+
+                        {{-- Açıklama Metni --}}
+                        <p class="izkc-footer-description">
                             {{ $footerInfoText }}
                         </p>
-                        <div class="caller">
-                            <i class="fal fa-headphones"></i>
-                            {{-- Dinamik İletişim Metni --}}
-                            <span>{{ $footerContactText }}</span>
-                            {{-- Dinamik Telefon Numarası --}}
-                            <h3>
-                                <a href="tel:{{ str_replace(' ', '', $footerContactPhone) }}">{{ $footerContactPhone }}</a>
-                            </h3>
-                        </div>
-                    </div>
-                </aside>
-            </div>
-            <div class="col-xl-2 col-md-6 col-lg-2 pdl45 noPaddingRight">
-                <aside class="widget">
-                    {{-- Dinamik Menü Başlığı --}}
-                    <h3 class="widget_title">{{ $footerLinksTitle }}<span>.</span></h3>
-                    {{-- Dinamik Footer Menüsü --}}
-                    {!! $footerMenu !!}
-                </aside>
-            </div>
-            <div class="col-xl-4 col-md-6 col-lg-4 pdl65">
-                <aside class="widget">
-                    {{-- Dinamik Servisler Başlığı --}}
-                    <h3 class="widget_title">{{ $footerServicesTitle }}<span>.</span></h3>
 
-                    {{-- 
-                        NOT: Bu "Recent Services" bölümü için orijinal Blade dosyanızda bir dinamik veri
-                        (örn: son 3 servis, son 3 blog yazısı) bulunmuyordu. 
-                        Bu nedenle statik olarak bırakıldı. 
-                        İhtiyacınıza göre burayı dinamikleştirebilirsiniz.
-                    --}}
-                    <div class="recentServices">
-                        <div class="serviceItem clearfix">
-                            <img class="float-left" src="{{ asset('images/widget/1.jpg') }}" alt=""/>
-                            <h5><a href="#">Lorem ipsum dolor sit am et, consectetur.</a></h5>
-                            <span>14 Jnauary, 2019</span>
-                        </div>
-                        <div class="serviceItem clearfix">
-                            <img class="float-left" src="{{ asset('images/widget/2.jpg') }}" alt=""/>
-                            <h5><a href="#">Lorem ipsum dolor sit am et, consectetur.</a></h5>
-                            <span>19 February, 2019</span>
-                        </div>
-                        <div class="serviceItem clearfix">
-                            <img class="float-left" src="{{ asset('images/widget/3.jpg') }}" alt=""/>
-                            <h5><a href="#">Lorem ipsum dolor sit am et, consectetur.</a></h5>
-                            <span>14 July, 2018</span>
+                        {{-- İletişim Kartı --}}
+                        <div class="izkc-footer-contact-card">
+                            <div class="izkc-footer-contact-icon">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="izkc-footer-contact-info">
+                                <span class="izkc-footer-contact-label">{{ $footerContactText }}</span>
+                                <a href="tel:{{ str_replace([' ', '(', ')'], '', $footerContactPhone) }}" class="izkc-footer-contact-phone">
+                                    {{ $footerContactPhone }}
+                                </a>
+                            </div>
                         </div>
                     </div>
-                </aside>
-            </div>
-            <div class="col-xl-3 col-md-6 col-lg-3">
-                <aside class="widget subscribe_widget">
-                    {{-- Dinamik Bülten Başlığı --}}
-                    <h3 class="widget_title">{{ $newsletterTitle }}<span>.</span></h3>
-                    <div class="subscribForm">
-                        {{-- Dinamik Bülten Formu --}}
-                        <form method="post" action="{{ route('newsletter.subscribe') }}">
+                </div>
+
+                {{-- Orta Sol Kolon: Kurumsal Linkler --}}
+                <div class="col-lg-2 col-md-6">
+                    <div class="izkc-footer-links-section">
+                        <h5 class="izkc-footer-section-title">
+                            <span class="izkc-footer-title-line"></span>
+                            {{ $footerLinksTitle }}
+                        </h5>
+                        <div class="izkc-footer-menu-wrapper">
+                            {{-- Footer için özel render edilen menu --}}
+                            @if(!empty($footerMenu))
+                                {!! $footerMenu !!}
+                            @else
+                                <ul class="izkc-footer-menu">
+                                    <li class="izkc-footer-menu-item"><a href="#" class="izkc-footer-menu-link">Hakkımızda</a></li>
+                                    <li class="izkc-footer-menu-item"><a href="#" class="izkc-footer-menu-link">İletişim</a></li>
+                                    <li class="izkc-footer-menu-item"><small class="izkc-footer-menu-notice">(Lütfen 'footer' menüsünü oluşturun)</small></li>
+                                </ul>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                {{-- Sağ Kolon: Newsletter & Sosyal Medya --}}
+                <div class="col-lg-6 col-md-6">
+                    <div class="izkc-footer-newsletter-section">
+                        <h5 class="izkc-footer-section-title">
+                            <span class="izkc-footer-title-line"></span>
+                            {{ $newsletterTitle }}
+                        </h5>
+
+                        {{-- Newsletter Formu --}}
+                        <form method="post" action="{{ route('newsletter.subscribe') }}" class="izkc-newsletter-form" id="izkc-newsletter-form">
                             @csrf
-                            <input type="email" name="email" placeholder="Enter your email" required/>
-                            <button type="submit">Submit Now</button>
-                            <input type="text" name="website" style="display:none"> {{-- honeypot --}}
+                            <div class="izkc-newsletter-input-group">
+                                <input type="email"
+                                       name="email"
+                                       class="izkc-newsletter-input"
+                                       placeholder="E-posta adresiniz"
+                                       required/>
+                                <button type="submit"
+                                        class="izkc-newsletter-button"
+                                        aria-label="Abone Ol">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                            <input type="text" name="website" style="display:none" tabindex="-1">
                         </form>
 
-                        {{-- Bülten için flash mesajları (isterseniz) --}}
+                        {{-- Flash Mesajları --}}
                         @if(session('success'))
-                            <div class="alert alert-success mt-2"
-                                 style="color: white; font-size: 14px;">{{ session('success') }}</div>
+                            <div class="izkc-newsletter-alert izkc-newsletter-alert--success">
+                                <i class="fas fa-check-circle"></i> {{ session('success') }}
+                            </div>
                         @endif
                         @if(session('error'))
-                            <div class="alert alert-danger mt-2"
-                                 style="color: #ff5e14; font-size: 14px;">{{ session('error') }}</div>
+                            <div class="izkc-newsletter-alert izkc-newsletter-alert--error">
+                                <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
+                            </div>
                         @endif
+
+                        {{-- Sosyal Medya --}}
+                        <div class="izkc-footer-social-section">
+                            <h6 class="izkc-footer-social-title">{{ $footerSocialTitle }}</h6>
+                            <div class="izkc-social-links-grid">
+                                @if($socialFacebook && $socialFacebook != '#')
+                                    <a href="{{ $socialFacebook }}" target="_blank" class="izkc-social-link" title="Facebook" aria-label="Facebook">
+                                        <i class="fab fa-facebook-f"></i>
+                                    </a>
+                                @endif
+                                @if($socialTwitter && $socialTwitter != '#')
+                                    <a href="{{ $socialTwitter }}" target="_blank" class="izkc-social-link" title="Twitter" aria-label="Twitter">
+                                        <i class="fab fa-twitter"></i>
+                                    </a>
+                                @endif
+                                @if($socialInstagram && $socialInstagram != '#')
+                                    <a href="{{ $socialInstagram }}" target="_blank" class="izkc-social-link" title="Instagram" aria-label="Instagram">
+                                        <i class="fab fa-instagram"></i>
+                                    </a>
+                                @endif
+                                @if($socialLinkedin && $socialLinkedin != '#')
+                                    <a href="{{ $socialLinkedin }}" target="_blank" class="izkc-social-link" title="LinkedIn" aria-label="LinkedIn">
+                                        <i class="fab fa-linkedin-in"></i>
+                                    </a>
+                                @endif
+                                @if($socialYoutube && $socialYoutube != '#')
+                                    <a href="{{ $socialYoutube }}" target="_blank" class="izkc-social-link" title="YouTube" aria-label="YouTube">
+                                        <i class="fab fa-youtube"></i>
+                                    </a>
+                                @endif
+                                @if($socialBehance && $socialBehance != '#')
+                                    <a href="{{ $socialBehance }}" target="_blank" class="izkc-social-link" title="Behance" aria-label="Behance">
+                                        <i class="fab fa-behance"></i>
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
                     </div>
-                </aside>
-                <aside class="widget footer_social">
-                    {{-- Dinamik Sosyal Medya Başlığı --}}
-                    <h3 class="widget_title">{{ $footerSocialTitle }}<span>.</span></h3>
-                    <div class="socials">
-                        {{-- Dinamik Sosyal Medya İkonları --}}
-                        @if($socialFacebook && $socialFacebook != '#')
-                            <a href="{{ $socialFacebook }}" target="_blank"><i class="fab fa-facebook-f"></i></a>
-                        @endif
-                        @if($socialTwitter && $socialTwitter != '#')
-                            <a href="{{ $socialTwitter }}" target="_blank"><i class="fab fa-twitter"></i></a>
-                        @endif
-                        @if($socialBehance && $socialBehance != '#')
-                            <a href="{{ $socialBehance }}" target="_blank"><i class="fab fa-behance"></i></a>
-                        @endif
-                        @if($socialYoutube && $socialYoutube != '#')
-                            <a href="{{ $socialYoutube }}" target="_blank"><i class="fab fa-youtube"></i></a>
-                        @endif
-                        @if($socialLinkedin && $socialLinkedin != '#')
-                            <a href="{{ $socialLinkedin }}" target="_blank"><i class="fab fa-linkedin"></i></a>
-                        @endif
-                        @if($socialInstagram && $socialInstagram != '#')
-                            <a href="{{ $socialInstagram }}" target="_blank"><i class="fab fa-instagram"></i></a>
-                        @endif
-                    </div>
-                </aside>
+                </div>
+
             </div>
         </div>
     </div>
-</footer>
 
-<section class="copyright_section">
-    <div class="container">
-        <div class="row">
-            <div class="col-xl-12">
-                <div class="siteinfo">
-                    {{-- Dinamik Copyright Metni --}}
+    {{-- Alt Copyright Alanı --}}
+    <div class="izkc-footer-bottom" id="izkc-footer-copyright">
+        <div class="container">
+            <div class="izkc-footer-bottom-content">
+                <div class="izkc-copyright-text">
                     {!! $copyrightText !!}
+                </div>
+                <div class="izkc-copyright-logo-wrapper">
+                    <img src="{{ asset('backend/beyaz.png') }}" class="izkc-copyright-logo" alt="Logo" width="150px">
                 </div>
             </div>
         </div>
     </div>
-</section>
-<a href="#" id="backtotop"><i class="fal fa-angle-double-up"></i></a>
+</div>
+
+{{-- Başa Dön Butonu --}}
+<a href="#" id="izkc-back-to-top" class="izkc-scroll-top-button" aria-label="Başa Dön">
+    <i class="fas fa-arrow-up"></i>
+</a>
+
+
+

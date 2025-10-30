@@ -926,7 +926,7 @@ License URI:
     -o-transition: all ease 300ms;
 }
 .icon_box_01:hover i.bigger{
-    color: #fe6620;
+    color: rgba(255, 255, 255, 0.1);
 }
 .icon_box_01 *{
     position: relative;
@@ -1141,7 +1141,7 @@ License URI:
     bottom: 0;
     left: 0;
     right: 0;
-    background: rgba(255, 94, 20, .8);
+    background: rgba(41, 98, 255, 0.8);
     overflow: hidden;
     width: 0;
     height: 100%;
@@ -1606,7 +1606,7 @@ License URI:
 .footer_01{
     position: relative;
     padding: 100px 0;
-    background: #051230;
+    background: linear-gradient(135deg, var(--izokoc-secondary), var(--izokoc-blue));
 }
 .footer_01 .widget{
     position: relative;

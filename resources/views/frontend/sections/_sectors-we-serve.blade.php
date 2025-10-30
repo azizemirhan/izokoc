@@ -34,9 +34,6 @@
                                     <img src="{{ asset($sectorImage) }}" alt="{{ $sectorName }}">
                                 @endif
                                 <div class="izokoc-sector-card__overlay"></div>
-                                <div class="izokoc-sector-card__icon">
-                                    <i class="{{ $sectorIcon }}"></i>
-                                </div>
                             </div>
                             <div class="izokoc-sector-card__content">
                                 <h4 class="izokoc-sector-card__title">{{ $sectorName }}</h4>
@@ -91,14 +88,6 @@
             transform: scale(1.1);
         }
 
-        .izokoc-sector-card__overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(26, 26, 46, 0.7), rgba(255, 193, 7, 0.3));
-        }
 
         .izokoc-sector-card__icon {
             position: absolute;
@@ -106,14 +95,14 @@
             left: 30px;
             width: 60px;
             height: 60px;
-            background: #ffc107;
+            background: #1a237e;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 28px;
-            color: #1a1a1a;
-            z-index: 2;
+            color: #fff;
+            z-index: 99999;
             box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
         }
 

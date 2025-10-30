@@ -16,14 +16,14 @@
                     <div class="izokoc_info_item">
                         <i class="fas fa-envelope"></i>
                         <div class="izokoc_info_text">
-                            <span class="izokoc_label">Email Address</span>
+                            <span class="izokoc_label">Email Posta</span>
                             <a href="mailto:{{ $contactEmail }}">{{ $contactEmail }}</a>
                         </div>
                     </div>
                     <div class="izokoc_info_item">
                         <i class="fas fa-phone"></i>
                         <div class="izokoc_info_text">
-                            <span class="izokoc_label">Phone Number</span>
+                            <span class="izokoc_label">Telefon</span>
                             <a href="tel:{{ str_replace(['(', ')', ' '], '', $footerContactPhone) }}">{{ $footerContactPhone }}</a>
                         </div>
                     </div>
