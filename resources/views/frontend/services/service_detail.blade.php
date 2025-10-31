@@ -17,7 +17,11 @@
     @endif
 @endsection
 
+{{-- Bootstrap CSS (eğer master layout'ta yoksa) --}}
 @push('styles')
+    {{-- Bootstrap CSS ekleme (eğer master'da yoksa) --}}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <style>
         /* ========================================
            İZOKOÇ SERVICE DETAIL STYLES
@@ -36,6 +40,10 @@
             --izokoc-shadow: rgba(0, 0, 0, 0.1);
         }
 
+        a {
+            text-decoration: none;
+            color: #fff;
+        }
         /* ========== SERVICE DETAIL LAYOUT ========== */
         .izokoc_service_detail {
             padding: 60px 0 100px;
@@ -262,47 +270,78 @@
             font-size: 15px;
         }
 
-        /* ========== FAQ ACCORDION ========== */
+        /* ========== FAQ ACCORDION - DÜZELTİLMİŞ ========== */
+        .izokoc_faq_accordion {
+            margin-top: 25px;
+        }
+
+        /* Bootstrap Accordion Override */
         .izokoc_faq_accordion .accordion-item {
-            background: var(--izokoc-white);
-            border: 1px solid var(--izokoc-border);
-            border-radius: 12px;
-            margin-bottom: 15px;
+            background: var(--izokoc-white) !important;
+            border: 1px solid var(--izokoc-border) !important;
+            border-radius: 12px !important;
+            margin-bottom: 15px !important;
             overflow: hidden;
         }
 
+        .izokoc_faq_accordion .accordion-header {
+            margin-bottom: 0 !important;
+        }
+
         .izokoc_faq_accordion .accordion-button {
-            background: var(--izokoc-bg-light);
-            color: var(--izokoc-text-dark);
-            font-weight: 600;
-            font-size: 16px;
-            padding: 20px 25px;
-            border: none;
+            background: var(--izokoc-bg-light) !important;
+            color: var(--izokoc-text-dark) !important;
+            font-weight: 600 !important;
+            font-size: 16px !important;
+            padding: 20px 25px !important;
+            border: none !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            text-align: left;
+            width: 100%;
+            position: relative;
         }
 
         .izokoc_faq_accordion .accordion-button:not(.collapsed) {
-            background: linear-gradient(135deg, var(--izokoc-primary), var(--izokoc-blue));
-            color: var(--izokoc-white);
-            box-shadow: none;
+            background: linear-gradient(135deg, var(--izokoc-primary), var(--izokoc-blue)) !important;
+            color: var(--izokoc-white) !important;
+            box-shadow: none !important;
         }
 
         .izokoc_faq_accordion .accordion-button:focus {
-            box-shadow: 0 0 0 0.25rem rgba(255, 49, 49, 0.25);
-            border: none;
+            box-shadow: 0 0 0 0.25rem rgba(255, 49, 49, 0.25) !important;
+            border: none !important;
         }
 
         .izokoc_faq_accordion .accordion-button::after {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23FF3131'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23FF3131'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e") !important;
+            width: 1.25rem;
+            height: 1.25rem;
+            flex-shrink: 0;
         }
 
         .izokoc_faq_accordion .accordion-button:not(.collapsed)::after {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ffffff'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ffffff'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e") !important;
+            transform: rotate(180deg);
+        }
+
+        .izokoc_faq_accordion .accordion-collapse {
+            border-top: 1px solid var(--izokoc-border);
         }
 
         .izokoc_faq_accordion .accordion-body {
-            padding: 20px 25px;
+            padding: 20px 25px !important;
             color: var(--izokoc-text-dark);
             line-height: 1.7;
+            background: var(--izokoc-white);
+        }
+
+        /* FAQ Debug Styles - Geçici olarak ekleyin */
+        .faq-debug {
+            border: 2px solid red !important;
+            background: yellow !important;
+            padding: 10px !important;
+            margin: 10px 0 !important;
         }
 
         /* ========== CTA CARD ========== */
@@ -799,7 +838,7 @@
 
 @section('content')
     <section class="izokoc_service_detail">
-        <div class="izokoc_container">
+        <div class="container">
             <div class="row g-4">
                 {{-- LEFT COLUMN: Main Content --}}
                 <div class="col-lg-8">
@@ -874,36 +913,104 @@
                         </section>
                     @endif
 
-                    {{-- FAQ Section - DÜZELTILMIŞ VERSİYON --}}
+                    {{-- FAQ Section - DÜZELTİLMİŞ VERSİYON --}}
                     @if(!empty($service->faqs))
                         <section id="faq" class="izokoc_content_card">
                             <h2>{{ __('Sıkça Sorulan Sorular') }}</h2>
+
+                            {{-- Debugging: FAQ verilerini görme --}}
+                            {{-- Geçici olarak ekleyin, sonra silin --}}
+                            {{--
+                            <div class="alert alert-info">
+                                <strong>Debug - FAQ Data:</strong>
+                                <pre>{{ json_encode($service->faqs, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
+                            </div>
+                            --}}
+
                             <div class="accordion izokoc_faq_accordion" id="serviceAccordion">
-                                @foreach($service->faqs as $faq)
+                                @foreach($service->faqs as $index => $faq)
+                                    @php
+                                        $currentLocale = app()->getLocale();
+                                        $question = data_get($faq, "question.{$currentLocale}")
+                                                 ?? data_get($faq, 'question.tr')
+                                                 ?? data_get($faq, 'question')
+                                                 ?? '';
+                                        $answer = data_get($faq, "answer.{$currentLocale}")
+                                               ?? data_get($faq, 'answer.tr')
+                                               ?? data_get($faq, 'answer')
+                                               ?? '';
+                                    @endphp
+
+                                    {{-- Debugging: Her bir FAQ için veri göster --}}
+                                    {{-- Geçici olarak ekleyin --}}
+                                    {{--
+                                    <div class="alert alert-warning">
+                                        <small>
+                                            <strong>FAQ {{ $index }}:</strong><br>
+                                            Question: {{ $question }}<br>
+                                            Answer: {{ \Illuminate\Support\Str::limit($answer, 100) }}
+                                        </small>
+                                    </div>
+                                    --}}
+
+                                    @if($question) {{-- Sadece soru varsa göster --}}
                                     <div class="accordion-item">
-                                        <h2 class="accordion-header" id="heading{{ $loop->index }}">
+                                        <h2 class="accordion-header" id="heading{{ $index }}">
                                             <button class="accordion-button collapsed"
                                                     type="button"
                                                     data-bs-toggle="collapse"
-                                                    data-bs-target="#collapse{{ $loop->index }}"
+                                                    data-bs-target="#collapse{{ $index }}"
                                                     aria-expanded="false"
-                                                    aria-controls="collapse{{ $loop->index }}">
-                                                {{-- DÜZELTME: data_get yerine doğrudan array akses --}}
-                                                {{ $faq['question'][app()->getLocale()] ?? $faq['question']['tr'] ?? '' }}
+                                                    aria-controls="collapse{{ $index }}">
+                                                {{ $question }}
                                             </button>
                                         </h2>
-                                        <div id="collapse{{ $loop->index }}"
+                                        <div id="collapse{{ $index }}"
                                              class="accordion-collapse collapse"
-                                             aria-labelledby="heading{{ $loop->index }}"
+                                             aria-labelledby="heading{{ $index }}"
                                              data-bs-parent="#serviceAccordion">
                                             <div class="accordion-body">
-                                                {{-- DÜZELTME: data_get yerine doğrudan array akses --}}
-                                                {!! $faq['answer'][app()->getLocale()] ?? $faq['answer']['tr'] ?? '' !!}
+                                                @if($answer)
+                                                    {!! $answer !!}
+                                                @else
+                                                    <p class="text-muted">{{ __('Bu soru için henüz cevap eklenmemiş.') }}</p>
+                                                @endif
                                             </div>
                                         </div>
                                     </div>
+                                    @endif
                                 @endforeach
                             </div>
+
+                            {{-- Alternatif basit accordion --}}
+                            {{-- Eğer Bootstrap accordion çalışmıyorsa bu kısımı açın --}}
+                            {{--
+                            <div class="simple-faq-list">
+                                @foreach($service->faqs as $index => $faq)
+                                    @php
+                                        $currentLocale = app()->getLocale();
+                                        $question = data_get($faq, "question.{$currentLocale}") ?? data_get($faq, 'question.tr') ?? '';
+                                        $answer = data_get($faq, "answer.{$currentLocale}") ?? data_get($faq, 'answer.tr') ?? '';
+                                    @endphp
+
+                                    @if($question)
+                                        <div class="simple-faq-item" style="border: 1px solid #ddd; margin-bottom: 10px; border-radius: 8px;">
+                                            <div class="simple-faq-question"
+                                                 style="background: #f8f9fa; padding: 15px; font-weight: 600; cursor: pointer;"
+                                                 onclick="toggleFaq({{ $index }})">
+                                                {{ $question }}
+                                                <span class="toggle-icon" style="float: right;">+</span>
+                                            </div>
+                                            <div class="simple-faq-answer"
+                                                 id="faq-answer-{{ $index }}"
+                                                 style="padding: 15px; display: none;">
+                                                {!! $answer !!}
+                                            </div>
+                                        </div>
+                                    @endif
+                                @endforeach
+                            </div>
+                            --}}
                         </section>
                     @endif
 
@@ -1049,7 +1156,7 @@
                         <div class="izokoc_quick_cta">
                             <h4>{{ __('Hemen İletişime Geçin') }}</h4>
                             <p>{{ __('Sorularınıza Hızlı Yanıt') }}</p>
-                            <a href="" class="btn">
+                            <a href="/iletisim" class="btn">
                                 {{ __('İletişim Kurun') }}
                             </a>
                         </div>
@@ -1096,8 +1203,63 @@
     </section>
 @endsection
 
+{{-- Bootstrap JS ekleme --}}
 @push('scripts')
+    {{-- Bootstrap JS (eğer master'da yoksa) --}}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
+        // Bootstrap accordion manuel başlatma
+        document.addEventListener('DOMContentLoaded', function() {
+            // Bootstrap accordion'u manuel olarak başlat
+            const accordionButtons = document.querySelectorAll('.accordion-button');
+            accordionButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const target = document.querySelector(this.getAttribute('data-bs-target'));
+                    const isExpanded = this.getAttribute('aria-expanded') === 'true';
+
+                    // Diğer açık olanları kapat
+                    document.querySelectorAll('.accordion-collapse').forEach(collapse => {
+                        if (collapse !== target) {
+                            collapse.classList.remove('show');
+                            const btn = document.querySelector(`[data-bs-target="#${collapse.id}"]`);
+                            if (btn) {
+                                btn.classList.add('collapsed');
+                                btn.setAttribute('aria-expanded', 'false');
+                            }
+                        }
+                    });
+
+                    // Hedefi aç/kapat
+                    if (isExpanded) {
+                        target.classList.remove('show');
+                        this.classList.add('collapsed');
+                        this.setAttribute('aria-expanded', 'false');
+                    } else {
+                        target.classList.add('show');
+                        this.classList.remove('collapsed');
+                        this.setAttribute('aria-expanded', 'true');
+                    }
+                });
+            });
+
+            console.log('Accordion initialized:', accordionButtons.length + ' buttons found');
+        });
+
+        // Alternatif basit FAQ toggle fonksiyonu
+        function toggleFaq(index) {
+            const answer = document.getElementById('faq-answer-' + index);
+            const icon = answer.previousElementSibling.querySelector('.toggle-icon');
+
+            if (answer.style.display === 'none' || answer.style.display === '') {
+                answer.style.display = 'block';
+                icon.textContent = '-';
+            } else {
+                answer.style.display = 'none';
+                icon.textContent = '+';
+            }
+        }
+
         // Lightbox functionality
         let currentImageIndex = 0;
         const images = @json($service->gallery_images ?? []);

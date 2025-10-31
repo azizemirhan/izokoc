@@ -149,7 +149,7 @@
         .sub_title {
             font-size: 14px;
             font-weight: 600;
-            color: #ffc107;
+            color: #1a237e;
             text-transform: uppercase;
             letter-spacing: 2px;
             margin-bottom: 15px;
@@ -157,7 +157,7 @@
         }
 
         .sub_title.dark_sub_title {
-            color: #ffc107;
+            color: #1a237e;
         }
 
         .sec_title {
@@ -181,7 +181,7 @@
             transform: translateX(-50%);
             width: 80px;
             height: 3px;
-            background: #ffc107;
+            background: #1a237e;
         }
 
         .mb45 {
@@ -223,13 +223,6 @@
             letter-spacing: 1px;
         }
 
-        .iconInput input:focus,
-        .iconInput textarea:focus {
-            outline: none;
-            border-color: #ffc107;
-            box-shadow: 0 0 0 4px rgba(255, 193, 7, 0.1);
-        }
-
         .iconInput textarea {
             min-height: 150px;
             resize: vertical;
@@ -252,7 +245,7 @@
 
         .iconInput input:focus + i,
         .iconInput textarea:focus + i {
-            color: #ffc107;
+            color: #1a237e;
         }
 
         input[type="submit"] {

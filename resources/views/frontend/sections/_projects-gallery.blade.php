@@ -138,10 +138,6 @@
                                 </p>
                             @endif
 
-                            <a href="{{ $projectLink }}" class="izokoc-project-detail-btn">
-                                {{ __('Detayları Gör') }}
-                                <i class="fas fa-arrow-right"></i>
-                            </a>
                         </div>
 
                         {{-- Gizli Galeri Verileri (Lightbox için) --}}

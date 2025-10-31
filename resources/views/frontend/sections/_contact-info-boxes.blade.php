@@ -88,6 +88,7 @@
             position: relative;
             overflow: hidden;
             text-align: center;
+            max-height: 350px;
         }
 
         .icon_box_05::before {
@@ -112,7 +113,7 @@
 
         .icon_box_05 > i {
             font-size: 48px;
-            color: #ffc107;
+            color: #1a237e;
             margin-bottom: 25px;
             display: block;
             transition: all 0.4s ease;
@@ -168,8 +169,8 @@
         }
 
         .ib5_inner a:hover {
-            color: #ffc107;
-            border-bottom-color: #ffc107;
+            color: #1a237e;
+            border-bottom-color: #1a237e;
         }
 
         .ib5_inner a:hover::after {

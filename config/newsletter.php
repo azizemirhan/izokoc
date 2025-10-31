@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'double_opt_in' => true,
+    'double_opt_in' => false,
 ];

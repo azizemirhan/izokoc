@@ -481,3 +481,244 @@
         height: 45px;
     }
 }
+
+/* ========================================
+   Newsletter Form Styles
+======================================== */
+
+/* Newsletter Alert Stilleri */
+.izkc-newsletter-alert {
+    margin-top: 15px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: slideInDown 0.3s ease-out;
+}
+
+.izkc-newsletter-alert--success {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    border-left: 4px solid #047857;
+}
+
+.izkc-newsletter-alert--error {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    border-left: 4px solid #b91c1c;
+}
+
+.izkc-newsletter-alert i {
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+/* Newsletter Form Container */
+.izkc-newsletter-form {
+    margin-bottom: 20px;
+}
+
+.izkc-newsletter-input-group {
+    display: flex;
+    align-items: stretch;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.izkc-newsletter-input-group:hover {
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.izkc-newsletter-input-group:focus-within {
+    border-color: var(--izokoc-primary, #FF3131);
+    box-shadow: 0 0 0 4px rgba(255, 49, 49, 0.2);
+}
+
+.izkc-newsletter-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 15px 20px;
+    color: white;
+    font-size: 15px;
+    outline: none;
+    font-weight: 500;
+}
+
+.izkc-newsletter-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 400;
+}
+
+.izkc-newsletter-input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.izkc-newsletter-button {
+    background: linear-gradient(135deg, var(--izokoc-primary, #FF3131), var(--izokoc-blue, #2962FF));
+    border: none;
+    color: white;
+    padding: 15px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.izkc-newsletter-button:hover:not(:disabled) {
+    background: linear-gradient(135deg, var(--izokoc-blue, #2962FF), var(--izokoc-primary, #FF3131));
+    transform: scale(1.05);
+}
+
+.izkc-newsletter-button:active {
+    transform: scale(0.98);
+}
+
+.izkc-newsletter-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.izkc-newsletter-button i {
+    font-size: 16px;
+}
+
+/* Loading Animation */
+.izkc-newsletter-button .fa-spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Alert Animations */
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}
+
+/* Responsive Newsletter Form */
+@media (max-width: 768px) {
+    .izkc-newsletter-input-group {
+        flex-direction: column;
+        border-radius: 12px;
+    }
+
+    .izkc-newsletter-input {
+        padding: 12px 16px;
+        font-size: 14px;
+    }
+
+    .izkc-newsletter-button {
+        padding: 12px;
+        border-radius: 0 0 10px 10px;
+        font-size: 14px;
+    }
+
+    .izkc-newsletter-alert {
+        font-size: 13px;
+        padding: 10px 12px;
+    }
+}
+
+/* Dark Mode Newsletter Form */
+@media (prefers-color-scheme: dark) {
+    .izkc-newsletter-input-group {
+        background: rgba(0, 0, 0, 0.3);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .izkc-newsletter-input {
+        color: #f1f5f9;
+    }
+
+    .izkc-newsletter-input::placeholder {
+        color: rgba(241, 245, 249, 0.6);
+    }
+}
+
+/* Honeypot Field (Gizli) */
+input[name="website"] {
+    position: absolute !important;
+    left: -9999px !important;
+    width: 1px !important;
+    height: 1px !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+/* Newsletter Success State */
+.izkc-newsletter-form.success .izkc-newsletter-input-group {
+    border-color: #10b981;
+    background: rgba(16, 185, 129, 0.1);
+}
+
+/* Newsletter Error State */
+.izkc-newsletter-form.error .izkc-newsletter-input-group {
+    border-color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+}
+
+/* Newsletter Loading State */
+.izkc-newsletter-form.loading .izkc-newsletter-input-group {
+    opacity: 0.8;
+    pointer-events: none;
+}
+
+/* Newsletter Form Focus Ring Özelleştirmesi */
+.izkc-newsletter-input:focus {
+    box-shadow: none;
+    outline: none;
+}
+
+/* Newsletter Subscription Status Indicator */
+.izkc-newsletter-status {
+    font-size: 12px;
+    margin-top: 8px;
+    opacity: 0.8;
+}
+
+.izkc-newsletter-status.pending {
+    color: #f59e0b;
+}
+
+.izkc-newsletter-status.confirmed {
+    color: #10b981;
+}
+
+.izkc-newsletter-status.unsubscribed {
+    color: #6b7280;
+}
