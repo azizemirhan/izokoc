@@ -66,7 +66,7 @@
 
                         {{-- Sosyal Paylaşım --}}
                         <div class="izokoc-blog-single__share">
-                            <strong>{{ __('Share:') }}</strong>
+                            <strong>{{ __('share') }}</strong>
                             <div class="izokoc-social-share">
                                 <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(route('blog.show', $post->slug)) }}"
                                    target="_blank"
@@ -99,7 +99,7 @@
                                        class="izokoc-blog-navigation__link izokoc-blog-navigation__link--prev">
                                         <span class="izokoc-blog-navigation__label">
                                             <i class="icofont-rounded-left"></i>
-                                            {{ __('Previous Post') }}
+                                            {{ __('previous_post') }}
                                         </span>
                                         <span class="izokoc-blog-navigation__title">
                                             {{ Str::limit($previousPost->title, 50) }}
@@ -111,7 +111,7 @@
                                     <a href="{{ route('blog.show', $nextPost->slug) }}"
                                        class="izokoc-blog-navigation__link izokoc-blog-navigation__link--next">
                                         <span class="izokoc-blog-navigation__label">
-                                            {{ __('Next Post') }}
+                                            {{ __('next_post') }}
                                             <i class="icofont-rounded-right"></i>
                                         </span>
                                         <span class="izokoc-blog-navigation__title">
@@ -163,7 +163,7 @@
                             <form action="{{ route('blog.index') }}" method="GET" class="izokoc-search-form">
                                 <input type="search"
                                        name="q"
-                                       placeholder="{{ __('Search articles...') }}"
+                                       placeholder="{{ __('search_articles') }}"
                                        class="izokoc-search-form__input">
                                 <button type="submit" class="izokoc-search-form__button">
                                     <i class="icofont-search-1"></i>
@@ -174,7 +174,7 @@
                         {{-- Kategoriler Widget'ı --}}
                         @if(isset($categories) && $categories->isNotEmpty())
                             <div class="izokoc-widget izokoc-widget--categories">
-                                <h3 class="izokoc-widget__title">{{ __('Categories') }}</h3>
+                                <h3 class="izokoc-widget__title">{{ __('categories') }}</h3>
                                 <ul class="izokoc-category-list">
                                     @foreach($categories as $category)
                                         <li class="izokoc-category-list__item">
@@ -193,7 +193,7 @@
                         {{-- Son Yazılar Widget'ı --}}
                         @if(isset($recentPosts) && $recentPosts->isNotEmpty())
                             <div class="izokoc-widget izokoc-widget--recent">
-                                <h3 class="izokoc-widget__title">{{ __('Recent Posts') }}</h3>
+                                <h3 class="izokoc-widget__title">{{ __('recent_posts') }}</h3>
                                 <ul class="izokoc-recent-posts">
                                     @foreach($recentPosts as $recentPost)
                                         <li class="izokoc-recent-posts__item">

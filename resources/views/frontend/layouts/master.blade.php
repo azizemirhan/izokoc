@@ -66,13 +66,14 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('site/css/presets/color1.css') }}" id="colorChange"/>
     <link rel="stylesheet" type="text/css" href="{{ asset('site/header.css') }}"/>
     <link rel="stylesheet" type="text/css" href="{{ asset('site/footer.css') }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ asset('site/whatsapp.css') }}"/>
 
     @stack('styles')
 </head>
 <body>
 @include('frontend.layouts._header')
-@if (!Route::is('frontend.home', 'frontend.services.show', 'blog.index', 'blog.show', 'blog.category'))
-    <x-page-banner :title="$pageTitle ?? 'Kurumsal'" :subtitle="$pageSubtitle ?? ''"/>
+@if (!Route::is('frontend.home', 'frontend.services.show', 'blog.index', 'blog.show', 'blog.category', 'frontend.search'))
+    <x-page-banner :title="$pageTitle ?? 'İzokoç'" :subtitle="$pageSubtitle ?? ''"/>
 @endif
 @yield('content')
 @include('frontend.layouts._footer')
@@ -80,7 +81,7 @@
     @include('admin.bar')
 @endauth
 @include('frontend.layouts.modal')
-
+@include('frontend.layouts._whatsapp')
 <script src="{{ asset('site/js/jquery.js') }}"></script>
 <script src="{{ asset('site/js/jquery-ui.js') }}"></script>
 <script src="{{ asset('site/js/bootstrap.min.js') }}"></script>
@@ -111,6 +112,7 @@
 <script src="{{ asset('site/js/theme.js') }}"></script>
 <script src="{{ asset('site/header.js') }}"></script>
 <script src="{{ asset('site/footer.js') }}"></script>
+<script src="{{ asset('site/whatsapp.js') }}"></script>
 
 @stack('scripts')
 </body>

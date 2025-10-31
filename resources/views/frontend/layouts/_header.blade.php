@@ -16,56 +16,62 @@
                     <div class="izokoc_info_item">
                         <i class="fas fa-envelope"></i>
                         <div class="izokoc_info_text">
-                            <span class="izokoc_label">Email Posta</span>
+                            <span class="izokoc_label">{{ __('email') }}</span>
                             <a href="mailto:{{ $contactEmail }}">{{ $contactEmail }}</a>
                         </div>
                     </div>
                     <div class="izokoc_info_item">
                         <i class="fas fa-phone"></i>
                         <div class="izokoc_info_text">
-                            <span class="izokoc_label">Telefon</span>
+                            <span class="izokoc_label">{{ __('phone') }}</span>
                             <a href="tel:{{ str_replace(['(', ')', ' '], '', $footerContactPhone) }}">{{ $footerContactPhone }}</a>
                         </div>
                     </div>
                 </div>
 
-                <!-- Search, Language & Menu Toggle -->
+                <!-- Search, WhatsApp, Language & Menu Toggle -->
                 <div class="izokoc_header_actions">
                     <button class="izokoc_search_btn" id="izokocSearchToggle">
                         <i class="fas fa-search"></i>
                     </button>
 
-                    {{-- CMS DİL SEÇİCİ --}}
+                    {{-- WHATSAPP İLETİŞİM BUTONU --}}
+                    @php
+                        $whatsappNumber = data_get($settings, 'whatsapp_number.value', data_get($settings, 'phone', '905xxxxxxxxx'));
+                        // Telefon numarasını WhatsApp formatına çevir (sadece rakamlar)
+                        $whatsappClean = preg_replace('/[^0-9]/', '', $whatsappNumber);
+                        // Eğer 0 ile başlıyorsa, 90 ekle
+                        if(substr($whatsappClean, 0, 1) == '0') {
+                            $whatsappClean = '90' . substr($whatsappClean, 1);
+                        }
+                        // Eğer 90 ile başlamıyorsa ve 10 haneli ise başına 90 ekle
+                        if(strlen($whatsappClean) == 10) {
+                            $whatsappClean = '90' . $whatsappClean;
+                        }
+                    @endphp
+                    <a href="https://wa.me/{{ $whatsappClean }}"
+                       target="_blank"
+                       class="izokoc_whatsapp_btn"
+                       title="WhatsApp'dan İletişime Geç">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+
+                    {{-- CMS DİL SEÇİCİ - YAN YANA BAYRAKLAR --}}
                     @if(isset($activeLanguages) && $activeLanguages->count() > 1)
-                        <div class="izokoc_language_selector">
-                            <button class="izokoc_language_btn" id="izokocLanguageBtn">
+                        <div class="izokoc_language_flags">
+                            @foreach($activeLanguages as $code => $lang)
                                 @php
-                                    $currentLocale = app()->getLocale();
-                                    $currentFlagCode = $currentLocale == 'en' ? 'gb' : $currentLocale;
-                                    $currentLangData = $activeLanguages->get($currentLocale);
+                                    $flagCode = $code == 'en' ? 'gb' : $code;
+                                    $isActive = $code == app()->getLocale();
                                 @endphp
-                                <img src="{{ asset('flag-icons-main/flags/1x1/'.$currentFlagCode.'.svg') }}"
-                                     alt="{{ $currentLocale }}"
-                                     class="izokoc_flag_img">
-                                <span class="izokoc_current_lang">{{ $currentLangData['native'] ?? strtoupper($currentLocale) }}</span>
-                                <i class="fas fa-chevron-down izokoc_lang_arrow"></i>
-                            </button>
-                            <div class="izokoc_language_dropdown" id="izokocLanguageDropdown">
-                                @foreach($activeLanguages as $code => $lang)
-                                    @if($code != app()->getLocale())
-                                        <a href="{{ route('language.swap', $code) }}"
-                                           class="izokoc_language_item">
-                                            @php
-                                                $flagCode = $code == 'en' ? 'gb' : $code;
-                                            @endphp
-                                            <img src="{{ asset('flag-icons-main/flags/1x1/'.$flagCode.'.svg') }}"
-                                                 alt="{{ $lang['native'] }}"
-                                                 class="izokoc_flag_img">
-                                            <span class="izokoc_language_name">{{ $lang['native'] }}</span>
-                                        </a>
-                                    @endif
-                                @endforeach
-                            </div>
+                                <a href="{{ route('language.swap', $code) }}"
+                                   class="izokoc_flag_link {{ $isActive ? 'izokoc_active' : '' }}"
+                                   title="{{ $lang['native'] }}">
+                                    <img src="{{ asset('flag-icons-main/flags/1x1/'.$flagCode.'.svg') }}"
+                                         alt="{{ $lang['native'] }}"
+                                         class="izokoc_flag_icon">
+                                </a>
+                            @endforeach
                         </div>
                     @endif
 
@@ -87,29 +93,28 @@
                 <i class="fas fa-times"></i>
             </button>
             <div class="izokoc_search_modal_body">
-                <h3 class="izokoc_search_modal_title">Arama Yap</h3>
                 <form class="izokoc_search_modal_form" method="get" action="{{ route('frontend.search') }}">
                     <div class="izokoc_search_input_wrapper">
                         <i class="fas fa-search izokoc_search_icon"></i>
                         <input
                                 type="search"
-                                name="s"
-                                placeholder="Aradığınız kelimeyi yazın..."
+                                name="s"T
+                                placeholder="{{ __('Type in the word you are looking for...') }}"
                                 class="izokoc_search_modal_input"
                                 autocomplete="off"
                         >
                         <button type="submit" class="izokoc_search_modal_submit">
-                            Ara
+                            {{ __('search-only') }}
                         </button>
                     </div>
                 </form>
                 <div class="izokoc_search_suggestions">
-                    <p class="izokoc_suggestions_title">Popüler Aramalar:</p>
+                    <p class="izokoc_suggestions_title">{{ __('popular_searches') }}</p>
                     <div class="izokoc_suggestions_tags">
-                        <a href="#" class="izokoc_suggestion_tag">İzolasyon</a>
-                        <a href="#" class="izokoc_suggestion_tag">Mantolama</a>
-                        <a href="#" class="izokoc_suggestion_tag">Çatı Yalıtımı</a>
-                        <a href="#" class="izokoc_suggestion_tag">Su Yalıtımı</a>
+                        <a href="#" class="izokoc_suggestion_tag">{{ __('isolation') }}</a>
+                        <a href="#" class="izokoc_suggestion_tag">{{ __('insulation') }}</a>
+                        <a href="#" class="izokoc_suggestion_tag">{{ __('roof-insulation') }}</a>
+                        <a href="#" class="izokoc_suggestion_tag">{{ __('waterproofing') }}</a>
                     </div>
                 </div>
             </div>
@@ -209,7 +214,7 @@
     {{-- MOBİL DİL SEÇİCİ --}}
     @if(isset($activeLanguages) && $activeLanguages->count() > 1)
         <div class="izokoc_mobile_languages">
-            <h4>{{ __('Dil Seçin') }}</h4>
+            <h4>{{ __('language_select') }}</h4>
             <div class="izokoc_mobile_language_list">
                 @foreach($activeLanguages as $code => $lang)
                     <a href="{{ route('language.swap', $code) }}"
@@ -231,7 +236,7 @@
     @endif
 
     <div class="izokoc_mobile_contact">
-        <h4>İletişim</h4>
+        <h4>{{ __('contact') }}</h4>
         <div class="izokoc_mobile_contact_item">
             <i class="fas fa-envelope"></i>
             <a href="mailto:{{ $contactEmail }}">{{ $contactEmail }}</a>
@@ -239,6 +244,10 @@
         <div class="izokoc_mobile_contact_item">
             <i class="fas fa-phone"></i>
             <a href="tel:{{ str_replace(['(', ')', ' '], '', $footerContactPhone) }}">{{ $footerContactPhone }}</a>
+        </div>
+        <div class="izokoc_mobile_contact_item izokoc_whatsapp_item">
+            <i class="fab fa-whatsapp"></i>
+            <a href="https://wa.me/{{ $whatsappClean }}" target="_blank">{{ __('whatsapp_contact') }}</a>
         </div>
     </div>
 

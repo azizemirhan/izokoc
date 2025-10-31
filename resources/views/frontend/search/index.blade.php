@@ -9,9 +9,9 @@
             <div class="izokoc_search_header">
                 <h1 class="izokoc_search_title">
                     @if(!empty($query))
-                        "<span class="izokoc_search_query">{{ $query }}</span>" için arama sonuçları
+                        "<span class="izokoc_search_query">{{ $query }}</span>" {{ __('search_results_for') }}
                     @else
-                        Arama
+                    {{ __('search-only') }}
                     @endif
                 </h1>
 
@@ -19,7 +19,7 @@
                     <div class="izokoc_search_meta">
                     <span class="izokoc_results_count">
                         <i class="fas fa-search"></i>
-                        {{ number_format($totalResults, 0, ',', '.') }} sonuç bulundu
+                        {{ number_format($totalResults, 0, ',', '.') }} {{ __('results_found') }}
                     </span>
                         <span class="izokoc_execution_time">
                         <i class="fas fa-clock"></i>
@@ -38,14 +38,14 @@
                                 type="search"
                                 name="s"
                                 value="{{ $query }}"
-                                placeholder="Aradığınız kelimeyi yazın..."
+                                placeholder="{{ __('search_placeholder') }}"
                                 class="izokoc_search_input_page"
                                 autocomplete="off"
                                 autofocus
                         >
                         <button type="submit" class="izokoc_search_btn_page">
                             <i class="fas fa-arrow-right"></i>
-                            Ara
+                            {{ __('search-only') }}
                         </button>
                     </div>
                 </form>
@@ -120,17 +120,17 @@
                         <div class="izokoc_no_results_icon">
                             <i class="fas fa-search-minus"></i>
                         </div>
-                        <h2 class="izokoc_no_results_title">Sonuç Bulunamadı</h2>
+                        <h2 class="izokoc_no_results_title">{{ __('no_results_title') }}</h2>
                         <p class="izokoc_no_results_text">
-                            "<strong>{{ $query }}</strong>" için herhangi bir sonuç bulunamadı.
+                            "<strong>{{ $query }}</strong>" {{ __('no_results_text') }}
                         </p>
                         <div class="izokoc_search_suggestions">
-                            <h3>Arama ipuçları:</h3>
+                            <h3>{{ __('search_tips_title') }}</h3>
                             <ul>
-                                <li><i class="fas fa-check"></i> Farklı anahtar kelimeler deneyin</li>
-                                <li><i class="fas fa-check"></i> Daha genel terimler kullanın</li>
-                                <li><i class="fas fa-check"></i> Yazım hatalarını kontrol edin</li>
-                                <li><i class="fas fa-check"></i> Daha az kelime kullanmayı deneyin</li>
+                                <li><i class="fas fa-check"></i>{{ __('tip_1') }}</li>
+                                <li><i class="fas fa-check"></i>{{ __('tip_2') }}</li>
+                                <li><i class="fas fa-check"></i>{{ __('tip_3') }}</li>
+                                <li><i class="fas fa-check"></i>{{ __('tip_4') }}</li>
                             </ul>
                         </div>
                     </div>
@@ -141,23 +141,23 @@
                     <div class="izokoc_search_welcome_icon">
                         <i class="fas fa-search"></i>
                     </div>
-                    <h2>Site İçi Arama</h2>
-                    <p>Arama yapmak için yukarıdaki kutucuğa anahtar kelimelerinizi yazın.</p>
+                    <h2>{{ __('initial_search_title') }}</h2>
+                    <p>{{ __('initial_search_text') }}</p>
 
                     <div class="izokoc_popular_searches">
-                        <h3>Popüler Aramalar:</h3>
+                        <h3>{{ __('popular_searches_title') }}</h3>
                         <div class="izokoc_popular_tags">
                             <a href="{{ route('frontend.search', ['s' => 'izolasyon']) }}" class="izokoc_popular_tag">
-                                <i class="fas fa-fire"></i> İzolasyon
+                                <i class="fas fa-fire"></i> {{ __('popular_search_1') }}
                             </a>
                             <a href="{{ route('frontend.search', ['s' => 'mantolama']) }}" class="izokoc_popular_tag">
-                                <i class="fas fa-fire"></i> Mantolama
+                                <i class="fas fa-fire"></i> {{ __('popular_search_2') }}
                             </a>
                             <a href="{{ route('frontend.search', ['s' => 'yalıtım']) }}" class="izokoc_popular_tag">
-                                <i class="fas fa-fire"></i> Yalıtım
+                                <i class="fas fa-fire"></i> {{ __('popular_search_3') }}
                             </a>
                             <a href="{{ route('frontend.search', ['s' => 'çatı']) }}" class="izokoc_popular_tag">
-                                <i class="fas fa-fire"></i> Çatı
+                                <i class="fas fa-fire"></i> {{ __('popular_search_4') }}
                             </a>
                         </div>
                     </div>
@@ -165,7 +165,6 @@
             @endif
         </div>
     </div>
-
     @push('styles')
         <style>
             /* ========================================

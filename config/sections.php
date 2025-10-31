@@ -621,7 +621,7 @@ return [
             [
                 'name' => 'description',
                 'label' => 'Açıklama Metni',
-                'type' => 'textarea',
+                'type' => 'text',
                 'translatable' => true,
                 'default' => 'Farklı sektörlerden firmalarla gerçekleştirdiğimiz projeler'
             ],

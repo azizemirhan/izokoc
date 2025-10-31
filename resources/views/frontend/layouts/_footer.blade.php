@@ -8,7 +8,7 @@
     // Çevrilebilir Ayarlar
     $footerInfoText = data_get($settings, 'footer_info_text.value.' . app()->getLocale(), 'Projelerinizi, uzman mühendislik çözümlerimiz ve yüksek kaliteli yalıtım uygulamalarımızla koruma altına alıyoruz.');
     $footerContactText = data_get($settings, 'footer_contact_text.value.' . app()->getLocale(), 'Uzman Ekibimizle İletişime Geçin');
-    $footerLinksTitle = data_get($settings, 'footer_links_title.value.' . app()->getLocale(), 'Kurumsal');
+
     $footerServicesTitle = data_get($settings, 'footer_services_title.value.' . app()->getLocale(), 'Hizmetlerimiz');
     $newsletterTitle = data_get($settings, 'newsletter_title.value.' . app()->getLocale(), 'E-Bülten');
     $footerSocialTitle = data_get($settings, 'footer_social_title.value.' . app()->getLocale(), 'Bizi Takip Edin');
@@ -73,7 +73,7 @@
                     <div class="izkc-footer-links-section">
                         <h5 class="izkc-footer-section-title">
                             <span class="izkc-footer-title-line"></span>
-                            {{ $footerLinksTitle }}
+                            {{ __('institutional') }}
                         </h5>
                         <div class="izkc-footer-menu-wrapper">
                             {{-- Footer için özel render edilen menu --}}
@@ -104,7 +104,7 @@
                                 <input type="email"
                                        name="email"
                                        class="izkc-newsletter-input"
-                                       placeholder="E-posta adresiniz"
+                                       placeholder="{{ __('your-email-address') }}"
                                        required/>
                                 <button type="submit"
                                         class="izkc-newsletter-button"
@@ -129,7 +129,7 @@
 
                         {{-- Sosyal Medya --}}
                         <div class="izkc-footer-social-section">
-                            <h6 class="izkc-footer-social-title">{{ $footerSocialTitle }}</h6>
+                            <h6 class="izkc-footer-social-title">{{ __('follow_us') }}</h6>
                             <div class="izkc-social-links-grid">
                                 @if($socialFacebook && $socialFacebook != '#')
                                     <a href="{{ $socialFacebook }}" target="_blank" class="izkc-social-link" title="Facebook" aria-label="Facebook">

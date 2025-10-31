@@ -122,6 +122,33 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    const mobileMenuItems = document.querySelectorAll('.izokoc_mobile_item.izokoc_has_submenu > a, .izokoc_mobile_item.izokoc_has_submenu > span');
+
+    mobileMenuItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const parentItem = this.closest('.izokoc_mobile_item');
+            const wasActive = parentItem.classList.contains('izokoc_active');
+
+            // Aynı seviyedeki diğer açık menüleri kapat
+            const siblings = parentItem.parentElement.querySelectorAll(':scope > .izokoc_mobile_item.izokoc_active');
+            siblings.forEach(sibling => {
+                if (sibling !== parentItem) {
+                    sibling.classList.remove('izokoc_active');
+                }
+            });
+
+            // Toggle current item
+            if (wasActive) {
+                parentItem.classList.remove('izokoc_active');
+            } else {
+                parentItem.classList.add('izokoc_active');
+            }
+        });
+    });
+
     // Mobil menü kapatma butonuna tıklandığında
     if (mobileClose) {
         mobileClose.addEventListener('click', closeMobileMenu);

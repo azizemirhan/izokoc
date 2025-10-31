@@ -26,7 +26,7 @@
                     <span>{{ $mainTitle }}</span>
                 </h2>
                 @if($description)
-                    <p class="izokoc-projects-description">{{ $description }}</p>
+                    <p class="izokoc-projects-description">{!! $description !!}</p>
                 @endif
             </div>
         </div>
@@ -37,7 +37,7 @@
                 <div class="col-xl-12">
                     <div class="izokoc-projects-filter-bar text-center mb-5">
                         <button class="izokoc-filter-button active" data-filter="all">
-                            <i class="fas fa-th"></i> {{ __('Tümü') }}
+                            <i class="fas fa-th"></i> {{ __('All') }}
                         </button>
                         @foreach($categories as $index => $category)
                             <button class="izokoc-filter-button" data-filter="izokoc-cat-{{ $index }}">
@@ -170,7 +170,7 @@
             <div class="row mt-5">
                 <div class="col-12 text-center">
                     <button class="theme-btn izokoc-load-more-btn" id="izokocLoadMoreProjects">
-                        <i class="fas fa-sync-alt"></i> {{ __('Daha Fazla Göster') }}
+                        <i class="fas fa-sync-alt"></i> {{ __('Show More') }}
                     </button>
                 </div>
             </div>

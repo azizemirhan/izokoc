@@ -59,7 +59,7 @@ ul {
     content: '';
     position: absolute;
     top: 0;
-    right: 0;
+    left: 70%;
     width: 50%;
     height: 100%;
     background: var(--izokoc-secondary);
@@ -124,6 +124,7 @@ ul {
 }
 
 .izokoc_search_btn,
+.izokoc_whatsapp_btn,
 .izokoc_menu_toggle {
     background: transparent;
     border: 2px solid rgba(255, 255, 255, 0.3);
@@ -136,12 +137,68 @@ ul {
     display: flex;
     align-items: center;
     justify-content: center;
+    text-decoration: none;
 }
 
 .izokoc_search_btn:hover {
     background: rgba(255, 255, 255, 0.15);
     border-color: var(--izokoc-white);
     transform: rotate(90deg);
+}
+
+/* WhatsApp Button Special Styles */
+.izokoc_whatsapp_btn {
+    font-size: 22px;
+    position: relative;
+    overflow: hidden;
+}
+
+.izokoc_whatsapp_btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: #25D366;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.4s ease;
+    z-index: -1;
+}
+
+.izokoc_whatsapp_btn:hover {
+    background: #25D366;
+    border-color: #25D366;
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(37, 211, 102, 0.5);
+}
+
+.izokoc_whatsapp_btn:hover::before {
+    width: 100%;
+    height: 100%;
+}
+
+.izokoc_whatsapp_btn i {
+    position: relative;
+    z-index: 1;
+}
+
+/* WhatsApp pulse animation */
+@keyframes whatsappPulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(37, 211, 102, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
+    }
+}
+
+.izokoc_whatsapp_btn {
+    animation: whatsappPulse 2s infinite;
 }
 
 .izokoc_menu_toggle {
@@ -342,107 +399,56 @@ ul {
 }
 
 /* ========== LANGUAGE SELECTOR ========== */
-.izokoc_language_selector {
-    position: relative;
-}
-
-.izokoc_language_btn {
-    background: transparent;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    color: var(--izokoc-white);
-    height: 45px;
-    padding: 0 18px;
-    border-radius: 25px;
-    cursor: pointer;
-    transition: var(--izokoc-transition);
+/* ========== LANGUAGE FLAGS (YAN YANA) ========== */
+.izokoc_language_flags {
     display: flex;
     align-items: center;
     gap: 10px;
-    font-weight: 600;
-    font-size: 14px;
 }
 
-.izokoc_language_btn:hover {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: var(--izokoc-white);
-}
-
-.izokoc_flag_img {
-    width: 20px;
-    height: 20px;
+.izokoc_flag_link {
+    position: relative;
+    display: inline-block;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
-    object-fit: cover;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
-
-.izokoc_current_lang {
-    letter-spacing: 0.5px;
-}
-
-.izokoc_lang_arrow {
-    font-size: 12px;
-    transition: var(--izokoc-transition);
-}
-
-.izokoc_language_btn:hover .izokoc_lang_arrow {
-    transform: translateY(2px);
-}
-
-.izokoc_language_dropdown {
-    position: absolute;
-    top: calc(100% + 10px);
-    right: 0;
-    background: var(--izokoc-white);
-    border-radius: 12px;
-    box-shadow: 0 10px 30px var(--izokoc-shadow);
-    min-width: 180px;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-10px);
-    transition: var(--izokoc-transition);
     overflow: hidden;
-    z-index: 100;
-}
-
-.izokoc_language_dropdown.izokoc_active {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-}
-
-.izokoc_language_item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 20px;
-    color: var(--izokoc-text-dark);
     transition: var(--izokoc-transition);
-    border-bottom: 1px solid var(--izokoc-border);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
 }
 
-.izokoc_language_item:last-child {
-    border-bottom: none;
+.izokoc_flag_link:hover {
+    transform: translateY(-3px) scale(1.1);
+    border-color: var(--izokoc-white);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
 }
 
-.izokoc_language_item:hover {
-    background: linear-gradient(90deg, rgba(255, 49, 49, 0.1), transparent);
-    padding-left: 25px;
+.izokoc_flag_link.izokoc_active {
+    border-color: var(--izokoc-white);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
 }
 
-.izokoc_language_item.izokoc_active {
-    background: linear-gradient(90deg, rgba(41, 98, 255, 0.1), transparent);
-    color: var(--izokoc-blue);
-    font-weight: 600;
+.izokoc_flag_link.izokoc_active::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid var(--izokoc-white);
 }
 
-.izokoc_language_item .izokoc_flag_img {
-    width: 24px;
-    height: 24px;
-}
-
-.izokoc_language_name {
-    font-size: 14px;
-    font-weight: 500;
+.izokoc_flag_icon {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
 /* ========== MOBILE LANGUAGES ========== */
@@ -809,7 +815,7 @@ ul {
 .izokoc_mobile_close {
     background: rgba(255, 255, 255, 0.2);
     border: none;
-    color: var(--izokoc-white);
+    color: #FF3131;
     width: 40px;
     height: 40px;
     border-radius: 50%;
@@ -1001,6 +1007,34 @@ ul {
     color: var(--izokoc-primary);
 }
 
+/* WhatsApp Item Special Style */
+.izokoc_mobile_contact_item.izokoc_whatsapp_item {
+    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin-top: 15px;
+    transition: all 0.3s ease;
+}
+
+.izokoc_mobile_contact_item.izokoc_whatsapp_item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+}
+
+.izokoc_mobile_contact_item.izokoc_whatsapp_item i {
+    color: white;
+    font-size: 20px;
+}
+
+.izokoc_mobile_contact_item.izokoc_whatsapp_item a {
+    color: white;
+    font-weight: 600;
+}
+
+.izokoc_mobile_contact_item.izokoc_whatsapp_item a:hover {
+    color: white;
+}
+
 /* ========== MOBILE SOCIAL ========== */
 .izokoc_mobile_social {
     display: flex;
@@ -1063,6 +1097,9 @@ ul {
     .izokoc_social {
         display: none;
     }
+    .izokoc_topbar::before {
+        left: 63%;
+    }
 
     .izokoc_menu_toggle {
         display: flex;
@@ -1109,9 +1146,16 @@ ul {
     }
 
     .izokoc_search_btn,
+    .izokoc_whatsapp_btn,
     .izokoc_menu_toggle {
         width: 40px;
         height: 40px;
+        font-size: 18px;
+    }
+
+    /* WhatsApp butonunu mobilde gizle (sidebar'da var) */
+    .izokoc_whatsapp_btn {
+        display: none;
     }
 
     .izokoc_logo img {
@@ -1191,4 +1235,192 @@ ul {
 
 .izokoc_mobile_sidebar::-webkit-scrollbar-thumb:hover {
     background: #e62929;
+}
+
+/* Mobil Dil Seçici Z-Index Düzeltmesi */
+.izokoc_mobile_languages {
+    position: relative;
+    z-index: 1000; /* Yüksek z-index */
+    padding: 20px;
+    background: #fff;
+}
+
+.izokoc_mobile_language_list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+    z-index: 1001;
+}
+
+.izokoc_mobile_language_item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+    position: relative;
+    z-index: 1002;
+}
+
+.izokoc_mobile_language_item:hover {
+    background: #e9ecef;
+    transform: translateX(5px);
+}
+
+.izokoc_mobile_language_item.izokoc_active {
+    background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+    color: #fff;
+}
+
+/* Mobil Sidebar Z-Index */
+.izokoc_mobile_sidebar {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 320px;
+    height: 100vh;
+    background: #fff;
+    box-shadow: -5px 0 30px rgba(0, 0, 0, 0.1);
+    transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 9999; /* Çok yüksek z-index */
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.izokoc_mobile_sidebar.izokoc_active {
+    right: 0;
+}
+
+/* Mobil Overlay Z-Index */
+.izokoc_mobile_overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 9998; /* Sidebar'dan bir alt */
+}
+
+.izokoc_mobile_overlay.izokoc_active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Mobil Menü Link ve Ok İkonu Düzeltmesi */
+.izokoc_mobile_item > a,
+.izokoc_mobile_item > span {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 15px 20px;
+    color: #1f2937;
+    font-weight: 500;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+/* Ok İkonu Container - Sabit Pozisyon */
+.izokoc_mobile_toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: #f3f4f6;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    flex-shrink: 0; /* Önemli: Küçülmeyi engeller */
+    margin-left: auto; /* Sağa yaslar */
+}
+
+.izokoc_mobile_toggle i {
+    font-size: 12px;
+    color: #6b7280;
+    transition: transform 0.3s ease;
+}
+
+/* Aktif Durumda Ok Döner */
+.izokoc_mobile_item.izokoc_active > a .izokoc_mobile_toggle i,
+.izokoc_mobile_item.izokoc_active > span .izokoc_mobile_toggle i {
+    transform: rotate(180deg);
+}
+
+/* Alt Menü Stili */
+.izokoc_mobile_submenu {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+    background: #f9fafb;
+}
+
+.izokoc_mobile_item.izokoc_active > .izokoc_mobile_submenu {
+    max-height: 500px; /* Yeterince yüksek bir değer */
+}
+
+.izokoc_mobile_submenu .izokoc_mobile_item > a {
+    padding-left: 40px;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.izokoc_mobile_submenu .izokoc_mobile_item > a:hover {
+    color: #dc2626;
+    background: #fff;
+}
+
+/* Footer Z-Index */
+.izkc-footer-wrapper {
+    position: relative;
+    z-index: 1; /* Düşük z-index */
+}
+
+/* Header Z-Index */
+.izokoc_header {
+    position: relative;
+    z-index: 100;
+}
+
+.izokoc_navbar {
+    position: relative;
+    z-index: 101;
+}
+
+/* ========== RESPONSIVE DİL BAYRAKLARI ========== */
+@media (max-width: 768px) {
+    .izokoc_language_flags {
+        display: none;
+    }
+
+
+
+    .izokoc_flag_link {
+        width: 28px;
+        height: 28px;
+        border-width: 1.5px;
+    }
+
+    .izokoc_flag_link:hover {
+        transform: translateY(-2px) scale(1.05);
+    }
+}
+
+@media (max-width: 480px) {
+    .izokoc_language_flags {
+        gap: 6px;
+    }
+
+    .izokoc_flag_link {
+        width: 26px;
+        height: 26px;
+    }
 }

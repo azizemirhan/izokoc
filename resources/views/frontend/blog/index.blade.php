@@ -57,7 +57,7 @@
 
                                     <a href="{{ route('blog.show', $post->slug) }}"
                                        class="izokoc-blog-card__readmore">
-                                        {{ __('Read More') }}
+                                        {{ __('read_more') }}
                                         <i class="icofont-long-arrow-right"></i>
                                     </a>
                                 </div>
@@ -65,8 +65,8 @@
                         @empty
                             <div class="izokoc-no-results">
                                 <i class="icofont-search-document"></i>
-                                <h4>{{ __('No posts found') }}</h4>
-                                <p>{{ __('Try adjusting your search or filter to find what you\'re looking for.') }}</p>
+                                <h4>{{ __('no_posts_found') }}</h4>
+                                <p>{{ __('Try adjusting your search or filter to find what you are looking for.') }}</p>
                             </div>
                         @endforelse
                     </div>
@@ -87,7 +87,7 @@
                             <form action="{{ route('blog.index') }}" method="GET" class="izokoc-search-form">
                                 <input type="search"
                                        name="q"
-                                       placeholder="{{ __('Search articles...') }}"
+                                       placeholder="{{ __('search_articles') }}"
                                        value="{{ request('q') }}"
                                        class="izokoc-search-form__input">
                                 <button type="submit" class="izokoc-search-form__button">
@@ -99,7 +99,7 @@
                         {{-- Kategoriler Widget'ı --}}
                         @if($categories->isNotEmpty())
                             <div class="izokoc-widget izokoc-widget--categories">
-                                <h3 class="izokoc-widget__title">{{ __('Categories') }}</h3>
+                                <h3 class="izokoc-widget__title">{{ __('categories') }}</h3>
                                 <ul class="izokoc-category-list">
                                     @foreach($categories as $category)
                                         <li class="izokoc-category-list__item">
@@ -118,7 +118,7 @@
                         {{-- Son Yazılar Widget'ı --}}
                         @if($recentPosts->isNotEmpty())
                             <div class="izokoc-widget izokoc-widget--recent">
-                                <h3 class="izokoc-widget__title">{{ __('Recent Posts') }}</h3>
+                                <h3 class="izokoc-widget__title">{{ __('recent_posts') }}</h3>
                                 <ul class="izokoc-recent-posts">
                                     @foreach($recentPosts as $recentPost)
                                         <li class="izokoc-recent-posts__item">
@@ -148,7 +148,7 @@
                         {{-- Etiketler Widget'ı (İsteğe bağlı) --}}
                         @if(isset($tags) && $tags->isNotEmpty())
                             <div class="izokoc-widget izokoc-widget--tags">
-                                <h3 class="izokoc-widget__title">{{ __('Popular Tags') }}</h3>
+                                <h3 class="izokoc-widget__title">{{ __('popular_tags') }}</h3>
                                 <div class="izokoc-tag-cloud">
                                     @foreach($tags as $tag)
                                         <a href="{{ route('blog.tag', $tag->slug) }}" class="izokoc-tag-cloud__item">

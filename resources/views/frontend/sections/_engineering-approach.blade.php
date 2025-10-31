@@ -122,7 +122,6 @@
             justify-content: center;
             font-size: 24px;
             font-weight: 700;
-            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.4);
         }
 
         .izokoc-process-step__icon {
