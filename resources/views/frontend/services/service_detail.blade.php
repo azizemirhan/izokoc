@@ -848,170 +848,161 @@
                             <i class="fas fa-tools"></i>
                             {{ __('Hizmetlerimiz') }}
                         </a>
-                        <h1 class="izokoc_service_title">
-                            {{ $service->getTranslation('title', app()->getLocale()) }}
-                        </h1>
-                        @if($service->getTranslation('summary', app()->getLocale()))
-                            <p class="izokoc_service_summary">
-                                {{ $service->getTranslation('summary', app()->getLocale()) }}
-                            </p>
+
+                        @php
+                            $title = $service->getTranslation('title', app()->getLocale());
+                        @endphp
+
+                        @if($title)
+                            <h1 class="izokoc_service_title">{{ $title }}</h1>
+                        @endif
+
+                        @php
+                            $summary = $service->getTranslation('summary', app()->getLocale());
+                        @endphp
+
+                        @if($summary)
+                            <p class="izokoc_service_summary">{{ $summary }}</p>
                         @endif
                     </div>
 
-                    {{-- Cover Image --}}
+                    {{-- Cover Image - Sadece varsa göster --}}
                     @if($service->cover_image)
                         <div class="izokoc_service_cover">
                             <img src="{{ asset($service->cover_image) }}"
-                                 alt="{{ $service->getTranslation('title', app()->getLocale()) }}">
+                                 alt="{{ $title ?? 'Service' }}">
                         </div>
                     @endif
 
-                    {{-- Main Content --}}
-                    <article id="details" class="izokoc_content_card">
-                        <div class="izokoc_prose">
-                            {!! $service->getTranslation('content', app()->getLocale()) !!}
+                    {{-- Main Content - Sadece varsa göster --}}
+                    @php
+                        $content = $service->getTranslation('content', app()->getLocale());
+                        $expectationsContent = $service->getTranslation('expectations_content', app()->getLocale());
+                    @endphp
 
-                            {{-- Expectations Content --}}
-                            @if($service->expectations_content)
-                                <div class="izokoc_expectations_panel">
-                                    <h2>{{ __('Yüksek Beklentiler') }}</h2>
-                                    <div class="izokoc_prose">
-                                        {!! $service->getTranslation('expectations_content', app()->getLocale()) !!}
+                    @if($content || $expectationsContent)
+                        <article id="details" class="izokoc_content_card">
+                            <div class="izokoc_prose">
+                                @if($content)
+                                    {!! $content !!}
+                                @endif
+
+                                {{-- Expectations Content - Sadece varsa göster --}}
+                                @if($expectationsContent)
+                                    <div class="izokoc_expectations_panel">
+                                        <h2>{{ __('Yüksek Beklentiler') }}</h2>
+                                        <div class="izokoc_prose">
+                                            {!! $expectationsContent !!}
+                                        </div>
                                     </div>
-                                </div>
-                            @endif
-                        </div>
-                    </article>
+                                @endif
+                            </div>
+                        </article>
+                    @endif
 
-                    {{-- Benefits Section --}}
-                    @if(!empty($service->benefits))
+                    {{-- Benefits Section - Sadece varsa göster --}}
+                    @if(!empty($service->benefits) && is_array($service->benefits) && count(array_filter($service->benefits)) > 0)
                         <section id="benefits" class="izokoc_content_card">
                             <h2>{{ __('Hizmetin Faydaları') }}</h2>
                             <div class="izokoc_benefits_grid">
                                 @foreach($service->benefits as $benefit)
-                                    <div class="izokoc_benefit_item">
-                                        <i class="fas fa-check-circle"></i>
-                                        <span>{{ data_get($benefit, 'text.' . app()->getLocale()) }}</span>
-                                    </div>
+                                    @php
+                                        $benefitText = data_get($benefit, 'text.' . app()->getLocale());
+                                    @endphp
+                                    @if($benefitText)
+                                        <div class="izokoc_benefit_item">
+                                            <i class="fas fa-check-circle"></i>
+                                            <span>{{ $benefitText }}</span>
+                                        </div>
+                                    @endif
                                 @endforeach
                             </div>
                         </section>
                     @endif
 
-                    {{-- Support Items Section --}}
-                    @if(!empty($service->support_items) && collect($service->support_items)->isNotEmpty())
+                    {{-- Support Items Section - Sadece varsa göster --}}
+                    @if(!empty($service->support_items) && is_array($service->support_items) && count(array_filter($service->support_items)) > 0)
                         <section id="support" class="izokoc_content_card">
                             <h2>{{ __('Nasıl Yardımcı Olabiliriz?') }}</h2>
                             <div class="izokoc_support_grid">
                                 @foreach($service->support_items as $item)
-                                    <div class="izokoc_support_item">
-                                        <i class="fas fa-shield-alt"></i>
-                                        <p>{{ data_get($item, 'text.' . app()->getLocale()) }}</p>
-                                    </div>
+                                    @php
+                                        $supportText = data_get($item, 'text.' . app()->getLocale());
+                                    @endphp
+                                    @if($supportText)
+                                        <div class="izokoc_support_item">
+                                            <i class="fas fa-shield-alt"></i>
+                                            <p>{{ $supportText }}</p>
+                                        </div>
+                                    @endif
                                 @endforeach
                             </div>
                         </section>
                     @endif
 
-                    {{-- FAQ Section - DÜZELTİLMİŞ VERSİYON --}}
-                    @if(!empty($service->faqs))
-                        <section id="faq" class="izokoc_content_card">
-                            <h2>{{ __('Sıkça Sorulan Sorular') }}</h2>
+                    {{-- FAQ Section - Sadece varsa göster --}}
+                    @if(!empty($service->faqs) && is_array($service->faqs))
+                        @php
+                            // En az bir geçerli FAQ var mı kontrol et
+                            $hasValidFaq = false;
+                            foreach($service->faqs as $faq) {
+                                $currentLocale = app()->getLocale();
+                                $question = data_get($faq, "question.{$currentLocale}")
+                                         ?? data_get($faq, 'question.tr')
+                                         ?? data_get($faq, 'question');
+                                if($question) {
+                                    $hasValidFaq = true;
+                                    break;
+                                }
+                            }
+                        @endphp
 
-                            {{-- Debugging: FAQ verilerini görme --}}
-                            {{-- Geçici olarak ekleyin, sonra silin --}}
-                            {{--
-                            <div class="alert alert-info">
-                                <strong>Debug - FAQ Data:</strong>
-                                <pre>{{ json_encode($service->faqs, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
-                            </div>
-                            --}}
+                        @if($hasValidFaq)
+                            <section id="faq" class="izokoc_content_card">
+                                <h2>{{ __('Sıkça Sorulan Sorular') }}</h2>
 
-                            <div class="accordion izokoc_faq_accordion" id="serviceAccordion">
-                                @foreach($service->faqs as $index => $faq)
-                                    @php
-                                        $currentLocale = app()->getLocale();
-                                        $question = data_get($faq, "question.{$currentLocale}")
-                                                 ?? data_get($faq, 'question.tr')
-                                                 ?? data_get($faq, 'question')
-                                                 ?? '';
-                                        $answer = data_get($faq, "answer.{$currentLocale}")
-                                               ?? data_get($faq, 'answer.tr')
-                                               ?? data_get($faq, 'answer')
-                                               ?? '';
-                                    @endphp
+                                <div class="accordion izokoc_faq_accordion" id="serviceAccordion">
+                                    @foreach($service->faqs as $index => $faq)
+                                        @php
+                                            $currentLocale = app()->getLocale();
+                                            $question = data_get($faq, "question.{$currentLocale}")
+                                                     ?? data_get($faq, 'question.tr')
+                                                     ?? data_get($faq, 'question');
+                                            $answer = data_get($faq, "answer.{$currentLocale}")
+                                                   ?? data_get($faq, 'answer.tr')
+                                                   ?? data_get($faq, 'answer');
+                                        @endphp
 
-                                    {{-- Debugging: Her bir FAQ için veri göster --}}
-                                    {{-- Geçici olarak ekleyin --}}
-                                    {{--
-                                    <div class="alert alert-warning">
-                                        <small>
-                                            <strong>FAQ {{ $index }}:</strong><br>
-                                            Question: {{ $question }}<br>
-                                            Answer: {{ \Illuminate\Support\Str::limit($answer, 100) }}
-                                        </small>
-                                    </div>
-                                    --}}
-
-                                    @if($question) {{-- Sadece soru varsa göster --}}
-                                    <div class="accordion-item">
-                                        <h2 class="accordion-header" id="heading{{ $index }}">
-                                            <button class="accordion-button collapsed"
-                                                    type="button"
-                                                    data-bs-toggle="collapse"
-                                                    data-bs-target="#collapse{{ $index }}"
-                                                    aria-expanded="false"
-                                                    aria-controls="collapse{{ $index }}">
-                                                {{ $question }}
-                                            </button>
-                                        </h2>
-                                        <div id="collapse{{ $index }}"
-                                             class="accordion-collapse collapse"
-                                             aria-labelledby="heading{{ $index }}"
-                                             data-bs-parent="#serviceAccordion">
-                                            <div class="accordion-body">
-                                                @if($answer)
-                                                    {!! $answer !!}
-                                                @else
-                                                    <p class="text-muted">{{ __('Bu soru için henüz cevap eklenmemiş.') }}</p>
-                                                @endif
+                                        @if($question)
+                                            <div class="accordion-item">
+                                                <h2 class="accordion-header" id="heading{{ $index }}">
+                                                    <button class="accordion-button collapsed"
+                                                            type="button"
+                                                            data-bs-toggle="collapse"
+                                                            data-bs-target="#collapse{{ $index }}"
+                                                            aria-expanded="false"
+                                                            aria-controls="collapse{{ $index }}">
+                                                        {{ $question }}
+                                                    </button>
+                                                </h2>
+                                                <div id="collapse{{ $index }}"
+                                                     class="accordion-collapse collapse"
+                                                     aria-labelledby="heading{{ $index }}"
+                                                     data-bs-parent="#serviceAccordion">
+                                                    <div class="accordion-body">
+                                                        @if($answer)
+                                                            {!! $answer !!}
+                                                        @else
+                                                            <p class="text-muted">{{ __('Bu soru için henüz cevap eklenmemiş.') }}</p>
+                                                        @endif
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                    @endif
-                                @endforeach
-                            </div>
-
-                            {{-- Alternatif basit accordion --}}
-                            {{-- Eğer Bootstrap accordion çalışmıyorsa bu kısımı açın --}}
-                            {{--
-                            <div class="simple-faq-list">
-                                @foreach($service->faqs as $index => $faq)
-                                    @php
-                                        $currentLocale = app()->getLocale();
-                                        $question = data_get($faq, "question.{$currentLocale}") ?? data_get($faq, 'question.tr') ?? '';
-                                        $answer = data_get($faq, "answer.{$currentLocale}") ?? data_get($faq, 'answer.tr') ?? '';
-                                    @endphp
-
-                                    @if($question)
-                                        <div class="simple-faq-item" style="border: 1px solid #ddd; margin-bottom: 10px; border-radius: 8px;">
-                                            <div class="simple-faq-question"
-                                                 style="background: #f8f9fa; padding: 15px; font-weight: 600; cursor: pointer;"
-                                                 onclick="toggleFaq({{ $index }})">
-                                                {{ $question }}
-                                                <span class="toggle-icon" style="float: right;">+</span>
-                                            </div>
-                                            <div class="simple-faq-answer"
-                                                 id="faq-answer-{{ $index }}"
-                                                 style="padding: 15px; display: none;">
-                                                {!! $answer !!}
-                                            </div>
-                                        </div>
-                                    @endif
-                                @endforeach
-                            </div>
-                            --}}
-                        </section>
+                                        @endif
+                                    @endforeach
+                                </div>
+                            </section>
+                        @endif
                     @endif
 
                     {{-- CTA Card --}}
@@ -1025,22 +1016,24 @@
                         </a>
                     </div>
 
-                    {{-- Gallery Section --}}
-                    @if(!empty($service->gallery_images) && count($service->gallery_images) > 0)
+                    {{-- Gallery Section - Sadece varsa göster --}}
+                    @if(!empty($service->gallery_images) && is_array($service->gallery_images) && count($service->gallery_images) > 0)
                         <section id="projects" class="izokoc_content_card">
                             <h2>{{ __('Bu Hizmetle İlgili Projeler') }}</h2>
                             <div class="izokoc_gallery_grid">
                                 @foreach($service->gallery_images as $index => $image)
-                                    <div class="izokoc_gallery_item" onclick="openLightbox({{ $index }})">
-                                        <div class="izokoc_gallery_image">
-                                            <img src="{{ asset($image) }}" alt="Proje {{ $index + 1 }}">
-                                            <div class="izokoc_gallery_overlay">
-                                                <button class="izokoc_gallery_btn">
-                                                    <i class="fas fa-expand"></i>
-                                                </button>
+                                    @if($image)
+                                        <div class="izokoc_gallery_item" onclick="openLightbox({{ $index }})">
+                                            <div class="izokoc_gallery_image">
+                                                <img src="{{ asset($image) }}" alt="Proje {{ $index + 1 }}">
+                                                <div class="izokoc_gallery_overlay">
+                                                    <button class="izokoc_gallery_btn">
+                                                        <i class="fas fa-expand"></i>
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    @endif
                                 @endforeach
                             </div>
                         </section>
@@ -1108,16 +1101,29 @@
                         @endif
 
                         {{-- Table of Contents --}}
+                        {{-- Table of Contents --}}
                         <div class="izokoc_toc_card">
                             <h3>{{ __('İçindekiler') }}</h3>
                             <ul class="izokoc_toc_list">
-                                <li>
-                                    <a href="#details">
-                                        <span class="izokoc_toc_dot"></span>
-                                        <span>{{ __('Detaylar') }}</span>
-                                    </a>
-                                </li>
-                                @if(!empty($service->benefits))
+                                @php
+                                    $hasContent = $service->getTranslation('content', app()->getLocale())
+                                               || $service->getTranslation('expectations_content', app()->getLocale());
+                                    $hasBenefits = !empty($service->benefits) && is_array($service->benefits) && count(array_filter($service->benefits)) > 0;
+                                    $hasSupport = !empty($service->support_items) && is_array($service->support_items) && count(array_filter($service->support_items)) > 0;
+                                    $hasFaq = !empty($service->faqs) && is_array($service->faqs);
+                                    $hasGallery = !empty($service->gallery_images) && is_array($service->gallery_images) && count($service->gallery_images) > 0;
+                                @endphp
+
+                                @if($hasContent)
+                                    <li>
+                                        <a href="#details">
+                                            <span class="izokoc_toc_dot"></span>
+                                            <span>{{ __('Detaylar') }}</span>
+                                        </a>
+                                    </li>
+                                @endif
+
+                                @if($hasBenefits)
                                     <li>
                                         <a href="#benefits">
                                             <span class="izokoc_toc_dot"></span>
@@ -1125,7 +1131,8 @@
                                         </a>
                                     </li>
                                 @endif
-                                @if(!empty($service->support_items))
+
+                                @if($hasSupport)
                                     <li>
                                         <a href="#support">
                                             <span class="izokoc_toc_dot"></span>
@@ -1133,7 +1140,8 @@
                                         </a>
                                     </li>
                                 @endif
-                                @if(!empty($service->faqs))
+
+                                @if($hasFaq)
                                     <li>
                                         <a href="#faq">
                                             <span class="izokoc_toc_dot"></span>
@@ -1141,7 +1149,8 @@
                                         </a>
                                     </li>
                                 @endif
-                                @if(!empty($service->gallery_images))
+
+                                @if($hasGallery)
                                     <li>
                                         <a href="#projects">
                                             <span class="izokoc_toc_dot"></span>

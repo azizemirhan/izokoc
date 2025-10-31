@@ -3,7 +3,7 @@
         'name' => 'laravel/laravel',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '43356b8b2bcb00e1dffea300637184a6af07ea1d',
+        'reference' => 'a55611ad35b0bcc6114d78c6d301a411ff69ddad',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -36,6 +36,15 @@
             'install_path' => __DIR__ . '/../barryvdh/reflection-docblock',
             'aliases' => array(),
             'dev_requirement' => true,
+        ),
+        'biscolab/laravel-recaptcha' => array(
+            'pretty_version' => 'v6.1.0',
+            'version' => '6.1.0.0',
+            'reference' => '440fc617cba9f39aab7fda5d7697b76a55286e31',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../biscolab/laravel-recaptcha',
+            'aliases' => array(),
+            'dev_requirement' => false,
         ),
         'brick/math' => array(
             'pretty_version' => '0.12.3',
@@ -580,7 +589,7 @@
         'laravel/laravel' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '43356b8b2bcb00e1dffea300637184a6af07ea1d',
+            'reference' => 'a55611ad35b0bcc6114d78c6d301a411ff69ddad',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

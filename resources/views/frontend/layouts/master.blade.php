@@ -67,8 +67,8 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('site/header.css') }}"/>
     <link rel="stylesheet" type="text/css" href="{{ asset('site/footer.css') }}"/>
     <link rel="stylesheet" type="text/css" href="{{ asset('site/whatsapp.css') }}"/>
-
     @stack('styles')
+    {!! htmlScriptTagJsApiV3() !!}
 </head>
 <body>
 @include('frontend.layouts._header')

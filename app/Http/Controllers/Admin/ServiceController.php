@@ -102,62 +102,135 @@ class ServiceController extends Controller
     /**
      * Hem store hem de update için merkezi validasyon kuralları.
      */
+    /**
+     * Hem store hem de update için merkezi validasyon kuralları.
+     */
     private function validateService(Request $request, $id = null): array
     {
         $activeLanguages = $this->getActiveLanguages();
         $languageCodes = array_keys($activeLanguages);
-        $firstLanguage = $languageCodes[0] ?? 'tr';
 
         $rules = [
-            'title' => 'required|array',
-            "title.{$firstLanguage}" => 'required|string|max:255', // Sadece ilk dil zorunlu
-            'slug' => 'required|string|max:255|unique:services,slug,' . $id,
+            'title' => 'nullable|array',
+            'slug' => 'nullable|string|max:255|unique:services,slug,' . $id,
             'summary' => 'nullable|array',
             'content' => 'nullable|array',
             'expectations_content' => 'nullable|array',
-            'cover_image' => ($id ? 'nullable' : 'required') . '|image|mimes:jpeg,png,jpg,webp|max:2048', // Oluştururken zorunlu
+            'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'gallery_images' => 'nullable|array',
             'gallery_images.*' => 'image|mimes:jpeg,png,jpg,webp|max:50048',
-            'order' => 'required|integer',
-            'is_active' => 'required|boolean',
+            'order' => 'nullable|integer',
+            'is_active' => 'nullable|boolean',
             'benefits' => 'nullable|array',
             'support_items' => 'nullable|array',
             'faqs' => 'nullable|array',
         ];
 
-        // Diğer dillerin başlıkları opsiyonel
+        // Tüm dillerin başlıkları opsiyonel
         foreach ($languageCodes as $code) {
             $rules["title.{$code}"] = 'nullable|string|max:255';
+            $rules["summary.{$code}"] = 'nullable|string';
+            $rules["content.{$code}"] = 'nullable|string';
+            $rules["expectations_content.{$code}"] = 'nullable|string';
         }
 
-        return $request->validate($rules);
-    }
+        $validated = $request->validate($rules);
 
+        // Varsayılan değerler ata
+        $validated['is_active'] = $validated['is_active'] ?? 1;
+        $validated['order'] = $validated['order'] ?? 0;
+
+        return $validated;
+    }
     /**
      * Hem store hem de update için repeater ve resim verilerini işler.
      */
+    /**
+     * Hem store hem de update için TÜM metin, repeater ve resim verilerini işler.
+     * (NİHAİ GÜNCELLENMİŞ METOT)
+     */
     private function handleServiceData(array &$validatedData, Request $request, ?Service $service = null): void
     {
-        // Repeater'lardan gelen boş satırları temizle
+        $languageCodes = array_keys($this->getActiveLanguages());
+
+        // 1. TÜM Çevrilebilir Metin Alanlarını Temizle
+        // (title, summary, content, expectations_content)
+        // Boş string veya boş HTML (<p><br></p>) ise veritabanına NULL olarak kaydet.
+
+        $textFieldsToClean = ['title', 'summary', 'content', 'expectations_content'];
+
+        foreach ($textFieldsToClean as $field) {
+            if (isset($validatedData[$field]) && is_array($validatedData[$field])) {
+                foreach ($languageCodes as $code) {
+                    if (isset($validatedData[$field][$code])) {
+                        $value = $validatedData[$field][$code];
+
+                        // HTML etiketlerini kaldır, baştaki/sondaki boşlukları sil
+                        $cleanedValue = trim(strip_tags((string) $value));
+
+                        // Eğer sonuç tamamen boşsa, bu dil için değeri null yap
+                        if (empty($cleanedValue)) {
+                            $validatedData[$field][$code] = null;
+                        }
+                    }
+                }
+            }
+        }
+
+        // 2. Çevrilemeyen Metin Alanlarını Temizle (Örn: slug)
+        // Boş string "" ise NULL yap
+        if (isset($validatedData['slug']) && trim((string) $validatedData['slug']) === '') {
+            $validatedData['slug'] = null;
+        }
+
+        // 3. Repeater'lardan gelen boş satırları (boş HTML içerenler dahil) temizle
+
+        // 3a. Benefits Temizleme
         $validatedData['benefits'] = array_values(array_filter($validatedData['benefits'] ?? [], function($item) {
-            return !empty($item['text']) && array_filter($item['text']);
+            // 'text' dizisindeki tüm değerleri strip_tags/trim'den geçir
+            $cleanedTexts = array_map(function($text) {
+                return trim(strip_tags((string) $text));
+            }, $item['text'] ?? []);
+
+            // Temizlenmiş dizide hala dolu bir değer var mı? (Boş değilse koru)
+            return !empty(array_filter($cleanedTexts));
         }));
 
+        // 3b. Support Items Temizleme
         $validatedData['support_items'] = array_values(array_filter($validatedData['support_items'] ?? [], function($item) {
-            return !empty($item['text']) && array_filter($item['text']);
+            $cleanedTexts = array_map(function($text) {
+                return trim(strip_tags((string) $text));
+            }, $item['text'] ?? []);
+
+            // Temizlenmiş dizide hala dolu bir değer var mı? (Boş değilse koru)
+            return !empty(array_filter($cleanedTexts));
         }));
 
+        // 3c. FAQs Temizleme (Soru VEYA Cevap dolu olmalı)
         $validatedData['faqs'] = array_values(array_filter($validatedData['faqs'] ?? [], function($item) {
-            return (!empty($item['question']) && array_filter($item['question'])) ||
-                (!empty($item['answer']) && array_filter($item['answer']));
+            // Soruyu temizle
+            $cleanedQuestions = array_map(function($q) {
+                return trim(strip_tags((string) $q));
+            }, $item['question'] ?? []);
+
+            // Cevabı temizle (Cevap da HTML olabilir)
+            $cleanedAnswers = array_map(function($a) {
+                // Cevaplar HTML içerebilir, ancak tamamen boş HTML ise (<p><br></p>)
+                // strip_tags onu da temizleyecektir.
+                return trim(strip_tags((string) $a));
+            }, $item['answer'] ?? []);
+
+            // Soru VEYA cevap doluysa satırı koru
+            return !empty(array_filter($cleanedQuestions)) || !empty(array_filter($cleanedAnswers));
         }));
 
-        // Kapak Resmi Yükleme
+
+        // 4. Kapak Resmi Yükleme
         if ($request->hasFile('cover_image')) {
             $validatedData['cover_image'] = $this->uploadImage($request, 'cover_image', 'uploads/services', $service->cover_image ?? null);
         }
 
-        // Galeri Resimleri Yükleme
+        // 5. Galeri Resimleri Yükleme
         $existingGallery = $service->gallery_images ?? [];
         if ($request->has('delete_gallery_images')) {
             $imagesToDelete = $request->input('delete_gallery_images');
@@ -176,7 +249,6 @@ class ServiceController extends Controller
             $validatedData['gallery_images'] = $existingGallery;
         }
     }
-
     public function uploadEditorImage(Request $request)
     {
         $request->validate([

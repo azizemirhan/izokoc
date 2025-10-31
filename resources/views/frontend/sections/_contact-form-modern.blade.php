@@ -31,7 +31,7 @@
                         </div>
                     @endif
 
-                    <form id="contactForm" method="POST" action="{{ $formAction }}" class="row">
+                    <form id="contactForm" method="POST" action="{{ route('frontend.contact.submit') }}" class="row">
                         @csrf
 
                         {{-- Honeypot for spam protection --}}
@@ -123,7 +123,6 @@
                             <span class="text-danger">{{ $message }}</span>
                             @enderror
                         </div>
-
                         <div class="col-xl-12 text-center">
                             <input
                                     type="submit"
@@ -132,6 +131,7 @@
                                     name="con_submit"
                             >
                         </div>
+                        {!! htmlScriptTagJsApiV3Submit('contactForm', 'recaptcha_action_adı') !!}
                     </form>
                 </div>
             </div>

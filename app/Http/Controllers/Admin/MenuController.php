@@ -72,7 +72,7 @@ class MenuController extends Controller
                 'id' => $s->id,
                 'title' => $title,
                 'slug' => $s->slug,
-                'url' => url('/services/' . $s->slug), // veya hizmet detay sayfanızın route'u
+                'url' => '/hizmetlerimiz/' . $s->slug, // veya hizmet detay sayfanızın route'u
             ];
         }));
     }
