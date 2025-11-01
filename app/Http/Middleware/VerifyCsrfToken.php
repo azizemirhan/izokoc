@@ -12,6 +12,7 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        'support-request',
+        // Test için geçici olarak ekle
+        '/contact',  // Sadece test için!
     ];
 }

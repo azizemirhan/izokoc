@@ -30,3 +30,4 @@ if (!function_exists('setting')) {
         return $setting->value ?? $default;
     }
 }
+

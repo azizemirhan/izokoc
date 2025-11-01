@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Route;
 use Spatie\Sitemap\Sitemap;
 use Spatie\Sitemap\Tags\Url;
 
+Route::get('/recaptcha-test', function () {
+    return view('recaptcha-test');
+})->name('recaptcha.test');
 
 Route::get('/test-api', function () {
     return view('test-api');

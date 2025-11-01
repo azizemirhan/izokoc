@@ -188,6 +188,7 @@ return [
         /*
          * Package Service Providers...
          */
+        App\Providers\RecaptchaServiceProvider::class,
 
         /*
          * Application Service Providers...

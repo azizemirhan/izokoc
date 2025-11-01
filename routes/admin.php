@@ -150,6 +150,15 @@ Route::middleware('is_admin')->group(function () {
     Route::post('/chat/session/{id}/send', [\App\Http\Controllers\Admin\AdminChatController::class, 'sendMessage']);
     Route::post('/chat/session/{id}/close', [\App\Http\Controllers\Admin\AdminChatController::class, 'closeSession']);
 
+    Route::prefix('security/recaptcha')->name('security.recaptcha.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\RecaptchaSecurityController::class, 'index'])->name('dashboard');
+        Route::get('/{id}', [\App\Http\Controllers\Admin\RecaptchaSecurityController::class, 'show'])->name('show');
+        Route::post('/block-ip', [\App\Http\Controllers\Admin\RecaptchaSecurityController::class, 'blockIp'])->name('block-ip');
+
+        // API endpoints (AJAX için)
+        Route::get('/api/stats', [\App\Http\Controllers\Admin\RecaptchaSecurityController::class, 'apiStats'])->name('api.stats');
+    });
+
     Route::get(' / lock', function () {
         session(['locked' => true]);
 

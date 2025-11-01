@@ -123,6 +123,16 @@
                             <span class="text-danger">{{ $message }}</span>
                             @enderror
                         </div>
+
+                        {{-- reCAPTCHA v3 Hatası --}}
+                        @error('recaptcha-response')
+                        <div class="col-xl-12">
+                            <div class="alert alert-danger">
+                                <i class="fas fa-shield-alt"></i> {{ $message }}
+                            </div>
+                        </div>
+                        @enderror
+
                         <div class="col-xl-12 text-center">
                             <input
                                     type="submit"
@@ -131,8 +141,16 @@
                                     name="con_submit"
                             >
                         </div>
-                        {!! htmlScriptTagJsApiV3Submit('contactForm', 'recaptcha_action_adı') !!}
                     </form>
+
+                    {{-- reCAPTCHA v3 Badge Bilgilendirmesi --}}
+                    <div class="recaptcha-info text-center mt-3">
+                        <small class="text-muted">
+                            Bu site Google reCAPTCHA ile korunmaktadır.
+                            <a href="https://policies.google.com/privacy" target="_blank">Gizlilik Politikası</a> ve
+                            <a href="https://policies.google.com/terms" target="_blank">Hizmet Şartları</a> geçerlidir.
+                        </small>
+                    </div>
                 </div>
             </div>
         </div>
@@ -243,6 +261,12 @@
             transform: none;
         }
 
+        .iconInput input:focus,
+        .iconInput textarea:focus {
+            border-color: #1a237e;
+            outline: none;
+        }
+
         .iconInput input:focus + i,
         .iconInput textarea:focus + i {
             color: #1a237e;
@@ -274,6 +298,12 @@
             transform: translateY(-1px);
         }
 
+        input[type="submit"]:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         .alert {
             margin-bottom: 30px;
             padding: 15px 20px;
@@ -292,6 +322,23 @@
             margin-top: 5px;
             font-size: 13px;
             color: #dc3545;
+        }
+
+        .recaptcha-info {
+            margin-top: 20px;
+        }
+
+        .recaptcha-info small {
+            font-size: 12px;
+        }
+
+        .recaptcha-info a {
+            color: #1a237e;
+            text-decoration: none;
+        }
+
+        .recaptcha-info a:hover {
+            text-decoration: underline;
         }
 
         @media (max-width: 991px) {
@@ -325,15 +372,26 @@
 @endpush
 
 @push('scripts')
+    {{-- reCAPTCHA v3 Script'ini yükle --}}
+    {!! recaptcha_script() !!}
+
+    {{-- Form submit işlemi --}}
+    {!! recaptcha_v3('contactForm', 'contact_form_submit') !!}
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const form = document.getElementById('contactForm');
 
             if (form) {
+                // Form submit'e ek işlemler (loading state vb.)
                 form.addEventListener('submit', function (e) {
                     const submitBtn = document.getElementById('con_submit');
-                    submitBtn.disabled = true;
-                    submitBtn.value = '{{ __("Sending...") }}';
+
+                    // Button'ı disable et (reCAPTCHA scripti zaten submit'i engeller)
+                    setTimeout(() => {
+                        submitBtn.disabled = true;
+                        submitBtn.value = '{{ __("Sending...") }}';
+                    }, 100);
                 });
             }
         });
